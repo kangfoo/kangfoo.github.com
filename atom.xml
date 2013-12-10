@@ -3,40 +3,152 @@
   <title><![CDATA[kangfoo's 博客]]></title>
   <link href="http://kangfoo.u.qiniudn.com//atom.xml" rel="self"/>
   <link href="http://kangfoo.u.qiniudn.com//"/>
-  <updated>2013-12-06T17:43:30+08:00</updated>
+  <updated>2013-12-10T16:00:27+08:00</updated>
   <id>http://kangfoo.u.qiniudn.com//</id>
   <author>
     <name><![CDATA[kangfoo]]></name>
-    
+    <email><![CDATA[xfgcsk@163.com]]></email>
   </author>
   <generator uri="http://press.opoo.org/">OpooPress</generator>
 
+  <entry>
+    <title type="html"><![CDATA[编译hadoop 1.2.1 hadoop-eclipse-plugin插件]]></title>
+    <link href="http://kangfoo.u.qiniudn.com//article/2013/12/hadoop-eclipse-plugin-1.2.1/"/>
+    <updated>2013-12-09T22:52:00+08:00</updated>
+    <id>http://kangfoo.u.qiniudn.com//article/2013/12/hadoop-eclipse-plugin-1.2.1/</id>
+    <content type="html"><![CDATA[<p>编译hadoop1.x.x版本的eclipse插件为何如此繁琐？</p>
+<p>个人理解，ant的初衷是打造一个本地化工具，而编译hadoop插件的资源间的依赖超出了这一目标。导致我们在使用ant编译的时候需要手工去修改配置。那么自然少不了设置环境变量、设置classpath、添加依赖、设置主函数、javac、jar清单文件编写、验证、部署等步骤。</p>
+<p>那么我们开始动手</p>
+<h4>主要步骤如下</h4>
+<ul>
+<li>设置环境变量</li>
+<li>设置ant初始参数</li>
+<li>调整java编译参数</li>
+<li>设置java classpath</li>
+<li>添加依赖</li>
+<li>修改META-INF文件</li>
+<li>编译打包、部署、验证</li>
+</ul>
+<h4>具体操作</h4>
+<ol>
+<li>设置语言环境<!-- lang:shell-->
+<pre class='brush:shell'>$ export LC_ALL=en
+</pre></li>
+<li>设置ant初始参数
+修改build-contrib.xml文件<!--- lang:shell -->
+<pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
+$ vi build-contrib.xml
+</pre>编辑并修改hadoop.root值为实际hadoop解压的根目录<!--- lang:xml -->
+<pre class='brush:xml'>&lt;property name="hadoop.root" location="/Users/kangfoo-mac/study/hadoop-1.2.1"/&gt;
+</pre>添加eclipse依赖<!--- lang:xml -->
+<pre class='brush:xml'>&lt;property name="eclipse.home" location="/Users/kangfoo-mac/work/soft/eclipse-standard-kepler-SR1-macosx-cocoa" /&gt;
+</pre>设置版本号<!--- lang:xml -->
+<pre class='brush:xml'>&lt;property name="version" value="1.2.1"/&gt;
+</pre></li>
+<li>调整java编译设置
+启用javac.deprecation<!--- lang:shell -->
+<pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
+$ vi build-contrib.xml
+</pre>将<br  /><!--- lang:xml -->
+<pre class='brush:xml'>&lt;property name="javac.deprecation" value="off"/&gt;
+</pre>改为<!--- lang:xml -->
+<pre class='brush:xml'>&lt;property name="javac.deprecation" value="on"/&gt;
+</pre></li>
+<li>ant 1.8+ 版本需要额外的设置javac includeantruntime=&ldquo;on&rdquo; 参数<!--- lang:xml -->
+<pre class='brush:xml'>&lt;!-- ====================================================== --&gt;
+&lt;!-- Compile a Hadoop contrib's files                       --&gt;
+&lt;!-- ====================================================== --&gt;
+&lt;target name="compile" depends="init, ivy-retrieve-common" unless="skip.contrib"&gt;
+&lt;echo message="contrib: ${name}"/&gt;
+&lt;javac
+ encoding="${build.encoding}"
+ srcdir="${src.dir}"
+ includes="**/*.java"
+ destdir="${build.classes}"
+ debug="${javac.debug}"
+ deprecation="${javac.deprecation}"
+ includeantruntime="on"&gt;
+ &lt;classpath refid="contrib-classpath"/&gt;
+&lt;/javac&gt;
+&lt;/target&gt; 
+</pre></li>
+<li>修改编译hadoop插件 classpath<!--- lang:shell -->
+<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
+$ vi build.xml
+</pre>添加 文件路径 hadoop-jars<!--- lang:xml -->
+<pre class='brush:xml'>&lt;path id="hadoop-jars"&gt;
+  &lt;fileset dir="${hadoop.root}/"&gt;
+    &lt;include name="hadoop-*.jar"/&gt;
+  &lt;/fileset&gt;
+&lt;/path&gt;
+</pre>将hadoop-jars 添加到classpath<!--- lang:xml -->
+<pre class='brush:xml'>&lt;path id="classpath"&gt;
+  &lt;pathelement location="${build.classes}"/&gt;
+  &lt;pathelement location="${hadoop.root}/build/classes"/&gt;
+  &lt;path refid="eclipse-sdk-jars"/&gt;
+  &lt;path refid="hadoop-jars"/&gt;
+&lt;/path&gt; 
+</pre></li>
+<li>修改或添加额外的jar依赖
+因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
+同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加<!--- lang:shell -->
+<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
+$ vi build.xml
+</pre>找到 <code>&lt;!-- Override jar target to specify manifest --&gt;</code> 修改target name为 jar 中的 copy file 的路径，具体如下：<!--- lang:xml -->
+<pre class='brush:xml'>&lt;copy file="${hadoop.root}/hadoop-core-${version}.jar" tofile="${build.dir}/lib/hadoop-core.jar" verbose="true"/&gt;
+&lt;copy file="${hadoop.root}/lib/commons-cli-${commons-cli.version}.jar"  tofile="${build.dir}/lib/commons-cli.jar" verbose="true"/&gt;
+&lt;copy file="${hadoop.root}/lib/commons-configuration-1.6.jar"  tofile="${build.dir}/lib/commons-configuration.jar" verbose="true"/&gt;
+&lt;copy file="${hadoop.root}/lib/commons-httpclient-3.0.1.jar"  tofile="${build.dir}/lib/commons-httpclient.jar" verbose="true"/&gt;
+&lt;copy file="${hadoop.root}/lib/commons-lang-2.4.jar"  tofile="${build.dir}/lib/commons-lang.jar" verbose="true"/&gt;
+&lt;copy file="${hadoop.root}/lib/jackson-core-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-core-asl.jar" verbose="true"/&gt;
+&lt;copy file="${hadoop.root}/lib/jackson-mapper-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-mapper-asl.jar" verbose="true"/&gt;
+</pre></li>
+<li>修改 jar 清单文件<!--- lang:xml -->
+<pre class='brush:shell'>$ cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
+$ vi MANIFEST.MF
+</pre>找到这个文件的Bundle-ClassPath这一行，然后，修改成<!--- lang:xml -->
+<pre class='brush:shell'>Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/hadoop-core.jar,lib/jackson-mapper-asl.jar,lib/commons-configuration.jar,lib/commons-lang.jar,lib/jackson-core-asl.jar
+</pre>请保证上述字符占用一行，或者满足osgi bundle 配置文件的换行标准语法也行的。省事就直接写成一行，搞定。</li>
+<li>新建直接打包并部署jar到eclipse/plugin目录的target<!--- lang:shell -->
+<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
+$ vi build.xml
+</pre>添加target直接将编译的插件拷贝到eclipse插件目录<!--- lang:xml -->
+<pre class='brush:xml'>&lt;target name="deploy" depends="jar" unless="skip.contrib"&gt; 
+&lt;copy file="${build.dir}/hadoop-${name}-${version}.jar" todir="${eclipse.home}/plugins" verbose="true"/&gt; &lt;/target&gt;
+</pre>修改ant默认target为deploy<!--- lang:xml -->
+<pre class='brush:xml'>&lt;project default="deploy" name="eclipse-plugin"&gt;
+</pre></li>
+<li>编译并启动eclipse验证插件<!--- lang:shell -->
+<pre class='brush:shell'>$ ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
+</pre>启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置</li>
+<li>效果图
+<img src="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1.png?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:b0nXaq4z_psXKmgw0yBWCQIlw9w=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLnBuZyIsIkUiOjEzODY3Mzg2NjB9" alt="image" /></li>
+</ol>
+<h4>相关源文件</h4>
+<ul>
+<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build-contrib.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:UGF5ciPhL5L_71XPMfHcyczxfbY=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLWNvbnRyaWIueG1sIiwiRSI6MTM4Njc0NzQxN30=&amp;download">hadoop-1.2.1/src/contrib/build-contrib.xml</a></li>
+<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:s_IcusoS1921HGL4jPYW0mkGZUw=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLnhtbCIsIkUiOjEzODY3NDc0MDd9&amp;download">hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml</a></li>
+<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:s_IcusoS1921HGL4jPYW0mkGZUw=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLnhtbCIsIkUiOjEzODY3NDc0MDd9&amp;download">hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF/MANIFEST.MF</a></li>
+<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugin-1.2.1.jar?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:PrPGIRgkUtbfDjTJqjyrc7mgWB4=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW4tMS4yLjEuamFyIiwiRSI6MTM4Njc0ODc0NH0=&amp;download">hadoop-eclipse-plugin-1.2.1.jar</a></li>
+</ul>
+<p><em>在此非常感谢<a href="http://www.cnblogs.com/kinuxroot/archive/2013/05/06/linux_hadoop_eclipse_plugin.html">kinuxroot</a>这位博主的的博文参考。</em></p>
+]]></content>
+  </entry>
   <entry>
     <title type="html"><![CDATA[Mac java乱码 maven OOM 异常]]></title>
     <link href="http://kangfoo.u.qiniudn.com//article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/"/>
     <updated>2013-12-05T23:55:00+08:00</updated>
     <id>http://kangfoo.u.qiniudn.com//article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/</id>
-    <content type="html"><![CDATA[<p>在中文环境的 java，javac 默认以GBK编码输出信息到控制台，但是mac默认以UTF-8编码，就出现了编码错误。
-可如下3种方式修改:</p>
+    <content type="html"><![CDATA[<p>在中文环境下苹果电脑中的 <strong>java，javac 默认以GBK编码</strong>输出信息到控制台，<strong>终端terminal默认以UTF-8编码</strong>，就出现了编码错误。</p>
+<p>可如下2种方式修改:</p>
 <ol>
-<li>更改系统语言环境<pre class='brush:language'>export LC_ALL=en 或者 export LANG=zh_CN.UTF-8
+<li>更改系统语言环境<pre>export LC_ALL=en 或者 export LANG=zh_CN.UTF-8
 </pre></li>
-<li>指定输出编码方式<pre><code>javac -Dfile.encoding=UTF-8</code></pre>
-</li>
-<li>通过iconv转码<pre><code>javac something|iconv -f GBK -t UTF-8</code></pre>
-通常我使用 export LANG=zh_CN.UTF-8 解决。
-但在有maven的情况下还需要这么设置。<pre><code>export MAVEN_OPTS="-Xmx1024m -Dfile.encoding=UTF-8"</code></pre>
-否则可能出现内存溢出。</li>
+<li>指定输出编码方式<pre>javac -Dfile.encoding=UTF-8
+</pre></li>
 </ol>
-]]></content>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[世界，你好！]]></title>
-    <link href="http://kangfoo.u.qiniudn.com//article/2013/12/hello-world/"/>
-    <updated>2013-12-05T23:23:00+08:00</updated>
-    <id>http://kangfoo.u.qiniudn.com//article/2013/12/hello-world/</id>
-    <content type="html"><![CDATA[<p>欢迎使用 OpooPress！</p>
-<p>这是系统自动生成的演示文章。编辑或者删除它，然后开始您的博客！</p>
-]]></content>
+<p>但在有maven的情况下还需要这么设置：<strong>先调整JVM大小，避免工程太大中途出现OOM，再设置文件的编码。</strong></p>
+<pre>export MAVEN_OPTS="-Xmx1024m －Dfile.encoding=UTF-8"
+</pre>]]></content>
   </entry>
 </feed>

@@ -4,16 +4,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>kangfoo's 博客</title>
+  <title>编译hadoop 1.2.1 hadoop-eclipse-plugin插件 - kangfoo's 博客</title>
   <meta name="author" content="kangfoo">
-  <meta name="description" content="好记性不如乱笔头！">
+  <meta name="description" content="使用ant编译hadoop 1.2.1 hadoop-eclipse-plugin插件">
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
   <meta name="Generated" content="2013-12-10T16:00:27+08:00"/>
-  <link rel="canonical" href="/">
+  <link rel="canonical" href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">
   
   
   <link href="/favicon.ico" rel="icon">
@@ -52,7 +52,7 @@
 <fieldset class="mobile-nav">
   <select onchange="if (this.value) { window.location.href = this.value;}">
     <option value="">导航&hellip;</option>
-    <option value="/" selected="selected">&raquo; 首页</option>
+    <option value="/">&raquo; 首页</option>
 
     <option value="/category/hadoop/">&raquo; hadoop</option>
     <option value="/category/java/">&raquo; java</option>
@@ -80,17 +80,17 @@
 </nav>
   <div id="main">
     <div id="content">
-<div class="blog-index">
-    <article>
+<div>
+<article class="hentry" role="article">
   <header>
-      <h1 class="entry-title"><a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a></h1>
+      <h1 class="entry-title">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</h1>
 
       <p class="meta">
 		
 
 
 <time datetime="2013-12-09T22:52:00+08:00" pubdate>2013年12月09日</time>
-         | <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/#disqus_thread">评论</a>
+         | <a href="#disqus_thread">评论</a>
       </p>
   </header>
 
@@ -211,47 +211,52 @@ $ vi build.xml
 </ul>
 <p><em>在此非常感谢<a href="http://www.cnblogs.com/kinuxroot/archive/2013/05/06/linux_hadoop_eclipse_plugin.html">kinuxroot</a>这位博主的的博文参考。</em></p>
 </div>
-    </article>
-    <article>
-  <header>
-      <h1 class="entry-title"><a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">Mac Java乱码 Maven OOM 异常</a></h1>
-
-      <p class="meta">
-		
+  <footer>
+    <p class="meta">
+<span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
 
 
-<time datetime="2013-12-05T23:55:00+08:00" pubdate>2013年12月05日</time>
-         | <a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/#disqus_thread">评论</a>
-      </p>
-  </header>
+<time datetime="2013-12-09T22:52:00+08:00" pubdate>2013年12月09日</time>
 
-  <div class="entry-content"><p>在中文环境下苹果电脑中的 <strong>java，javac 默认以GBK编码</strong>输出信息到控制台，<strong>终端terminal默认以UTF-8编码</strong>，就出现了编码错误。</p>
-<p>可如下2种方式修改:</p>
-<ol>
-<li>更改系统语言环境<pre>export LC_ALL=en 或者 export LANG=zh_CN.UTF-8
-</pre></li>
-<li>指定输出编码方式<pre>javac -Dfile.encoding=UTF-8
-</pre></li>
-</ol>
-<p>但在有maven的情况下还需要这么设置：<strong>先调整JVM大小，避免工程太大中途出现OOM，再设置文件的编码。</strong></p>
-<pre>export MAVEN_OPTS="-Xmx1024m －Dfile.encoding=UTF-8"
-</pre></div>
-    </article>
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
+ 分类</span>
+
+
+<span class="categories">被贴了 <a class="tag" href="/tag/java/">java</a>, <a class="tag" href="/tag/ant/">ant</a>, <a class="tag" href="/tag/hadoop/">hadoop</a>
+ 标签</span>
+    </p>
+<div class="sharing">
   
-  <div class="pagination">
-<span class="pagebar">
-<span class="nolink-page" title="第 1 页，共 1 页">1/1</span>
+<!-- sharebar button begin -->
+<a class="sharebar_button_douban"></a>
+<div class="sharebar_toolbox">
+<a class="sharebar_button_tsina"></a>
+<a class="sharebar_button_kaixin001"></a>
+<a class="sharebar_button_renren"></a>
+<span class="sharebar_separator">|</span>
+<a href="http://www.sharebar.cn/" class="sharebar_button_compact">更多</a>
+</div>
+<script type="text/javascript" src="http://s.sharebar.cn/js/sharebar_button.js" charset="utf-8"></script>
+<!-- sharebar button end -->
 
-
-
-
-<span class="current-page">1</span>
-
-
-
-
-</span>
-<a class="next" href="/archives">文章目录</a>  </div>
+</div>
+<p>
+  <h2>相关文章</h2>
+  <ul id="related-posts-list">
+      <li class="post">
+        <a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">Mac Java乱码 Maven OOM 异常</a>
+        <div class="source right"><time datetime="2013-12-05T23:55:00">2013-12-05</time></div>
+      </li>
+  </ul>
+</p>    <p class="meta">
+        <a class="basic-alignment left" href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/" title="上一篇: Mac java乱码 maven OOM 异常">&laquo; Mac java乱码 maven OOM 异常</a>
+    </p>
+  </footer>
+</article>
+  <section>
+    <h1>评论</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
 </div>
 <aside class="sidebar">
 <section>
@@ -294,11 +299,17 @@ $ vi build.xml
 <script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
 <script language="JavaScript">
 <!--
-    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/',github:{target:'#gh_repos',user:'kangfoo',count:0,skip_forks:false},refreshRelativeTimes:true,verbose:true},{});
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2013/12/hadoop-eclipse-plugin-1.2.1/',title:'编译hadoop 1.2.1 hadoop-eclipse-plugin插件',github:{target:'#gh_repos',user:'kangfoo',count:0,skip_forks:false},refreshRelativeTimes:true,verbose:true},{});
     OpooPress.init();
 
     var disqus_shortname = 'kangaroo';
-    OpooPress.showDisqusCommentCount();
+    
+    // var disqus_developer = 1;
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2013/12/hadoop-eclipse-plugin-1.2.1/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2013/12/hadoop-eclipse-plugin-1.2.1/';
+    var disqus_title = '编译hadoop 1.2.1 hadoop-eclipse-plugin插件';
+    //var disqus_category_id = '';
+    OpooPress.showDisqusWidgets();
 //-->
 </script>
 <!-- START: Syntax Highlighter ComPress -->
@@ -340,3 +351,4 @@ $ vi build.xml
 <!-- END: Syntax Highlighter ComPress -->
 </body>
 </html>
+

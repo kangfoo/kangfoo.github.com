@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2013-12-06T17:43:30+08:00"/>
+  <meta name="Generated" content="2013-12-10T16:00:27+08:00"/>
   <link rel="canonical" href="/about/">
   
   
@@ -20,7 +20,16 @@
   <link href="/atom.xml" rel="alternate" title="kangfoo's 博客" type="application/atom+xml">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+<link href="http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css" rel="stylesheet" type="text/css">
+
+<!--
 <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic|PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+国内网站：http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css
+国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
+-->
+
   <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
 </head>
 <body>
@@ -43,20 +52,28 @@
   <select onchange="if (this.value) { window.location.href = this.value;}">
     <option value="">导航&hellip;</option>
     <option value="/">&raquo; 首页</option>
-    <option value="/it/">&raquo; IT</option>
-    <option value="/digest/">&raquo; 网摘</option>
-    <option value="/skim/">&raquo; 浮光掠影</option>
+
+    <option value="/category/hadoop/">&raquo; hadoop</option>
+    <option value="/category/java/">&raquo; java</option>
+
     <option value="/archives/">&raquo; 归档</option>
+
+
+    <option value="http://www.opoopress.com/">&raquo; OpooPress</option>
+
+
     <option value="/about/" selected="selected">&raquo; 关于</option>
+
+
   </select>
 </fieldset>
 
 <ul class="main-navigation">
 <li><a href="/">首页</a></li>
-<li><a href="/it/">IT</a></li>
-<li><a href="/digest/">网摘</a></li>
-<li><a href="/skim/">浮光掠影</a></li>
+<li><a href="/category/hadoop/">hadoop</a></li>
+<li><a href="/category/java/">java</a></li>
 <li><a href="/archives/">归档</a></li>
+<li><a href="http://www.opoopress.com/" target="_blank">OpooPress</a></li>
 <li><a href="/about/">关于</a></li>
 </ul>
 </nav>
@@ -87,24 +104,29 @@
   
   
       <li class="post">
-        <a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">Mac Java乱码 Maven OOM 异常</a>
+        <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
       </li>
       <li class="post">
-        <a href="/article/2013/12/hello-world/">世界，你好！</a>
+        <a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">Mac Java乱码 Maven OOM 异常</a>
       </li>
   </ul>
 </section>
-
 <section>
-  <h1>分类</h1>
-  <ul id="categories">
-	<li class="category"><a href="/category/opoopress/">opoopress</a><span class="count right">1</span>
-	</li>
-	<li class="category"><a href="/category/blog/">blog</a><span class="count right">2</span>
-	</li>
-	<li class="category"><a href="/category/custom-category/">Custom Category</a><span class="count right">1</span>
-	</li>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
   </ul>
+</section>
+<section>
+  <h2>近期评论</h2>
+ <script language="JavaScript">
+  <!--
+	var is_https = ('https:' == document.location.protocol);
+	var rcw_script_src = (is_https ? 'https:' : 'http:') + '//kangaroo.disqus.com/recent_comments_widget.js?num_items=5&excerpt_length=100&hide_avatars=' + (is_https ? '1' : '0&avatar_size=32');
+	var rcw_script = '<scr' + 'ipt type="text/javascript" src="' + rcw_script_src + '"></scr' + 'ipt>';
+	document.writeln(rcw_script);
+  //-->
+  </script>
 </section>
 </aside>
     </div>
@@ -116,7 +138,7 @@
 <script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
 <script language="JavaScript">
 <!--
-    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/about/',title:'我',refreshRelativeTimes:true,verbose:true},{});
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/about/',title:'我',github:{target:'#gh_repos',user:'kangfoo',count:0,skip_forks:false},refreshRelativeTimes:true,verbose:true},{});
     OpooPress.init();
 
     var disqus_shortname = 'kangaroo';
