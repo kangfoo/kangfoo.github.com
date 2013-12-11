@@ -54,6 +54,7 @@ $ export LC_ALL=en
 ```xml
 <property name="version" value="1.2.1"/>
 ```
+
 1. 调整java编译设置
 启用javac.deprecation
 <!--- lang:shell -->
@@ -71,6 +72,7 @@ $ export LC_ALL=en
 ```xml
 <property name="javac.deprecation" value="on"/>
 ```
+
 1. ant 1.8+ 版本需要额外的设置javac includeantruntime="on" 参数
 <!--- lang:xml -->
 ```xml
@@ -117,7 +119,6 @@ $ export LC_ALL=en
   </path> 
 ```
 1. 修改或添加额外的jar依赖
-
 因为我们根本都没有直接编译过hadoop,所以就直接使用${'$'}{HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
 同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加
 <!--- lang:shell -->
@@ -136,6 +137,7 @@ $ export LC_ALL=en
 <copy file="${'$'}{hadoop.root}/lib/jackson-core-asl-1.8.8.jar"  tofile="${'$'}{build.dir}/lib/jackson-core-asl.jar" verbose="true"/>
 <copy file="${'$'}{hadoop.root}/lib/jackson-mapper-asl-1.8.8.jar"  tofile="${'$'}{build.dir}/lib/jackson-mapper-asl.jar" verbose="true"/>
 ```
+
 1. 修改 jar 清单文件
 <!--- lang:shell -->
 ```shell
@@ -148,6 +150,7 @@ $ export LC_ALL=en
 Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/hadoop-core.jar,lib/jackson-mapper-asl.jar,lib/commons-configuration.jar,lib/commons-lang.jar,lib/jackson-core-asl.jar
 ```
 请保证上述字符占用一行，或者满足osgi bundle 配置文件的换行标准语法也行的。省事就直接写成一行，搞定。
+
 1. 新建直接打包并部署jar到eclipse/plugin目录的target
 <!--- lang:shell -->
 ```shell
@@ -165,6 +168,7 @@ Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/ha
 ```xml
 <project default="deploy" name="eclipse-plugin">
 ```
+
 1. 编译并启动eclipse验证插件
 <!--- lang:shell -->
 ```shell
