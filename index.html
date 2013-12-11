@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2013-12-11T20:19:29+08:00"/>
+  <meta name="Generated" content="2013-12-11T20:27:23+08:00"/>
   <link rel="canonical" href="/">
   
   
@@ -400,7 +400,7 @@ WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Invalid directory in dfs.d
 <li><p>节点之间不能通信
 java.io.IOException: File xxx/jobtracker.info could only be replicated to 0 nodes, instead of 1 <br />
 java.net.NoRouteToHostException: No route to host <br />
-<strong>解决方案</strong>：关闭iptables，sudo /etc/init.d/iptables stop</p>
+<strong>解决方案</strong>：关闭iptables，<code>sudo /etc/init.d/iptables stop</code></p>
 </li>
 <li><p>got exception trying to get groups for user webuser</p>
 <pre>
@@ -408,7 +408,8 @@ org.apache.hadoop.util.Shell$ExitCodeException: id: webuser：无此用户
      at org.apache.hadoop.util.Shell.runCommand(Shell.java:255)
      at org.apache.hadoop.util.Shell.run(Shell.java:182)
 </pre>
-<p><strong>解决方案</strong>：</p>
+<p><strong>解决方案</strong>：
+在hdfs-site.xml文件中添加</p>
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;property&gt;
  &lt;name&gt;dfs.web.ugi&lt;/name&gt;
@@ -426,7 +427,7 @@ value  第一个为你自己搭建hadoop的用户名,第二个为用户所属组
 </ul>
 <h2>八、附录</h2>
 <ul>
-<li>无意中<a href="http://t3serv002.mit.edu:50070/dfshealth.jsp">Google到的一个hadoop</a></li>
+<li>无意中Google到的一个<a href="http://t3serv002.mit.edu:50070/dfshealth.jsp">hadoop</a></li>
 <li>参考博文：<a href="http://blog.csdn.net/ab198604/article/details/8250461">hadoop学习之hadoop完全分布式集群安装</a> 图文并茂</li>
 <li>参考博文：<a href="http://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop1/">用 Hadoop 进行分布式并行编程, 第 1 部分</a> 理论与实践相结合</li>
 <li>参考博文：<a href="http://www.jb51.net/os/78318.html">centos安装</a></li>
