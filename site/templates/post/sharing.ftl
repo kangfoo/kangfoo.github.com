@@ -13,15 +13,8 @@
   </#if>
 
 <!-- sharebar button begin -->
-<a class="sharebar_button_douban"></a>
-<div class="sharebar_toolbox">
-<a class="sharebar_button_tsina"></a>
-<a class="sharebar_button_kaixin001"></a>
-<a class="sharebar_button_renren"></a>
-<span class="sharebar_separator">|</span>
-<a href="http://www.sharebar.cn/" class="sharebar_button_compact">更多</a>
-</div>
-<script type="text/javascript" src="http://s.sharebar.cn/js/sharebar_button.js" charset="utf-8"></script>
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
 <!-- sharebar button end -->
 
 </div>

@@ -117,6 +117,7 @@ $ export LC_ALL=en
   </path> 
 ```
 1. 修改或添加额外的jar依赖
+
 因为我们根本都没有直接编译过hadoop,所以就直接使用${'$'}{HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
 同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加
 <!--- lang:shell -->
@@ -136,13 +137,13 @@ $ export LC_ALL=en
 <copy file="${'$'}{hadoop.root}/lib/jackson-mapper-asl-1.8.8.jar"  tofile="${'$'}{build.dir}/lib/jackson-mapper-asl.jar" verbose="true"/>
 ```
 1. 修改 jar 清单文件
-<!--- lang:xml -->
+<!--- lang:shell -->
 ```shell
- $ cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
- $ vi MANIFEST.MF
+ cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
+ vi MANIFEST.MF
 ``` 
 找到这个文件的Bundle-ClassPath这一行，然后，修改成
-<!--- lang:xml -->
+<!--- lang:shell -->
 ```shell
 Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/hadoop-core.jar,lib/jackson-mapper-asl.jar,lib/commons-configuration.jar,lib/commons-lang.jar,lib/jackson-core-asl.jar
 ```
@@ -150,8 +151,8 @@ Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/ha
 1. 新建直接打包并部署jar到eclipse/plugin目录的target
 <!--- lang:shell -->
 ```shell
-  $ cd hadoop-1.2.1/src/contrib/eclipse-plugin
-  $ vi build.xml
+ cd hadoop-1.2.1/src/contrib/eclipse-plugin
+ vi build.xml
 ```  
 添加target直接将编译的插件拷贝到eclipse插件目录
 <!--- lang:xml -->
@@ -159,7 +160,7 @@ Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/ha
 <target name="deploy" depends="jar" unless="skip.contrib"> 
 	<copy file="${'$'}{build.dir}/hadoop-${'$'}{name}-${'$'}{version}.jar" todir="${'$'}{eclipse.home}/plugins" verbose="true"/> </target>
 ```
-修改ant默认target为deploy
+将ant默认target default="java"改为default="deploy"
 <!--- lang:xml -->
 ```xml
 <project default="deploy" name="eclipse-plugin">
@@ -167,7 +168,7 @@ Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/ha
 1. 编译并启动eclipse验证插件
 <!--- lang:shell -->
 ```shell
-$ ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
+  ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
 ```
 启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置
 1. 效果图
