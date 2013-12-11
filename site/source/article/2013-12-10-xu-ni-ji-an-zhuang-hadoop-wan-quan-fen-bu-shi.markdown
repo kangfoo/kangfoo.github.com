@@ -12,13 +12,13 @@ tags:
 ---
 ## 一、初衷
 
-对于学习Hadoop的我来将，没有足够的硬件设备，但又想安装完全分布式的Hadoop，一个master两个slave。手上就一台能联网的笔记本，那就使用oracle vitual box进行环境搭建把。环境搭建的效果为：在虚拟机中虚拟3台centos6.4 64位系统，每台都配置双网卡nat,host-only模式。在宿主机器上安装eclipse进行Hadoop开发。
+对于学习Hadoop的我来将，没有足够的硬件设备，但又想安装完全分布式的Hadoop，一个master两个slave。手上就一台能联网的笔记本，那就使用oracle vitual box进行环境搭建把。环境搭建的效果为：在虚拟机中虚拟3台centos6.4 64位系统，每台都配置双网卡NAT,host-only模式。在宿主机器上安装eclipse进行Hadoop开发。
 
-Hadoop环境搭建很大部分是在准备操作系统。具体如何搭建Hadoop其实就像解压缩普通的tar类似。然后在适当的配置Hadoop的dfs,mapredurce相关的配置，调整下操作系统就可以开始着手学习Hadoop了。
+Hadoop环境搭建很大部分是在准备操作系统。具体如何搭建Hadoop其实就像解压缩普通的tar类似。然后再适当的配置Hadoop的dfs,mapredurce相关的配置，调整操作系统就可以开始着手学习Hadoop了。
 
 ## 二、拓补图
 
-图片制作中
+图片制作中… …
 
 * master11:192.168.56.11
 * slave12:192.168.56.12
@@ -35,6 +35,8 @@ Hadoop环境搭建很大部分是在准备操作系统。具体如何搭建Hadoo
 **其他版本可到相关官方网站根据需要自行下载**
 
 ## 四、虚拟机和基础环境搭建
+
+这里主要操作有：安装一个新的oracle virtual box，并先安装一个centos6.4 的64位的操作系统。配置操作系统双网卡、修改机器名为master11、新建hadoop用户组和hadoop用户、配置sudo权限、安装配置java环境、同步系统时间、关闭防火墙。其中有些步骤需要重启操作系统后成效，建议一切都配置后再重启并再次验证是否生效，并开始克隆两个DataNode节点服务器slave12\slave14。
 
 ### 4.1 安装虚拟机
 
@@ -118,7 +120,10 @@ ONBOOT=yes
 NM_CONTROLLED=yes
 BOOTPROTO=dhcp
 </pre>
-1. 检查机器名称。修改后，重启生效。
+
+### 4.4 检查机器名称
+
+检查机器名称。修改后，重启生效。
 <!--- lang:shell -->
 ```shell
    cat /etc/sysconfig/network
@@ -129,14 +134,19 @@ BOOTPROTO=dhcp
  HOSTNAME=master11
 </pre>
 
-1. 新建hadoop用户组和用户(以下步骤如无特殊说明默认皆使用hadoop)
+### 4.5 建立hadoop用户组和用户
+
+新建hadoop用户组和用户(以下步骤如无特殊说明默认皆使用hadoop)
 <!--- lang:shell -->
 ```shell
 groupadd hadoop
 useradd hadoop -g hadoop
 passwd hadoop
 ```
-1. CentOS普通用户增加sudo权限的简单配置<br/>
+
+### 4.6 配置sudo权限
+
+CentOS普通用户增加sudo权限的简单配置<br/>
 查看sudo是否安装:
 <!--- lang:shell -->
 ```shell
@@ -160,16 +170,23 @@ runaspw  需要root密码，如果不加默认是要输入普通账户的密码<
 修改普通用户的.bash_profile文件(vi /home/hadoop/.bash_profile)，在PATH变量中增加
 `/sbin:/usr/sbin:/usr/local/sbin:/usr/kerberos/sbin`
 
-1. 安装java。 使用hadoop用户`sudo rpm -ivh jdk-7-linux-x64.rpm`进行安装jdk7。
+### 4.7 安装java
+
+使用hadoop用户`sudo rpm -ivh jdk-7-linux-x64.rpm`进行安装jdk7。
 配置环境变量参考[CentOS-6.3安装配置JDK-7]
 
-1. 配置时间。
+### 4.8 同步服务
+
 安装时间同步服务`sudo yum install -y ntp`
 设置同步服务器 `sudo ntpdate us.pool.ntp.org` 
 
-1. 关闭防火墙。hadoop使用的端口太多了，图省事，关掉。`chkconfig iptables off`。需要重启。 
+### 4.9 关闭防火墙
 
-1. 使用虚拟机进行克隆2个datanode节点。配置网卡（参见第五步）。配置主机名（参见第六步）。配置hosts,最好也包括宿主机（`sudo vi /etc/hosts`）
+hadoop使用的端口太多了，图省事，关掉。`chkconfig iptables off`。需要重启。 
+
+### 4.10 克隆
+
+使用虚拟机进行克隆2个datanode节点。配置网卡（参见第五步）。配置主机名（参见第六步）。配置hosts,最好也包括宿主机（`sudo vi /etc/hosts`）
 <pre>
 192.168.56.11 master11
 192.168.56.12 slave12
@@ -182,8 +199,8 @@ sudo ntpdate us.pool.ntp.org
 ```
 重启服务`service network start`。可能出现错误参见[device eth0 does not seem to be present, delaying initialization]
 
-1. 配置ssh</br>
-*单机ssh配置并回环测试* 
+### 4.11 配置ssh
+1. 单机ssh配置并回环测试
 <!--- lang:shell -->
 ```shell
 ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa   
@@ -191,20 +208,24 @@ chmod 700 ~/.ssh
 cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 ```
-输入`ssh localhost`不用输入密码直接登陆，表明ssh配置成功。（若没有权限分配，可能无法实现ssh免密码登陆的效果。浪费了我不少时间。）</br>
-*配置master和slave间的ssh*</br>
-*在slave12上执行*
+输入`ssh localhost`不用输入密码直接登陆，表明ssh配置成功。（若未重新权限分配，可能无法实现ssh免密码登陆的效果。浪费了我不少时间。）
+2. 配置master和slave间的ssh
+在slave12上执行
 <!--- lang:shell -->
 ```shell
 scp hadoop@master11:~/.ssh/id_dsa.pub ./master_dsa.pub
 cat master_dsa.pub >>authorized_keys
 ```
-在master上执行`ssh slave12`若，不输入密码直接登陆，配置即通过。</br>
-**相同的步骤需要也在slave14和master11上重复一遍。</br>
+在master上执行`ssh slave12`若，不输入密码直接登陆，配置即通过。
+3. 相同的步骤需要也在slave14和master11上重复一遍。
 
-机器环境确认无误后可以轻松的安装hadoop了。
+机器环境确认无误后可以轻松的安装hadoop。
 
-## 五、hadoop1.2.1环境搭建
+## 五、hadoop1.2.1 安装与配置
+
+经过了以上步骤准备Hadoop1.2.1的环境搭建就相对容易多了。此处就仅需要解压缩安装并配置Hadoop，再验证是否正常便可大功告成。
+
+### 5.1 安装
 
 1. 重启master11,准备工作环境目录
 <!--- lang:shell -->
@@ -216,7 +237,6 @@ mkdir env
 <!--- lang:shell -->
 ```shell
 tar -zxvf hadoop-1.2.1.tar.gz -C ~/env/
-mkdir env
 ```
 1. 建立软链接
 <!--- lang:shell -->
@@ -262,7 +282,7 @@ mkdir mapreduce/local
 
 </pre>
 
-## 六、hadoop1.2.1环境搭建
+### 5.2 配置
 
 1. 配置 conf/core-site.xml
 指定hdfs协议下的存储和临时目录
@@ -279,7 +299,7 @@ mkdir mapreduce/local
 ```
 
 1. 配置 conf/hdfs-site.xml
-配置关于hdfs相关的配置。这里将原有默认负责3个副本调整为2个。学习时可根据需求适当调整。
+配置关于hdfs相关的配置。这里将原有默认复制3个副本调整为2个。学习时可根据需求适当调整。
 <!--- lang:xml -->
 ```xml
     <property>
@@ -348,8 +368,9 @@ scp -r ~/env/ hadoop@slave12:~/
 scp -r ~/env/ hadoop@slave14:~/
 ```
 
-1. 启动hadoop</br>
-在主节点上格式化namenode
+### 5.3 启动hadoop
+
+1. 在主节点上格式化namenode
 <!--- lang:shell -->
 ```shell
 ./bin/hadoop namenode -format
@@ -360,7 +381,9 @@ scp -r ~/env/ hadoop@slave14:~/
 ```shell
 ./bin/start-all.sh
 ```
-1. 检查运行状态
+
+### 5.4 检查运行状态
+1. 通过web查看Hadoop状态
 <pre>
 http://192.168.56.11:50030/jobtracker.jsp
 http://192.168.56.11:50070/dfshealth.jsp
@@ -375,7 +398,7 @@ http://192.168.56.11:50070/dfshealth.jsp
 可wordcount参考[Hadoop集群（第6期）_WordCount运行详解]
 
 
-## 七、常见错误
+## 六、常见错误
 
 * expected: rwxr-xr-x, while actual: rwxrwxr-x
 WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Invalid directory in dfs.data.dir: Incorrect permission for /home/hadoop/env/data/data, expected: rwxr-xr-x, while actual: rwxrwxr-x <br/>
@@ -410,7 +433,7 @@ value  第一个为你自己搭建hadoop的用户名,第二个为用户所属组
 </pre>
 web访问授权是webuser用户。访问的时候。我们一般用户名不是webuser所有要覆盖掉默认的webuser 
 
-## 八、附录
+## 七、附录
 * 无意中Google到的一个[hadoop]
 * 参考博文：[hadoop学习之hadoop完全分布式集群安装] 图文并茂
 * 参考博文：[用 Hadoop 进行分布式并行编程, 第 1 部分] 理论与实践相结合 
