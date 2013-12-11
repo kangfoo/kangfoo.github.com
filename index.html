@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2013-12-11T23:06:52+08:00"/>
+  <meta name="Generated" content="2013-12-11T23:10:55+08:00"/>
   <link rel="canonical" href="/">
   
   
@@ -114,7 +114,7 @@
 </ul>
 <p><strong>其他版本可到相关官方网站根据需要自行下载</strong></p>
 <h2>四、虚拟机和基础环境搭建</h2>
-<p>这里主要操作为，安装一个新的oracle virtual box，并先安装一个centos6.4 的64位的操作系统。配置操作系统双网卡、修改机器名为master11、新建hadoop用户组和hadoop用户、配置sudo权限、安装配置java环境、同步系统时间、关闭防火墙。其中有些步骤需要重启操作系统后成效，建议一切都配置后再重启并再次验证是否生效，并开始克隆两个DataNode节点服务器slave12\slave14。</p>
+<p>这里主要操作有：安装一个新的oracle virtual box，并先安装一个centos6.4 的64位的操作系统。配置操作系统双网卡、修改机器名为master11、新建hadoop用户组和hadoop用户、配置sudo权限、安装配置java环境、同步系统时间、关闭防火墙。其中有些步骤需要重启操作系统后成效，建议一切都配置后再重启并再次验证是否生效，并开始克隆两个DataNode节点服务器slave12\slave14。</p>
 <h3>4.1 安装虚拟机</h3>
 <p>可参见官方文档安装oracle virtual box</p>
 <h3>4.2 在虚拟机里安装centos6.4</h3>
@@ -260,7 +260,7 @@ cat master_dsa.pub &gt;&gt;authorized_keys
 </ol>
 <p>机器环境确认无误后可以轻松的安装hadoop。</p>
 <h2>五、hadoop1.2.1 安装与配置</h2>
-<p>经过了以上步骤准备Hadoop1.2.1的环境搭建就相对容易多了。此处就仅需要解压缩安装并配置Hadoop就可大功告成。</p>
+<p>经过了以上步骤准备Hadoop1.2.1的环境搭建就相对容易多了。此处就仅需要解压缩安装并配置Hadoop，再验证是否正常便可大功告成。</p>
 <h3>5.1 安装</h3>
 <ol>
 <li>重启master11,准备工作环境目录<!--- lang:shell -->
