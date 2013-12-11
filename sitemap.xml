@@ -2,15 +2,19 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//</loc>
-        <lastmod>2013-12-09T22:52:00+08:00</lastmod>
+        <lastmod>2013-12-10T17:32:00+08:00</lastmod>
 		<changefreq>daily</changefreq>
 		<priority>1.0</priority>
     </url>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//archives/</loc>
-        <lastmod>2013-12-09T22:52:00+08:00</lastmod>
+        <lastmod>2013-12-10T17:32:00+08:00</lastmod>
 		<changefreq>daily</changefreq>
 		<priority>0.8</priority>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/</loc>
+        <lastmod>2013-12-10T17:32:00+08:00</lastmod>
     </url>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//article/2013/12/hadoop-eclipse-plugin-1.2.1/</loc>

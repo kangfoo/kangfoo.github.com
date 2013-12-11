@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2013-12-10T16:00:27+08:00"/>
+  <meta name="Generated" content="2013-12-11T20:19:29+08:00"/>
   <link rel="canonical" href="/">
   
   
@@ -81,6 +81,358 @@
   <div id="main">
     <div id="content">
 <div class="blog-index">
+    <article>
+  <header>
+      <h1 class="entry-title"><a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a></h1>
+
+      <p class="meta">
+		
+
+
+<time datetime="2013-12-10T17:32:00+08:00" pubdate>2013年12月10日</time>
+         | <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/#disqus_thread">评论</a>
+      </p>
+  </header>
+
+  <div class="entry-content"><h2>一、初衷</h2>
+<p>对于学习Hadoop的我来将，没有足够的硬件设备，但又想安装完全分布式的Hadoop，一个master两个slave。手上就一台能联网的笔记本，那就使用oracle vitual box进行环境搭建把。环境搭建的效果为：在虚拟机中虚拟3台centos6.4 64位系统，每台都配置双网卡nat,host-only模式。在宿主机器上安装eclipse进行Hadoop开发。</p>
+<p>Hadoop环境搭建很大部分是在准备操作系统。具体如何搭建Hadoop其实就像解压缩普通的tar类似。然后在适当的配置Hadoop的dfs,mapredurce相关的配置，调整下操作系统就可以开始着手学习Hadoop了。</p>
+<h2>二、拓补图</h2>
+<p>图片制作中</p>
+<ul>
+<li>master11:192.168.56.11</li>
+<li>slave12:192.168.56.12</li>
+<li>slave14:192.168.56.14</li>
+</ul>
+<h2>三、介质准备</h2>
+<ul>
+<li>虚拟机 <a href="http://dlc.sun.com.edgesuite.net/virtualbox/4.2.18/VirtualBox-4.2.18-88780-OSX.dmg">oracle virtual box Mac</a></li>
+<li>操作系统镜像 <a href="http://mirrors.163.com/centos/6.4/isos/x86_64/CentOS-6.4-x86_64-minimal.iso">centos 6.4 64位 网易镜像</a></li>
+<li>java <a href="http://download.oracle.com/otn-pub/java/jdk/7u45-b18/jdk-7u45-linux-x64.rpm?AuthParam=1386411925_f85a151e16f1c54da8a0451e59270b4a">jdk-7u45-linux-x64.rpm</a> 或者 <a href="http://cd.ctfs.ftn.qq.com/ftn_handler/5b6bcdbb17aada3096f04db2183249eba3560a4b273bcad2993899a61afc06b5803fbcc0a64f564c0c295f339092089fcae828c2f76fccbb07e55ff3e96905c8/jdk-6u45-linux-x64-rpm.bin">jdk-6u45-linux-x64-rpm.bin</a></li>
+<li>hadoop1.x <a href="http://apache.fayea.com/apache-mirror/hadoop/common/hadoop-1.2.1/hadoop-1.2.1.tar.gz">hadoop1.2.1</a></li>
+<li>eclipse <a href="http://mirrors.yun-idc.com/eclipse//technology/epp/downloads/release/kepler/R/eclipse-standard-kepler-R-macosx-cocoa-x86_64.tar.gz">eclipse mac版64位</a></li>
+</ul>
+<p><strong>其他版本可到相关官方网站根据需要自行下载</strong></p>
+<h2>四、虚拟机和基础环境搭建</h2>
+<h3>4.1 安装虚拟机</h3>
+<p>可参见官方文档安装oracle virtual box</p>
+<h3>4.2 在虚拟机里安装centos6.4</h3>
+<p>此处使用的是mini版的centos6.4 64位网易提供的镜像。在安装中内存调整大于等于1g，默认为视图安装界面，小于1g则为命令行终端安装方式。可更具实际情况调整虚拟机资源分配。此处为内存1g,存储20g.网络NAT模式。</p>
+<p>具体可参见<a href="http://www.jb51.net/os/78318.html">centos安装</a></p>
+<h3>4.3 配置双网卡</h3>
+<p>使用自己的笔记本经常遇到的问题就是在不同的网络下ip是不一样的。那么我们在学习hadoop的时候岂不是要经常修改这些ip呢。索性就直接弄个host-only模式的让oracle virtual box提供一个虚拟的网关。具体步骤：</p>
+<ol>
+<li><p>先关闭计算机 sudo poweroff</p>
+</li>
+<li><p>打开virtualbox主界面,依次点击屏幕左上角virtualbox->偏好设置->网络->点击右侧添加图标添加一个Host-Only网络vboxnet0,再设置参数值<pre>
+主机虚拟网络界面（A）
+IPv4地址（I）：192.168.56.1
+IPv4网络掩码（M）：255.255.255.0
+IPv6地址（P）：空
+IPv6网络掩码长度（L）：0</pre><pre>
+DHCP服务器（D）
+选择启动服务器
+服务器地址(r):192.168.56.100
+服务器网络掩码(M):255.255.255.0
+最小地址(L):192.168.56.254
+最大地址(U):192.168.56.254
+</pre>
+截图：<img src="http://zhaomingtai.u.qiniudn.com/nat-host-only.jpg" alt="image" /></p>
+</li>
+<li><p>配置网卡1。选中你刚新建的虚拟机，右键设置->网络->网卡1->点击启动网络连接（E）<pre>
+连接方式（A）:仅主机（Host-Only）适配器
+界面名称（N）:vboxnet0(此处需要注意，如果没有进行步骤1那么这里可能无法选择，整个设置流程会提示有错误而无法继续)
+高级
+控制芯片（T）:xxx
+混杂模式（P）:拒绝
+MAC地址（M）:系统随机即可
+接入网线（C）：选中
+</pre></p>
+</li>
+<li><p>配置网卡2。点击网卡2->点击启动网络连接（E） <pre>
+连接方式（A）:网络地址装换(NAT)
+界面名称（N）:
+高级(d)
+控制芯片（T）:xxx
+混杂模式（P）:拒绝
+MAC地址（M）:系统随机即可
+接入网线（C）：选中
+</pre></p>
+</li>
+<li><p>配置网络。启动操作系统，使用root用户进行网络配置。</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>cd /etc/sysconfig/network-scripts/
+cp ifcfg-eth0 ifcfg-eth1
+</pre><p>配置ifcfg-eth0,ifcfg-eth1两个文件与virtual box 中的网卡mac值一一对应, <code>ONBOOT=yes</code>开机启动。并将ifcfg-eth1中的网卡名称eth0改为eth1,再重启网路服务。</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>service network start
+</pre><p>其中eth0的网关信息比较多，需要根据情况具体配置。如，这里使用eth0为host-only模式，eth1为nat模式,eth0为固定ip，eth1为开机自动获取ip。可参考如下：</p>
+<pre>
+[root@master11 network-scripts]# cat ifcfg-eth0
+DEVICE=eth0
+HWADDR=08:00:27:55:99:EA（必须和virtual box 中的mac地址一致）
+TYPE=Ethernet
+UUID=dc6511c2-b5bb-4ccc-9775-84679a726db3（没有可不填）
+ONBOOT=yes
+NM_CONTROLLED=yes
+BOOTPROTO=static
+NETMASK=255.255.255.0
+BROADCAST=192.168.56.255
+IPADDR=192.168.56.11</pre><pre>
+<p>[root@master11 network-scripts]# cat ifcfg-eth1
+DEVICE=eth1
+HWADDR=08:00:27:13:36:C3
+TYPE=Ethernet
+UUID=b8f8485e-b731-4b64-8363-418dbe34880d
+ONBOOT=yes
+NM_CONTROLLED=yes
+BOOTPROTO=dhcp
+</pre></p>
+</li>
+<li><p>检查机器名称。修改后，重启生效。</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>cat /etc/sysconfig/network
+</pre><p>这里期望得机器名称信息是：</p>
+<pre>
+NETWORKING=yes
+HOSTNAME=master11
+</pre>
+</li>
+<li><p>新建hadoop用户组和用户(以下步骤如无特殊说明默认皆使用hadoop)</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>groupadd hadoop
+useradd hadoop -g hadoop
+passwd hadoop
+</pre></li>
+<li><p>CentOS普通用户增加sudo权限的简单配置<br />
+查看sudo是否安装:</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>rpm -qa|grep sudo
+</pre><p>修改/etc/sudoers文件，修改命令必须为visudo才行</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>visudo -f /etc/sudoers
+</pre><p>在root ALL=(ALL) ALL 之后增加</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>hadoop ALL=(ALL) ALL
+Defaults:hadoop timestamp_timeout=-1,runaspw
+</pre><pre>
+增加普通账户hadoop的sudo权限
+timestamp_timeout=-1 只需验证一次密码，以后系统自动记忆
+runaspw  需要root密码，如果不加默认是要输入普通账户的密码</pre>
+<p>修改普通用户的.bash_profile文件(vi /home/hadoop/.bash_profile)，在PATH变量中增加
+<code>/sbin:/usr/sbin:/usr/local/sbin:/usr/kerberos/sbin</code></p>
+</li>
+<li><p>安装java。 使用hadoop用户<code>sudo rpm -ivh jdk-7-linux-x64.rpm</code>进行安装jdk7。
+配置环境变量参考<a href="http://www.cnblogs.com/zhoulf/archive/2013/02/04/2891608.html">CentOS-6.3安装配置JDK-7</a></p>
+</li>
+<li><p>配置时间。
+安装时间同步服务<code>sudo yum install -y ntp</code>
+设置同步服务器 <code>sudo ntpdate us.pool.ntp.org</code></p>
+</li>
+<li><p>关闭防火墙。hadoop使用的端口太多了，图省事，关掉。<code>chkconfig iptables off</code>。需要重启。</p>
+</li>
+<li><p>使用虚拟机进行克隆2个datanode节点。配置网卡（参见第五步）。配置主机名（参见第六步）。配置hosts,最好也包括宿主机（<code>sudo vi /etc/hosts</code>）</p>
+<pre>
+192.168.56.11 master11
+192.168.56.12 slave12
+192.168.56.14 slave14
+</pre>
+<p>同步时间</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>sudo ntpdate us.pool.ntp.org
+</pre><p>重启服务<code>service network start</code>。可能出现错误参见<a href="http://blog.sina.com.cn/s/blog_77126fa501018s3d.html">device eth0 does not seem to be present, delaying initialization</a></p>
+</li>
+<li><p>配置ssh</br>
+<em>单机ssh配置并回环测试</em></p>
+<!--- lang:shell -->
+<pre class='brush:shell'>ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa   
+chmod 700 ~/.ssh
+cat ~/.ssh/id_dsa.pub &gt;&gt; ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+</pre><p>输入<code>ssh localhost</code>不用输入密码直接登陆，表明ssh配置成功。（若没有权限分配，可能无法实现ssh免密码登陆的效果。浪费了我不少时间。）</br>
+<em>配置master和slave间的ssh</em></br>
+<em>在slave12上执行</em></p>
+<!--- lang:shell -->
+<pre class='brush:shell'>scp hadoop@master11:~/.ssh/id_dsa.pub ./master_dsa.pub
+cat master_dsa.pub &gt;&gt;authorized_keys
+</pre><p>在master上执行<code>ssh slave12</code>若，不输入密码直接登陆，配置即通过。</br>
+**相同的步骤需要也在slave14和master11上重复一遍。</br></p>
+</li>
+</ol>
+<p>机器环境确认无误后可以轻松的安装hadoop了。</p>
+<h2>五、hadoop1.2.1环境搭建</h2>
+<ol>
+<li>重启master11,准备工作环境目录<!--- lang:shell -->
+<pre class='brush:shell'>cd ~/
+mkdir env
+</pre></li>
+<li>解压Hadoop 1.2.1 tar<!--- lang:shell -->
+<pre class='brush:shell'>tar -zxvf hadoop-1.2.1.tar.gz -C ~/env/
+mkdir env
+</pre></li>
+<li>建立软链接<!--- lang:shell -->
+<pre class='brush:shell'>ln -s hadoop-1.2.1/ hadoop
+</pre></li>
+<li>配置环境变量（<code>vi ～/.bashrc</code>）<!--- lang:shell -->
+<pre class='brush:shell'>export JAVA_HOME=/usr/java/jdk1.7.0_45
+source ~/.bashrc
+</pre></li>
+<li>同步.bashrc<pre class='brush:shell'>scp ~/.bashrc hadoop@slave12:~/
+scp ~/.bashrc hadoop@slave14:~/
+</pre></li>
+<li>创建数据文件存放路径。主要便于管理Hadoop的数据文件。<!--- lang:shell -->
+<pre class='brush:shell'>cd /home/hadoop/env
+mkdir data/tmp
+mkdir data/name
+mkdir data/data
+chmod 755 data/data/
+mkdir mapreduce/system
+mkdir mapreduce/local
+</pre>效果如下
+<pre>
+├── env
+│   ├── data
+│   │   ├── data
+│   │   ├── name
+│   │   └── tmp
+│   ├── hadoop -> hadoop-1.2.1/
+│   ├── hadoop-1.2.1
+│   │   ├── bin
+│   │   ├── build.xml
+│   └── mapreduce
+│       ├── local
+│       └── system</li>
+</ol>
+<p></pre></p>
+<h2>六、hadoop1.2.1环境搭建</h2>
+<ol>
+<li><p>配置 conf/core-site.xml
+指定hdfs协议下的存储和临时目录</p>
+<!--- lang:xml -->
+<pre class='brush:xml'>&lt;property&gt;
+&lt;name&gt;fs.default.name&lt;/name&gt;
+&lt;value&gt;hdfs://master11:9000&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+&lt;name&gt;hadoop.tmp.dir&lt;/name&gt;
+&lt;value&gt;/home/${user.name}/env/data/tmp&lt;/value&gt;
+&lt;/property&gt;
+</pre></li>
+<li><p>配置 conf/hdfs-site.xml
+配置关于hdfs相关的配置。这里将原有默认负责3个副本调整为2个。学习时可根据需求适当调整。</p>
+<!--- lang:xml -->
+<pre class='brush:xml'>&lt;property&gt;
+&lt;name&gt;dfs.name.dir&lt;/name&gt;
+&lt;value&gt;/home/${user.name}/env/data/name&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+&lt;name&gt;dfs.data.dir&lt;/name&gt;
+&lt;value&gt;/home/${user.name}/env/data/data&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+&lt;name&gt;dfs.replication&lt;/name&gt;
+&lt;value&gt;2&lt;/value&gt;
+&lt;/property&gt;
+</pre></li>
+<li><p>配置 conf/mapred-site.xml</p>
+<!--- lang:xml -->
+<pre class='brush:xml'>&lt;property&gt;
+&lt;name&gt;mapred.job.tracker&lt;/name&gt;
+&lt;value&gt;master11:9001&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+&lt;name&gt;mapred.system.dir&lt;/name&gt;
+&lt;value&gt;/home/${user.name}/env/mapreduce/system&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+&lt;name&gt;mapred.local.dir&lt;/name&gt;
+&lt;value&gt;/home/${user.name}/env/mapreduce/local&lt;/value&gt;
+&lt;/property&gt;
+</pre></li>
+<li><p>配置masters</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>vi masters
+</pre><p>写为</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>master11
+</pre></li>
+<li><p>配置slaves</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>vi slaves
+</pre><p>写为</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>slave12
+slave14
+</pre></li>
+<li><p>同步hadoop到子节点</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>scp -r ~/env/ hadoop@slave12:~/
+scp -r ~/env/ hadoop@slave14:~/
+</pre></li>
+<li><p>启动hadoop</br>
+在主节点上格式化namenode</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>./bin/hadoop namenode -format
+</pre></li>
+<li><p>在主节点上启动Hadoop</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>./bin/start-all.sh
+</pre></li>
+<li><p>检查运行状态</p>
+<pre>
+http://192.168.56.11:50030/jobtracker.jsp
+http://192.168.56.11:50070/dfshealth.jsp
+</pre>
+</li>
+<li><p>验证Hadoop mapredurce
+执行<code>hadoop jar hadoop-xx-examples.jar</code> 验证jobtracker和tasktracker</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>./bin/hadoop jar hadoop-0.16.0-examples.jar wordcount input output
+</pre><p>可wordcount参考<a href="http://www.cnblogs.com/xia520pi/archive/2012/05/16/2504205.html">Hadoop集群（第6期）_WordCount运行详解</a></p>
+</li>
+</ol>
+<h2>七、常见错误</h2>
+<ul>
+<li><p>expected: rwxr-xr-x, while actual: rwxrwxr-x
+WARN org.apache.hadoop.hdfs.server.datanode.DataNode: Invalid directory in dfs.data.dir: Incorrect permission for /home/hadoop/env/data/data, expected: rwxr-xr-x, while actual: rwxrwxr-x <br />
+<strong>解决方案</strong>：chmod 755 /home/hadoop/env/data/data</p>
+</li>
+<li><p>节点之间不能通信
+java.io.IOException: File xxx/jobtracker.info could only be replicated to 0 nodes, instead of 1 <br />
+java.net.NoRouteToHostException: No route to host <br />
+<strong>解决方案</strong>：关闭iptables，sudo /etc/init.d/iptables stop</p>
+</li>
+<li><p>got exception trying to get groups for user webuser</p>
+<pre>
+org.apache.hadoop.util.Shell$ExitCodeException: id: webuser：无此用户
+     at org.apache.hadoop.util.Shell.runCommand(Shell.java:255)
+     at org.apache.hadoop.util.Shell.run(Shell.java:182)
+</pre>
+<p><strong>解决方案</strong>：</p>
+<!--- lang:xml -->
+<pre class='brush:xml'>&lt;property&gt;
+ &lt;name&gt;dfs.web.ugi&lt;/name&gt;
+ &lt;value&gt;hadoop,supergroup&lt;/value&gt;
+ &lt;final&gt;true&lt;/final&gt;
+ &lt;description&gt;The user account used by the web interface.Syntax: USERNAME,GROUP1,GROUP2, ……
+ &lt;/description&gt;
+&lt;/property&gt;
+</pre><p>加上这个配置。可以解决了</p>
+<pre>
+value  第一个为你自己搭建hadoop的用户名,第二个为用户所属组因为默认  
+</pre>
+<p>web访问授权是webuser用户。访问的时候。我们一般用户名不是webuser所有要覆盖掉默认的webuser</p>
+</li>
+</ul>
+<h2>八、附录</h2>
+<ul>
+<li>无意中<a href="http://t3serv002.mit.edu:50070/dfshealth.jsp">Google到的一个hadoop</a></li>
+<li>参考博文：<a href="http://blog.csdn.net/ab198604/article/details/8250461">hadoop学习之hadoop完全分布式集群安装</a> 图文并茂</li>
+<li>参考博文：<a href="http://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop1/">用 Hadoop 进行分布式并行编程, 第 1 部分</a> 理论与实践相结合</li>
+<li>参考博文：<a href="http://www.jb51.net/os/78318.html">centos安装</a></li>
+</ul>
+</div>
+    </article>
     <article>
   <header>
       <h1 class="entry-title"><a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a></h1>
@@ -167,12 +519,15 @@ $ vi build.xml
   &lt;path refid="hadoop-jars"/&gt;
 &lt;/path&gt; 
 </pre></li>
-<li>修改或添加额外的jar依赖
-因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
-同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加<!--- lang:shell -->
-<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
-$ vi build.xml
-</pre>找到 <code>&lt;!-- Override jar target to specify manifest --&gt;</code> 修改target name为 jar 中的 copy file 的路径，具体如下：<!--- lang:xml -->
+<li>修改或添加额外的jar依赖</li>
+</ol>
+<p>因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
+同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>  $ cd hadoop-1.2.1/src/contrib/eclipse-plugin
+  $ vi build.xml
+</pre><p>找到 <code>&lt;!-- Override jar target to specify manifest --&gt;</code> 修改target name为 jar 中的 copy file 的路径，具体如下：</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;copy file="${hadoop.root}/hadoop-core-${version}.jar" tofile="${build.dir}/lib/hadoop-core.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/commons-cli-${commons-cli.version}.jar"  tofile="${build.dir}/lib/commons-cli.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/commons-configuration-1.6.jar"  tofile="${build.dir}/lib/commons-configuration.jar" verbose="true"/&gt;
@@ -180,24 +535,24 @@ $ vi build.xml
 &lt;copy file="${hadoop.root}/lib/commons-lang-2.4.jar"  tofile="${build.dir}/lib/commons-lang.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/jackson-core-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-core-asl.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/jackson-mapper-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-mapper-asl.jar" verbose="true"/&gt;
-</pre></li>
-<li>修改 jar 清单文件<!--- lang:xml -->
-<pre class='brush:shell'>$ cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
-$ vi MANIFEST.MF
-</pre>找到这个文件的Bundle-ClassPath这一行，然后，修改成<!--- lang:xml -->
+</pre><ol>
+<li>修改 jar 清单文件<!--- lang:shell -->
+<pre class='brush:shell'>cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
+vi MANIFEST.MF
+</pre>找到这个文件的Bundle-ClassPath这一行，然后，修改成<!--- lang:shell -->
 <pre class='brush:shell'>Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/hadoop-core.jar,lib/jackson-mapper-asl.jar,lib/commons-configuration.jar,lib/commons-lang.jar,lib/jackson-core-asl.jar
 </pre>请保证上述字符占用一行，或者满足osgi bundle 配置文件的换行标准语法也行的。省事就直接写成一行，搞定。</li>
 <li>新建直接打包并部署jar到eclipse/plugin目录的target<!--- lang:shell -->
-<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
-$ vi build.xml
+<pre class='brush:shell'>cd hadoop-1.2.1/src/contrib/eclipse-plugin
+vi build.xml
 </pre>添加target直接将编译的插件拷贝到eclipse插件目录<!--- lang:xml -->
 <pre class='brush:xml'>&lt;target name="deploy" depends="jar" unless="skip.contrib"&gt; 
 &lt;copy file="${build.dir}/hadoop-${name}-${version}.jar" todir="${eclipse.home}/plugins" verbose="true"/&gt; &lt;/target&gt;
-</pre>修改ant默认target为deploy<!--- lang:xml -->
+</pre>将ant默认target default=&ldquo;java"改为default=&ldquo;deploy&rdquo;<!--- lang:xml -->
 <pre class='brush:xml'>&lt;project default="deploy" name="eclipse-plugin"&gt;
 </pre></li>
 <li>编译并启动eclipse验证插件<!--- lang:shell -->
-<pre class='brush:shell'>$ ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
+<pre class='brush:shell'>ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
 </pre>启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置</li>
 <li>效果图
 <img src="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1.png?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:b0nXaq4z_psXKmgw0yBWCQIlw9w=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLnBuZyIsIkUiOjEzODY3Mzg2NjB9" alt="image" /></li>
@@ -259,6 +614,9 @@ $ vi build.xml
   <ul id="recent_posts">
   
   
+      <li class="post">
+        <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
+      </li>
       <li class="post">
         <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
       </li>

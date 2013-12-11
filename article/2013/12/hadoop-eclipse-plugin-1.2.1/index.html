@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2013-12-10T16:00:27+08:00"/>
+  <meta name="Generated" content="2013-12-11T20:19:29+08:00"/>
   <link rel="canonical" href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">
   
   
@@ -167,12 +167,15 @@ $ vi build.xml
   &lt;path refid="hadoop-jars"/&gt;
 &lt;/path&gt; 
 </pre></li>
-<li>修改或添加额外的jar依赖
-因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
-同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加<!--- lang:shell -->
-<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
-$ vi build.xml
-</pre>找到 <code>&lt;!-- Override jar target to specify manifest --&gt;</code> 修改target name为 jar 中的 copy file 的路径，具体如下：<!--- lang:xml -->
+<li>修改或添加额外的jar依赖</li>
+</ol>
+<p>因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
+同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加</p>
+<!--- lang:shell -->
+<pre class='brush:shell'>  $ cd hadoop-1.2.1/src/contrib/eclipse-plugin
+  $ vi build.xml
+</pre><p>找到 <code>&lt;!-- Override jar target to specify manifest --&gt;</code> 修改target name为 jar 中的 copy file 的路径，具体如下：</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;copy file="${hadoop.root}/hadoop-core-${version}.jar" tofile="${build.dir}/lib/hadoop-core.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/commons-cli-${commons-cli.version}.jar"  tofile="${build.dir}/lib/commons-cli.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/commons-configuration-1.6.jar"  tofile="${build.dir}/lib/commons-configuration.jar" verbose="true"/&gt;
@@ -180,24 +183,24 @@ $ vi build.xml
 &lt;copy file="${hadoop.root}/lib/commons-lang-2.4.jar"  tofile="${build.dir}/lib/commons-lang.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/jackson-core-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-core-asl.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/jackson-mapper-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-mapper-asl.jar" verbose="true"/&gt;
-</pre></li>
-<li>修改 jar 清单文件<!--- lang:xml -->
-<pre class='brush:shell'>$ cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
-$ vi MANIFEST.MF
-</pre>找到这个文件的Bundle-ClassPath这一行，然后，修改成<!--- lang:xml -->
+</pre><ol>
+<li>修改 jar 清单文件<!--- lang:shell -->
+<pre class='brush:shell'>cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
+vi MANIFEST.MF
+</pre>找到这个文件的Bundle-ClassPath这一行，然后，修改成<!--- lang:shell -->
 <pre class='brush:shell'>Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/hadoop-core.jar,lib/jackson-mapper-asl.jar,lib/commons-configuration.jar,lib/commons-lang.jar,lib/jackson-core-asl.jar
 </pre>请保证上述字符占用一行，或者满足osgi bundle 配置文件的换行标准语法也行的。省事就直接写成一行，搞定。</li>
 <li>新建直接打包并部署jar到eclipse/plugin目录的target<!--- lang:shell -->
-<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
-$ vi build.xml
+<pre class='brush:shell'>cd hadoop-1.2.1/src/contrib/eclipse-plugin
+vi build.xml
 </pre>添加target直接将编译的插件拷贝到eclipse插件目录<!--- lang:xml -->
 <pre class='brush:xml'>&lt;target name="deploy" depends="jar" unless="skip.contrib"&gt; 
 &lt;copy file="${build.dir}/hadoop-${name}-${version}.jar" todir="${eclipse.home}/plugins" verbose="true"/&gt; &lt;/target&gt;
-</pre>修改ant默认target为deploy<!--- lang:xml -->
+</pre>将ant默认target default=&ldquo;java"改为default=&ldquo;deploy&rdquo;<!--- lang:xml -->
 <pre class='brush:xml'>&lt;project default="deploy" name="eclipse-plugin"&gt;
 </pre></li>
 <li>编译并启动eclipse验证插件<!--- lang:shell -->
-<pre class='brush:shell'>$ ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
+<pre class='brush:shell'>ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
 </pre>启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置</li>
 <li>效果图
 <img src="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1.png?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:b0nXaq4z_psXKmgw0yBWCQIlw9w=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLnBuZyIsIkUiOjEzODY3Mzg2NjB9" alt="image" /></li>
@@ -228,15 +231,8 @@ $ vi build.xml
 <div class="sharing">
   
 <!-- sharebar button begin -->
-<a class="sharebar_button_douban"></a>
-<div class="sharebar_toolbox">
-<a class="sharebar_button_tsina"></a>
-<a class="sharebar_button_kaixin001"></a>
-<a class="sharebar_button_renren"></a>
-<span class="sharebar_separator">|</span>
-<a href="http://www.sharebar.cn/" class="sharebar_button_compact">更多</a>
-</div>
-<script type="text/javascript" src="http://s.sharebar.cn/js/sharebar_button.js" charset="utf-8"></script>
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
 <!-- sharebar button end -->
 
 </div>
@@ -244,12 +240,17 @@ $ vi build.xml
   <h2>相关文章</h2>
   <ul id="related-posts-list">
       <li class="post">
+        <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
+        <div class="source right"><time datetime="2013-12-10T17:32:00">2013-12-10</time></div>
+      </li>
+      <li class="post">
         <a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">Mac Java乱码 Maven OOM 异常</a>
         <div class="source right"><time datetime="2013-12-05T23:55:00">2013-12-05</time></div>
       </li>
   </ul>
 </p>    <p class="meta">
         <a class="basic-alignment left" href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/" title="上一篇: Mac java乱码 maven OOM 异常">&laquo; Mac java乱码 maven OOM 异常</a>
+        <a class="basic-alignment right" href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/" title="下一篇: 在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境">在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境 &raquo;</a>
     </p>
   </footer>
 </article>
@@ -264,6 +265,9 @@ $ vi build.xml
   <ul id="recent_posts">
   
   
+      <li class="post">
+        <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
+      </li>
       <li class="post">
         <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
       </li>

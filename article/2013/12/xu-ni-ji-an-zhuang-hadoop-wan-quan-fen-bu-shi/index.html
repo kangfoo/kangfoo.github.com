@@ -1,22 +1,100 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-  <title><![CDATA[kangfoo's 博客]]></title>
-  <link href="http://kangfoo.u.qiniudn.com//atom.xml" rel="self"/>
-  <link href="http://kangfoo.u.qiniudn.com//"/>
-  <updated>2013-12-11T20:19:29+08:00</updated>
-  <id>http://kangfoo.u.qiniudn.com//</id>
-  <author>
-    <name><![CDATA[kangfoo]]></name>
-    <email><![CDATA[xfgcsk@163.com]]></email>
-  </author>
-  <generator uri="http://press.opoo.org/">OpooPress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境 - kangfoo's 博客</title>
+  <meta name="author" content="kangfoo">
+  
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="OpooPressSiteRoot" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Generator" content="OpooPress-1.0.3"/>
+  <meta name="Generated" content="2013-12-11T20:19:29+08:00"/>
+  <link rel="canonical" href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">
+  
+  
+  <link href="/favicon.ico" rel="icon">
+  <link href="/atom.xml" rel="alternate" title="kangfoo's 博客" type="application/atom+xml">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 
-  <entry>
-    <title type="html"><![CDATA[在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境]]></title>
-    <link href="http://kangfoo.u.qiniudn.com//article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/"/>
-    <updated>2013-12-10T17:32:00+08:00</updated>
-    <id>http://kangfoo.u.qiniudn.com//article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/</id>
-    <content type="html"><![CDATA[<h2>一、初衷</h2>
+<link href="http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css" rel="stylesheet" type="text/css">
+
+<!--
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic|PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+国内网站：http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css
+国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
+-->
+
+<link type="text/css" rel="stylesheet" href="/plugins/syntax-highlighter/styles/shCoreDefault.css"/>
+  <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+  <!--[if lt IE 9]><script src="/javascripts/unsupported-browser.js"></script><![endif]-->
+  <header role="banner"><hgroup>
+  <h1><a href="/">kangfoo's 博客</a></h1>
+    <h2>工作学习笔记，生活掠影。</h2>
+</hgroup>
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:http://kangfoo.u.qiniudn.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="搜索"/>
+  </fieldset>
+</form>
+<fieldset class="mobile-nav">
+  <select onchange="if (this.value) { window.location.href = this.value;}">
+    <option value="">导航&hellip;</option>
+    <option value="/">&raquo; 首页</option>
+
+    <option value="/category/hadoop/">&raquo; hadoop</option>
+    <option value="/category/java/">&raquo; java</option>
+
+    <option value="/archives/">&raquo; 归档</option>
+
+
+    <option value="http://www.opoopress.com/">&raquo; OpooPress</option>
+
+
+    <option value="/about/">&raquo; 关于</option>
+
+
+  </select>
+</fieldset>
+
+<ul class="main-navigation">
+<li><a href="/">首页</a></li>
+<li><a href="/category/hadoop/">hadoop</a></li>
+<li><a href="/category/java/">java</a></li>
+<li><a href="/archives/">归档</a></li>
+<li><a href="http://www.opoopress.com/" target="_blank">OpooPress</a></li>
+<li><a href="/about/">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+<div>
+<article class="hentry" role="article">
+  <header>
+      <h1 class="entry-title">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</h1>
+
+      <p class="meta">
+		
+
+
+<time datetime="2013-12-10T17:32:00+08:00" pubdate>2013年12月10日</time>
+         | <a href="#disqus_thread">评论</a>
+      </p>
+  </header>
+
+  <div class="entry-content"><h2>一、初衷</h2>
 <p>对于学习Hadoop的我来将，没有足够的硬件设备，但又想安装完全分布式的Hadoop，一个master两个slave。手上就一台能联网的笔记本，那就使用oracle vitual box进行环境搭建把。环境搭建的效果为：在虚拟机中虚拟3台centos6.4 64位系统，每台都配置双网卡nat,host-only模式。在宿主机器上安装eclipse进行Hadoop开发。</p>
 <p>Hadoop环境搭建很大部分是在准备操作系统。具体如何搭建Hadoop其实就像解压缩普通的tar类似。然后在适当的配置Hadoop的dfs,mapredurce相关的配置，调整下操作系统就可以开始着手学习Hadoop了。</p>
 <h2>二、拓补图</h2>
@@ -353,149 +431,139 @@ value  第一个为你自己搭建hadoop的用户名,第二个为用户所属组
 <li>参考博文：<a href="http://www.ibm.com/developerworks/cn/opensource/os-cn-hadoop1/">用 Hadoop 进行分布式并行编程, 第 1 部分</a> 理论与实践相结合</li>
 <li>参考博文：<a href="http://www.jb51.net/os/78318.html">centos安装</a></li>
 </ul>
-]]></content>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[编译hadoop 1.2.1 hadoop-eclipse-plugin插件]]></title>
-    <link href="http://kangfoo.u.qiniudn.com//article/2013/12/hadoop-eclipse-plugin-1.2.1/"/>
-    <updated>2013-12-09T22:52:00+08:00</updated>
-    <id>http://kangfoo.u.qiniudn.com//article/2013/12/hadoop-eclipse-plugin-1.2.1/</id>
-    <content type="html"><![CDATA[<p>编译hadoop1.x.x版本的eclipse插件为何如此繁琐？</p>
-<p>个人理解，ant的初衷是打造一个本地化工具，而编译hadoop插件的资源间的依赖超出了这一目标。导致我们在使用ant编译的时候需要手工去修改配置。那么自然少不了设置环境变量、设置classpath、添加依赖、设置主函数、javac、jar清单文件编写、验证、部署等步骤。</p>
-<p>那么我们开始动手</p>
-<h4>主要步骤如下</h4>
-<ul>
-<li>设置环境变量</li>
-<li>设置ant初始参数</li>
-<li>调整java编译参数</li>
-<li>设置java classpath</li>
-<li>添加依赖</li>
-<li>修改META-INF文件</li>
-<li>编译打包、部署、验证</li>
-</ul>
-<h4>具体操作</h4>
-<ol>
-<li>设置语言环境<!-- lang:shell-->
-<pre class='brush:shell'>$ export LC_ALL=en
-</pre></li>
-<li>设置ant初始参数
-修改build-contrib.xml文件<!--- lang:shell -->
-<pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
-$ vi build-contrib.xml
-</pre>编辑并修改hadoop.root值为实际hadoop解压的根目录<!--- lang:xml -->
-<pre class='brush:xml'>&lt;property name="hadoop.root" location="/Users/kangfoo-mac/study/hadoop-1.2.1"/&gt;
-</pre>添加eclipse依赖<!--- lang:xml -->
-<pre class='brush:xml'>&lt;property name="eclipse.home" location="/Users/kangfoo-mac/work/soft/eclipse-standard-kepler-SR1-macosx-cocoa" /&gt;
-</pre>设置版本号<!--- lang:xml -->
-<pre class='brush:xml'>&lt;property name="version" value="1.2.1"/&gt;
-</pre></li>
-<li>调整java编译设置
-启用javac.deprecation<!--- lang:shell -->
-<pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
-$ vi build-contrib.xml
-</pre>将<br  /><!--- lang:xml -->
-<pre class='brush:xml'>&lt;property name="javac.deprecation" value="off"/&gt;
-</pre>改为<!--- lang:xml -->
-<pre class='brush:xml'>&lt;property name="javac.deprecation" value="on"/&gt;
-</pre></li>
-<li>ant 1.8+ 版本需要额外的设置javac includeantruntime=&ldquo;on&rdquo; 参数<!--- lang:xml -->
-<pre class='brush:xml'>&lt;!-- ====================================================== --&gt;
-&lt;!-- Compile a Hadoop contrib's files                       --&gt;
-&lt;!-- ====================================================== --&gt;
-&lt;target name="compile" depends="init, ivy-retrieve-common" unless="skip.contrib"&gt;
-&lt;echo message="contrib: ${name}"/&gt;
-&lt;javac
- encoding="${build.encoding}"
- srcdir="${src.dir}"
- includes="**/*.java"
- destdir="${build.classes}"
- debug="${javac.debug}"
- deprecation="${javac.deprecation}"
- includeantruntime="on"&gt;
- &lt;classpath refid="contrib-classpath"/&gt;
-&lt;/javac&gt;
-&lt;/target&gt; 
-</pre></li>
-<li>修改编译hadoop插件 classpath<!--- lang:shell -->
-<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
-$ vi build.xml
-</pre>添加 文件路径 hadoop-jars<!--- lang:xml -->
-<pre class='brush:xml'>&lt;path id="hadoop-jars"&gt;
-  &lt;fileset dir="${hadoop.root}/"&gt;
-    &lt;include name="hadoop-*.jar"/&gt;
-  &lt;/fileset&gt;
-&lt;/path&gt;
-</pre>将hadoop-jars 添加到classpath<!--- lang:xml -->
-<pre class='brush:xml'>&lt;path id="classpath"&gt;
-  &lt;pathelement location="${build.classes}"/&gt;
-  &lt;pathelement location="${hadoop.root}/build/classes"/&gt;
-  &lt;path refid="eclipse-sdk-jars"/&gt;
-  &lt;path refid="hadoop-jars"/&gt;
-&lt;/path&gt; 
-</pre></li>
-<li>修改或添加额外的jar依赖</li>
-</ol>
-<p>因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
-同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加</p>
-<!--- lang:shell -->
-<pre class='brush:shell'>  $ cd hadoop-1.2.1/src/contrib/eclipse-plugin
-  $ vi build.xml
-</pre><p>找到 <code>&lt;!-- Override jar target to specify manifest --&gt;</code> 修改target name为 jar 中的 copy file 的路径，具体如下：</p>
-<!--- lang:xml -->
-<pre class='brush:xml'>&lt;copy file="${hadoop.root}/hadoop-core-${version}.jar" tofile="${build.dir}/lib/hadoop-core.jar" verbose="true"/&gt;
-&lt;copy file="${hadoop.root}/lib/commons-cli-${commons-cli.version}.jar"  tofile="${build.dir}/lib/commons-cli.jar" verbose="true"/&gt;
-&lt;copy file="${hadoop.root}/lib/commons-configuration-1.6.jar"  tofile="${build.dir}/lib/commons-configuration.jar" verbose="true"/&gt;
-&lt;copy file="${hadoop.root}/lib/commons-httpclient-3.0.1.jar"  tofile="${build.dir}/lib/commons-httpclient.jar" verbose="true"/&gt;
-&lt;copy file="${hadoop.root}/lib/commons-lang-2.4.jar"  tofile="${build.dir}/lib/commons-lang.jar" verbose="true"/&gt;
-&lt;copy file="${hadoop.root}/lib/jackson-core-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-core-asl.jar" verbose="true"/&gt;
-&lt;copy file="${hadoop.root}/lib/jackson-mapper-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-mapper-asl.jar" verbose="true"/&gt;
-</pre><ol>
-<li>修改 jar 清单文件<!--- lang:shell -->
-<pre class='brush:shell'>cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
-vi MANIFEST.MF
-</pre>找到这个文件的Bundle-ClassPath这一行，然后，修改成<!--- lang:shell -->
-<pre class='brush:shell'>Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/hadoop-core.jar,lib/jackson-mapper-asl.jar,lib/commons-configuration.jar,lib/commons-lang.jar,lib/jackson-core-asl.jar
-</pre>请保证上述字符占用一行，或者满足osgi bundle 配置文件的换行标准语法也行的。省事就直接写成一行，搞定。</li>
-<li>新建直接打包并部署jar到eclipse/plugin目录的target<!--- lang:shell -->
-<pre class='brush:shell'>cd hadoop-1.2.1/src/contrib/eclipse-plugin
-vi build.xml
-</pre>添加target直接将编译的插件拷贝到eclipse插件目录<!--- lang:xml -->
-<pre class='brush:xml'>&lt;target name="deploy" depends="jar" unless="skip.contrib"&gt; 
-&lt;copy file="${build.dir}/hadoop-${name}-${version}.jar" todir="${eclipse.home}/plugins" verbose="true"/&gt; &lt;/target&gt;
-</pre>将ant默认target default=&ldquo;java"改为default=&ldquo;deploy&rdquo;<!--- lang:xml -->
-<pre class='brush:xml'>&lt;project default="deploy" name="eclipse-plugin"&gt;
-</pre></li>
-<li>编译并启动eclipse验证插件<!--- lang:shell -->
-<pre class='brush:shell'>ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
-</pre>启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置</li>
-<li>效果图
-<img src="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1.png?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:b0nXaq4z_psXKmgw0yBWCQIlw9w=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLnBuZyIsIkUiOjEzODY3Mzg2NjB9" alt="image" /></li>
-</ol>
-<h4>相关源文件</h4>
-<ul>
-<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build-contrib.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:UGF5ciPhL5L_71XPMfHcyczxfbY=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLWNvbnRyaWIueG1sIiwiRSI6MTM4Njc0NzQxN30=&amp;download">hadoop-1.2.1/src/contrib/build-contrib.xml</a></li>
-<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:s_IcusoS1921HGL4jPYW0mkGZUw=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLnhtbCIsIkUiOjEzODY3NDc0MDd9&amp;download">hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml</a></li>
-<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:s_IcusoS1921HGL4jPYW0mkGZUw=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLnhtbCIsIkUiOjEzODY3NDc0MDd9&amp;download">hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF/MANIFEST.MF</a></li>
-<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugin-1.2.1.jar?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:PrPGIRgkUtbfDjTJqjyrc7mgWB4=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW4tMS4yLjEuamFyIiwiRSI6MTM4Njc0ODc0NH0=&amp;download">hadoop-eclipse-plugin-1.2.1.jar</a></li>
-</ul>
-<p><em>在此非常感谢<a href="http://www.cnblogs.com/kinuxroot/archive/2013/05/06/linux_hadoop_eclipse_plugin.html">kinuxroot</a>这位博主的的博文参考。</em></p>
-]]></content>
-  </entry>
-  <entry>
-    <title type="html"><![CDATA[Mac java乱码 maven OOM 异常]]></title>
-    <link href="http://kangfoo.u.qiniudn.com//article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/"/>
-    <updated>2013-12-05T23:55:00+08:00</updated>
-    <id>http://kangfoo.u.qiniudn.com//article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/</id>
-    <content type="html"><![CDATA[<p>在中文环境下苹果电脑中的 <strong>java，javac 默认以GBK编码</strong>输出信息到控制台，<strong>终端terminal默认以UTF-8编码</strong>，就出现了编码错误。</p>
-<p>可如下2种方式修改:</p>
-<ol>
-<li>更改系统语言环境<pre>export LC_ALL=en 或者 export LANG=zh_CN.UTF-8
-</pre></li>
-<li>指定输出编码方式<pre>javac -Dfile.encoding=UTF-8
-</pre></li>
-</ol>
-<p>但在有maven的情况下还需要这么设置：<strong>先调整JVM大小，避免工程太大中途出现OOM，再设置文件的编码。</strong></p>
-<pre>export MAVEN_OPTS="-Xmx1024m －Dfile.encoding=UTF-8"
-</pre>]]></content>
-  </entry>
-</feed>
+</div>
+  <footer>
+    <p class="meta">
+<span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
+
+
+<time datetime="2013-12-10T17:32:00+08:00" pubdate>2013年12月10日</time>
+
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
+ 分类</span>
+
+
+    </p>
+<div class="sharing">
+  
+<!-- sharebar button begin -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- sharebar button end -->
+
+</div>
+<p>
+  <h2>相关文章</h2>
+  <ul id="related-posts-list">
+      <li class="post">
+        <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
+        <div class="source right"><time datetime="2013-12-09T22:52:00">2013-12-09</time></div>
+      </li>
+  </ul>
+</p>    <p class="meta">
+        <a class="basic-alignment left" href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/" title="上一篇: 编译hadoop 1.2.1 hadoop-eclipse-plugin插件">&laquo; 编译hadoop 1.2.1 hadoop-eclipse-plugin插件</a>
+    </p>
+  </footer>
+</article>
+  <section>
+    <h1>评论</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+<section>
+  <h1>近期文章</h1>
+  <ul id="recent_posts">
+  
+  
+      <li class="post">
+        <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
+      </li>
+      <li class="post">
+        <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">Mac Java乱码 Maven OOM 异常</a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+</section>
+<section>
+  <h2>近期评论</h2>
+ <script language="JavaScript">
+  <!--
+	var is_https = ('https:' == document.location.protocol);
+	var rcw_script_src = (is_https ? 'https:' : 'http:') + '//kangaroo.disqus.com/recent_comments_widget.js?num_items=5&excerpt_length=100&hide_avatars=' + (is_https ? '1' : '0&avatar_size=32');
+	var rcw_script = '<scr' + 'ipt type="text/javascript" src="' + rcw_script_src + '"></scr' + 'ipt>';
+	document.writeln(rcw_script);
+  //-->
+  </script>
+</section>
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  版权所有 &copy; 2013 - kangfoo -
+  <span class="credit">Powered by <a href="http://www.opoopress.com/">OpooPress</a></span>
+</p></footer>
+<script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
+<script language="JavaScript">
+<!--
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/',title:'在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境',github:{target:'#gh_repos',user:'kangfoo',count:0,skip_forks:false},refreshRelativeTimes:true,verbose:true},{});
+    OpooPress.init();
+
+    var disqus_shortname = 'kangaroo';
+    
+    // var disqus_developer = 1;
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/';
+    var disqus_title = '在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境';
+    //var disqus_category_id = '';
+    OpooPress.showDisqusWidgets();
+//-->
+</script>
+<!-- START: Syntax Highlighter ComPress -->
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+        'applescript			/plugins/syntax-highlighter/scripts/shBrushAppleScript.js',
+        'actionscript3 as3		/plugins/syntax-highlighter/scripts/shBrushAS3.js',
+        'bash shell				/plugins/syntax-highlighter/scripts/shBrushBash.js',
+        'coldfusion cf			/plugins/syntax-highlighter/scripts/shBrushColdFusion.js',
+        'cpp c					/plugins/syntax-highlighter/scripts/shBrushCpp.js',
+        'c# c-sharp csharp		/plugins/syntax-highlighter/scripts/shBrushCSharp.js',
+        'css					/plugins/syntax-highlighter/scripts/shBrushCss.js',
+        'delphi pascal pas		/plugins/syntax-highlighter/scripts/shBrushDelphi.js',
+        'diff patch			    /plugins/syntax-highlighter/scripts/shBrushDiff.js',
+        'erl erlang				/plugins/syntax-highlighter/scripts/shBrushErlang.js',
+        'groovy					/plugins/syntax-highlighter/scripts/shBrushGroovy.js',
+        'java					/plugins/syntax-highlighter/scripts/shBrushJava.js',
+        'jfx javafx				/plugins/syntax-highlighter/scripts/shBrushJavaFX.js',
+        'js jscript javascript	/plugins/syntax-highlighter/scripts/shBrushJScript.js',
+        'perl pl				/plugins/syntax-highlighter/scripts/shBrushPerl.js',
+        'php					/plugins/syntax-highlighter/scripts/shBrushPhp.js',
+        'text plain				/plugins/syntax-highlighter/scripts/shBrushPlain.js',
+        'powershell ps          /plugins/syntax-highlighter/scripts/shBrushPowerShell.js',
+        'py python				/plugins/syntax-highlighter/scripts/shBrushPython.js',
+        'ruby rails ror rb		/plugins/syntax-highlighter/scripts/shBrushRuby.js',
+        'sass scss              /plugins/syntax-highlighter/scripts/shBrushSass.js',
+        'scala					/plugins/syntax-highlighter/scripts/shBrushScala.js',
+        'sql					/plugins/syntax-highlighter/scripts/shBrushSql.js',
+        'vb vbnet				/plugins/syntax-highlighter/scripts/shBrushVb.js',
+        'xml xhtml xslt html	/plugins/syntax-highlighter/scripts/shBrushXml.js'
+    );
+    SyntaxHighlighter.defaults['auto-links'] = false;                 
+    SyntaxHighlighter.defaults['toolbar'] = false;     
+    SyntaxHighlighter.defaults['tab-size'] = 4;
+    SyntaxHighlighter.all();
+</script>
+<!-- END: Syntax Highlighter ComPress -->
+</body>
+</html>
+
