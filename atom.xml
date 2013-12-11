@@ -3,7 +3,7 @@
   <title><![CDATA[kangfoo's 博客]]></title>
   <link href="http://kangfoo.u.qiniudn.com//atom.xml" rel="self"/>
   <link href="http://kangfoo.u.qiniudn.com//"/>
-  <updated>2013-12-11T20:27:23+08:00</updated>
+  <updated>2013-12-11T20:34:35+08:00</updated>
   <id>http://kangfoo.u.qiniudn.com//</id>
   <author>
     <name><![CDATA[kangfoo]]></name>
@@ -232,43 +232,49 @@ mkdir mapreduce/local
 指定hdfs协议下的存储和临时目录</p>
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;property&gt;
-&lt;name&gt;fs.default.name&lt;/name&gt;
-&lt;value&gt;hdfs://master11:9000&lt;/value&gt;
+  &lt;name&gt;fs.default.name&lt;/name&gt;
+  &lt;value&gt;hdfs://master11:9000&lt;/value&gt;
 &lt;/property&gt;
 &lt;property&gt;
-&lt;name&gt;hadoop.tmp.dir&lt;/name&gt;
-&lt;value&gt;/home/${user.name}/env/data/tmp&lt;/value&gt;
+  &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;
+  &lt;value&gt;/home/${user.name}/env/data/tmp&lt;/value&gt;
 &lt;/property&gt;
 </pre></li>
 <li><p>配置 conf/hdfs-site.xml
 配置关于hdfs相关的配置。这里将原有默认负责3个副本调整为2个。学习时可根据需求适当调整。</p>
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;property&gt;
-&lt;name&gt;dfs.name.dir&lt;/name&gt;
-&lt;value&gt;/home/${user.name}/env/data/name&lt;/value&gt;
+ &lt;name&gt;dfs.name.dir&lt;/name&gt;
+ &lt;value&gt;/home/${user.name}/env/data/name&lt;/value&gt;
 &lt;/property&gt;
 &lt;property&gt;
-&lt;name&gt;dfs.data.dir&lt;/name&gt;
-&lt;value&gt;/home/${user.name}/env/data/data&lt;/value&gt;
+ &lt;name&gt;dfs.data.dir&lt;/name&gt;
+ &lt;value&gt;/home/${user.name}/env/data/data&lt;/value&gt;
 &lt;/property&gt;
 &lt;property&gt;
-&lt;name&gt;dfs.replication&lt;/name&gt;
-&lt;value&gt;2&lt;/value&gt;
+ &lt;name&gt;dfs.replication&lt;/name&gt;
+  &lt;value&gt;2&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+ &lt;name&gt;dfs.web.ugi&lt;/name&gt;
+ &lt;value&gt;hadoop,supergroup&lt;/value&gt;
+ &lt;final&gt;true&lt;/final&gt;
+ &lt;description&gt;The user account used by the web interface. Syntax: USERNAME,GROUP1,GROUP2, ……&lt;/description&gt;
 &lt;/property&gt;
 </pre></li>
 <li><p>配置 conf/mapred-site.xml</p>
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;property&gt;
-&lt;name&gt;mapred.job.tracker&lt;/name&gt;
-&lt;value&gt;master11:9001&lt;/value&gt;
+ &lt;name&gt;mapred.job.tracker&lt;/name&gt;
+ &lt;value&gt;master11:9001&lt;/value&gt;
 &lt;/property&gt;
 &lt;property&gt;
-&lt;name&gt;mapred.system.dir&lt;/name&gt;
-&lt;value&gt;/home/${user.name}/env/mapreduce/system&lt;/value&gt;
+ &lt;name&gt;mapred.system.dir&lt;/name&gt;
+ &lt;value&gt;/home/${user.name}/env/mapreduce/system&lt;/value&gt;
 &lt;/property&gt;
 &lt;property&gt;
-&lt;name&gt;mapred.local.dir&lt;/name&gt;
-&lt;value&gt;/home/${user.name}/env/mapreduce/local&lt;/value&gt;
+ &lt;name&gt;mapred.local.dir&lt;/name&gt;
+ &lt;value&gt;/home/${user.name}/env/mapreduce/local&lt;/value&gt;
 &lt;/property&gt;
 </pre></li>
 <li><p>配置masters</p>
