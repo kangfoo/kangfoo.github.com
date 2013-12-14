@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2013-12-15T01:15:14+08:00"/>
+  <meta name="Generated" content="2013-12-15T01:32:53+08:00"/>
   <link rel="canonical" href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">
   
   
@@ -109,11 +109,11 @@
 </ul>
 <h4>具体操作</h4>
 <ol>
-<li><p>设置语言环境</p>
+<li><p>设置语言环境</br></p>
 <!-- lang:shell-->
 <pre class='brush:shell'>$ export LC_ALL=en
 </pre></li>
-<li><p>设置ant初始参数
+<li><p>设置ant初始参数</br>
 修改build-contrib.xml文件</p>
 <!--- lang:shell -->
 <pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
@@ -128,7 +128,7 @@ $ vi build-contrib.xml
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="version" value="1.2.1"/&gt;
 </pre></li>
-<li><p>调整java编译设置
+<li><p>调整java编译设置</br>
 启用javac.deprecation</p>
 <!--- lang:shell -->
 <pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
@@ -140,7 +140,7 @@ $ vi build-contrib.xml
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="javac.deprecation" value="on"/&gt;
 </pre></li>
-<li><p>ant 1.8+ 版本需要额外的设置javac includeantruntime=&ldquo;on&rdquo; 参数</p>
+<li><p>ant 1.8+ 版本需要额外的设置javac includeantruntime=&ldquo;on&rdquo; 参数</br></p>
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;!-- ====================================================== --&gt;
 &lt;!-- Compile a Hadoop contrib's files                       --&gt;
@@ -159,7 +159,7 @@ $ vi build-contrib.xml
 &lt;/javac&gt;
 &lt;/target&gt; 
 </pre></li>
-<li><p>修改编译hadoop插件 classpath</p>
+<li><p>修改编译hadoop插件 classpath</br></p>
 <!--- lang:shell -->
 <pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
 $ vi build.xml
@@ -179,8 +179,8 @@ $ vi build.xml
   &lt;path refid="hadoop-jars"/&gt;
 &lt;/path&gt; 
 </pre></li>
-<li><p>修改或添加额外的jar依赖
-因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
+<li><p>修改或添加额外的jar依赖</br>
+因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。</br>
 同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加</p>
 <!--- lang:shell -->
 <pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin

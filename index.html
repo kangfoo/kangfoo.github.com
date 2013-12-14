@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2013-12-15T01:15:14+08:00"/>
+  <meta name="Generated" content="2013-12-15T01:32:53+08:00"/>
   <link rel="canonical" href="/">
   
   
@@ -109,7 +109,7 @@
 </pre></li>
 <li><p>检查ANT_HOME,JAVA_HOME</p>
 </li>
-<li><p>下载hadoop2x-eclipse-plugin
+<li><p>下载hadoop2x-eclipse-plugin</br>
 目前hadoop2的eclipse-plugins源代码由github脱管，下载地址<a href="https://github.com/winghc/hadoop2x-eclipse-plugin">how to build - hadoop2x-eclipse-plugin</a> 右侧的 &ldquo;Download ZIP&rdquo; 或者 克隆到桌面. 当然你也可以fork到你自己的帐户下,在使用git clone。</p>
 </li>
 <li><p>执行</p>
@@ -119,20 +119,20 @@ $ ant jar -Dversion=2.2.0 -Declipse.home=/opt/eclipse -Dhadoop.home=/usr/share/h
 </pre><p>将上述java system property eclipse.home 和 hadoop.home 设置成你自己的环境路径。 执行上述命令可能很快或者很慢。请耐心等待。主要慢的target:ivy-download，ivy-resolve-common。最后jar生成在
 <code>$root/build/contrib/eclipse-plugin/hadoop-eclipse-plugin-2.2.0.jar</code>路径下。</p>
 </li>
-<li><p>安装验证
+<li><p>安装验证</br>
 将生成好的jar,复制到<code>${eclipse.home}/plugins</code>目录下。启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置。</p>
 </li>
-<li><p>效果图
+<li><p>效果图</br>
 使用插件访问本地的伪分布式hadoop环境。查看文件texst1.txt和test2.txt同使用命令 hadoop dfs -ls /in 效果相同。
 <img src="http://zhaomingtai.u.qiniudn.com/hadoop2x-eclipse-plugin-success.jpg" alt="image" /></p>
 </li>
 <li><p>已编译的插件
 <a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugin-2.2.0.jar">hadoop-eclipse-plugin-2.2.0.jar</a></p>
 </li>
-<li><p>备注</p>
+<li><p>备注</br>
+目前我在使用这个版本的插件时发现还时挺不稳定的。发现了两个缺陷。我的环境为：Java HotSpot&trade; 64-Bit Server VM、 eclipse-standard-kepler-SR1-macosx-cocoa、 hadoop2.2.0。</p>
 </li>
 </ol>
-<p>目前我在使用这个版本的插件时发现还时挺不稳定的。发现了两个缺陷。我的环境为：Java HotSpot&trade; 64-Bit Server VM、 eclipse-standard-kepler-SR1-macosx-cocoa、 hadoop2.2.0。</p>
 <p>缺陷:</p>
 <ul>
 <li>Editor could not be initalized.</li>
@@ -534,11 +534,11 @@ value  第一个为你自己搭建hadoop的用户名,第二个为用户所属组
 </ul>
 <h4>具体操作</h4>
 <ol>
-<li><p>设置语言环境</p>
+<li><p>设置语言环境</br></p>
 <!-- lang:shell-->
 <pre class='brush:shell'>$ export LC_ALL=en
 </pre></li>
-<li><p>设置ant初始参数
+<li><p>设置ant初始参数</br>
 修改build-contrib.xml文件</p>
 <!--- lang:shell -->
 <pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
@@ -553,7 +553,7 @@ $ vi build-contrib.xml
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="version" value="1.2.1"/&gt;
 </pre></li>
-<li><p>调整java编译设置
+<li><p>调整java编译设置</br>
 启用javac.deprecation</p>
 <!--- lang:shell -->
 <pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
@@ -565,7 +565,7 @@ $ vi build-contrib.xml
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="javac.deprecation" value="on"/&gt;
 </pre></li>
-<li><p>ant 1.8+ 版本需要额外的设置javac includeantruntime=&ldquo;on&rdquo; 参数</p>
+<li><p>ant 1.8+ 版本需要额外的设置javac includeantruntime=&ldquo;on&rdquo; 参数</br></p>
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;!-- ====================================================== --&gt;
 &lt;!-- Compile a Hadoop contrib's files                       --&gt;
@@ -584,7 +584,7 @@ $ vi build-contrib.xml
 &lt;/javac&gt;
 &lt;/target&gt; 
 </pre></li>
-<li><p>修改编译hadoop插件 classpath</p>
+<li><p>修改编译hadoop插件 classpath</br></p>
 <!--- lang:shell -->
 <pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
 $ vi build.xml
@@ -604,8 +604,8 @@ $ vi build.xml
   &lt;path refid="hadoop-jars"/&gt;
 &lt;/path&gt; 
 </pre></li>
-<li><p>修改或添加额外的jar依赖
-因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
+<li><p>修改或添加额外的jar依赖</br>
+因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。</br>
 同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加</p>
 <!--- lang:shell -->
 <pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
