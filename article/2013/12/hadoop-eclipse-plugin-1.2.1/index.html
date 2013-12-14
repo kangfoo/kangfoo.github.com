@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2013-12-11T23:10:55+08:00"/>
+  <meta name="Generated" content="2013-12-15T01:15:14+08:00"/>
   <link rel="canonical" href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">
   
   
@@ -109,30 +109,39 @@
 </ul>
 <h4>具体操作</h4>
 <ol>
-<li>设置语言环境<!-- lang:shell-->
+<li><p>设置语言环境</p>
+<!-- lang:shell-->
 <pre class='brush:shell'>$ export LC_ALL=en
 </pre></li>
-<li>设置ant初始参数
-修改build-contrib.xml文件<!--- lang:shell -->
+<li><p>设置ant初始参数
+修改build-contrib.xml文件</p>
+<!--- lang:shell -->
 <pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
 $ vi build-contrib.xml
-</pre>编辑并修改hadoop.root值为实际hadoop解压的根目录<!--- lang:xml -->
+</pre><p>编辑并修改hadoop.root值为实际hadoop解压的根目录</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="hadoop.root" location="/Users/kangfoo-mac/study/hadoop-1.2.1"/&gt;
-</pre>添加eclipse依赖<!--- lang:xml -->
+</pre><p>添加eclipse依赖</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="eclipse.home" location="/Users/kangfoo-mac/work/soft/eclipse-standard-kepler-SR1-macosx-cocoa" /&gt;
-</pre>设置版本号<!--- lang:xml -->
+</pre><p>设置版本号</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="version" value="1.2.1"/&gt;
 </pre></li>
-<li>调整java编译设置
-启用javac.deprecation<!--- lang:shell -->
+<li><p>调整java编译设置
+启用javac.deprecation</p>
+<!--- lang:shell -->
 <pre class='brush:shell'>$ cd /hadoop-1.2.1/src/contrib
 $ vi build-contrib.xml
-</pre>将<br  /><!--- lang:xml -->
+</pre><p>将<br  /></p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="javac.deprecation" value="off"/&gt;
-</pre>改为<!--- lang:xml -->
+</pre><p>改为</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;property name="javac.deprecation" value="on"/&gt;
 </pre></li>
-<li>ant 1.8+ 版本需要额外的设置javac includeantruntime=&ldquo;on&rdquo; 参数<!--- lang:xml -->
+<li><p>ant 1.8+ 版本需要额外的设置javac includeantruntime=&ldquo;on&rdquo; 参数</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;!-- ====================================================== --&gt;
 &lt;!-- Compile a Hadoop contrib's files                       --&gt;
 &lt;!-- ====================================================== --&gt;
@@ -150,16 +159,19 @@ $ vi build-contrib.xml
 &lt;/javac&gt;
 &lt;/target&gt; 
 </pre></li>
-<li>修改编译hadoop插件 classpath<!--- lang:shell -->
+<li><p>修改编译hadoop插件 classpath</p>
+<!--- lang:shell -->
 <pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
 $ vi build.xml
-</pre>添加 文件路径 hadoop-jars<!--- lang:xml -->
+</pre><p>添加 文件路径 hadoop-jars</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;path id="hadoop-jars"&gt;
   &lt;fileset dir="${hadoop.root}/"&gt;
     &lt;include name="hadoop-*.jar"/&gt;
   &lt;/fileset&gt;
 &lt;/path&gt;
-</pre>将hadoop-jars 添加到classpath<!--- lang:xml -->
+</pre><p>将hadoop-jars 添加到classpath</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;path id="classpath"&gt;
   &lt;pathelement location="${build.classes}"/&gt;
   &lt;pathelement location="${hadoop.root}/build/classes"/&gt;
@@ -167,13 +179,12 @@ $ vi build.xml
   &lt;path refid="hadoop-jars"/&gt;
 &lt;/path&gt; 
 </pre></li>
-<li>修改或添加额外的jar依赖</li>
-</ol>
-<p>因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
+<li><p>修改或添加额外的jar依赖
+因为我们根本都没有直接编译过hadoop,所以就直接使用${HADOOP_HOME}/lib下的资源.需要注意，这里将依赖jar的版本后缀去掉了。
 同样还是在hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml文件中修改或添加</p>
 <!--- lang:shell -->
-<pre class='brush:shell'>  $ cd hadoop-1.2.1/src/contrib/eclipse-plugin
-  $ vi build.xml
+<pre class='brush:shell'>$ cd hadoop-1.2.1/src/contrib/eclipse-plugin
+$ vi build.xml
 </pre><p>找到 <code>&lt;!-- Override jar target to specify manifest --&gt;</code> 修改target name为 jar 中的 copy file 的路径，具体如下：</p>
 <!--- lang:xml -->
 <pre class='brush:xml'>&lt;copy file="${hadoop.root}/hadoop-core-${version}.jar" tofile="${build.dir}/lib/hadoop-core.jar" verbose="true"/&gt;
@@ -183,27 +194,36 @@ $ vi build.xml
 &lt;copy file="${hadoop.root}/lib/commons-lang-2.4.jar"  tofile="${build.dir}/lib/commons-lang.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/jackson-core-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-core-asl.jar" verbose="true"/&gt;
 &lt;copy file="${hadoop.root}/lib/jackson-mapper-asl-1.8.8.jar"  tofile="${build.dir}/lib/jackson-mapper-asl.jar" verbose="true"/&gt;
-</pre><ol>
-<li>修改 jar 清单文件<!--- lang:shell -->
+</pre></li>
+<li><p>修改 jar 清单文件</p>
+<!--- lang:shell -->
 <pre class='brush:shell'>cd ./hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF
 vi MANIFEST.MF
-</pre>找到这个文件的Bundle-ClassPath这一行，然后，修改成<!--- lang:shell -->
+</pre><p>找到这个文件的Bundle-ClassPath这一行，然后，修改成</p>
+<!--- lang:shell -->
 <pre class='brush:shell'>Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/hadoop-core.jar,lib/jackson-mapper-asl.jar,lib/commons-configuration.jar,lib/commons-lang.jar,lib/jackson-core-asl.jar
-</pre>请保证上述字符占用一行，或者满足osgi bundle 配置文件的换行标准语法也行的。省事就直接写成一行，搞定。</li>
-<li>新建直接打包并部署jar到eclipse/plugin目录的target<!--- lang:shell -->
+</pre><p>请保证上述字符占用一行，或者满足osgi bundle 配置文件的换行标准语法也行的。省事就直接写成一行，搞定。</p>
+</li>
+<li><p>新建直接打包并部署jar到eclipse/plugin目录的target</p>
+<!--- lang:shell -->
 <pre class='brush:shell'>cd hadoop-1.2.1/src/contrib/eclipse-plugin
 vi build.xml
-</pre>添加target直接将编译的插件拷贝到eclipse插件目录<!--- lang:xml -->
+</pre><p>添加target直接将编译的插件拷贝到eclipse插件目录</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;target name="deploy" depends="jar" unless="skip.contrib"&gt; 
 &lt;copy file="${build.dir}/hadoop-${name}-${version}.jar" todir="${eclipse.home}/plugins" verbose="true"/&gt; &lt;/target&gt;
-</pre>将ant默认target default=&ldquo;java"改为default=&ldquo;deploy&rdquo;<!--- lang:xml -->
+</pre><p>将ant默认target default=&ldquo;java"改为default=&ldquo;deploy&rdquo;</p>
+<!--- lang:xml -->
 <pre class='brush:xml'>&lt;project default="deploy" name="eclipse-plugin"&gt;
 </pre></li>
-<li>编译并启动eclipse验证插件<!--- lang:shell -->
+<li><p>编译并启动eclipse验证插件</p>
+<!--- lang:shell -->
 <pre class='brush:shell'>ant -f ./hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml
-</pre>启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置</li>
-<li>效果图
-<img src="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1.png?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:b0nXaq4z_psXKmgw0yBWCQIlw9w=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLnBuZyIsIkUiOjEzODY3Mzg2NjB9" alt="image" /></li>
+</pre><p>启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置</p>
+</li>
+<li><p>效果图
+<img src="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1.png?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:b0nXaq4z_psXKmgw0yBWCQIlw9w=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLnBuZyIsIkUiOjEzODY3Mzg2NjB9" alt="image" /></p>
+</li>
 </ol>
 <h4>相关源文件</h4>
 <ul>
@@ -240,6 +260,10 @@ vi build.xml
   <h2>相关文章</h2>
   <ul id="related-posts-list">
       <li class="post">
+        <a href="/article/2013/12/build-hadoop2x-eclipse-plugin/">编译hadoop 2.x Hadoop-eclipse-plugin插件</a>
+        <div class="source right"><time datetime="2013-12-15T00:19:00">2013-12-15</time></div>
+      </li>
+      <li class="post">
         <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
         <div class="source right"><time datetime="2013-12-10T17:32:00">2013-12-10</time></div>
       </li>
@@ -265,6 +289,9 @@ vi build.xml
   <ul id="recent_posts">
   
   
+      <li class="post">
+        <a href="/article/2013/12/build-hadoop2x-eclipse-plugin/">编译hadoop 2.x Hadoop-eclipse-plugin插件</a>
+      </li>
       <li class="post">
         <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
       </li>

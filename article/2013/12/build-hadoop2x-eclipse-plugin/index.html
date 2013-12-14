@@ -4,16 +4,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Mac java乱码 maven OOM 异常 - kangfoo's 博客</title>
+  <title>编译hadoop 2.x Hadoop-eclipse-plugin插件 - kangfoo's 博客</title>
   <meta name="author" content="kangfoo">
-  <meta name="description" content="苹果电脑java/javac乱码，java maven OOM 异常">
+  <meta name="description" content="使用ant编译hadoop 2.x hadoop-eclipse-plugin插件">
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
   <meta name="Generated" content="2013-12-15T01:15:14+08:00"/>
-  <link rel="canonical" href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">
+  <link rel="canonical" href="/article/2013/12/build-hadoop2x-eclipse-plugin/">
   
   
   <link href="/favicon.ico" rel="icon">
@@ -30,6 +30,7 @@
 国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
 -->
 
+<link type="text/css" rel="stylesheet" href="/plugins/syntax-highlighter/styles/shCoreDefault.css"/>
   <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
 </head>
 <body>
@@ -82,40 +83,76 @@
 <div>
 <article class="hentry" role="article">
   <header>
-      <h1 class="entry-title">Mac Java乱码 Maven OOM 异常</h1>
+      <h1 class="entry-title">编译hadoop 2.x Hadoop-eclipse-plugin插件</h1>
 
       <p class="meta">
 		
 
 
-<time datetime="2013-12-05T23:55:00+08:00" pubdate>2013年12月05日</time>
+<time datetime="2013-12-15T00:19:00+08:00" pubdate>2013年12月15日</time>
          | <a href="#disqus_thread">评论</a>
       </p>
   </header>
 
-  <div class="entry-content"><p>在中文环境下苹果电脑中的 <strong>java，javac 默认以GBK编码</strong>输出信息到控制台，<strong>终端terminal默认以UTF-8编码</strong>，就出现了编码错误。</p>
-<p>可如下2种方式修改:</p>
+  <div class="entry-content"><p>经过hadoop1.x的发展，编译hadoop2.x版本的eclipse插件视乎比之前要轻松的多。如果你不在意编译过程中提示的警告，那么根据<a href="https://github.com/winghc/hadoop2x-eclipse-plugin">how to build - hadoop2x-eclipse-plugin</a>文档就可一步到位。若想自己设置部分变量，可参考<a href="http://kangfoo.u.qiniudn.com/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>。</p>
+<h4>主要步骤</h4>
+<ul>
+<li>介质准备</li>
+<li>执行</li>
+<li>安装验证</li>
+</ul>
+<h4>具体操作</h4>
 <ol>
-<li>更改系统语言环境<pre>export LC_ALL=en 或者 export LANG=zh_CN.UTF-8
+<li><p>设置语言环境</p>
+<!-- lang:shell-->
+<pre class='brush:shell'>$ export LC_ALL=en
 </pre></li>
-<li>指定输出编码方式<pre>javac -Dfile.encoding=UTF-8
-</pre></li>
+<li><p>检查ANT_HOME,JAVA_HOME</p>
+</li>
+<li><p>下载hadoop2x-eclipse-plugin
+目前hadoop2的eclipse-plugins源代码由github脱管，下载地址<a href="https://github.com/winghc/hadoop2x-eclipse-plugin">how to build - hadoop2x-eclipse-plugin</a> 右侧的 &ldquo;Download ZIP&rdquo; 或者 克隆到桌面. 当然你也可以fork到你自己的帐户下,在使用git clone。</p>
+</li>
+<li><p>执行</p>
+<!-- lang:shell-->
+<pre class='brush:shell'>$ cd src/contrib/eclipse-plugin
+$ ant jar -Dversion=2.2.0 -Declipse.home=/opt/eclipse -Dhadoop.home=/usr/share/hadoop
+</pre><p>将上述java system property eclipse.home 和 hadoop.home 设置成你自己的环境路径。 执行上述命令可能很快或者很慢。请耐心等待。主要慢的target:ivy-download，ivy-resolve-common。最后jar生成在
+<code>$root/build/contrib/eclipse-plugin/hadoop-eclipse-plugin-2.2.0.jar</code>路径下。</p>
+</li>
+<li><p>安装验证
+将生成好的jar,复制到<code>${eclipse.home}/plugins</code>目录下。启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置。</p>
+</li>
+<li><p>效果图
+使用插件访问本地的伪分布式hadoop环境。查看文件texst1.txt和test2.txt同使用命令 hadoop dfs -ls /in 效果相同。
+<img src="http://zhaomingtai.u.qiniudn.com/hadoop2x-eclipse-plugin-success.jpg" alt="image" /></p>
+</li>
+<li><p>已编译的插件
+<a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugin-2.2.0.jar">hadoop-eclipse-plugin-2.2.0.jar</a></p>
+</li>
+<li><p>备注</p>
+</li>
 </ol>
-<p>但在有maven的情况下还需要这么设置：<strong>先调整JVM大小，避免工程太大中途出现OOM，再设置文件的编码。</strong></p>
-<pre>export MAVEN_OPTS="-Xmx1024m －Dfile.encoding=UTF-8"
-</pre></div>
+<p>目前我在使用这个版本的插件时发现还时挺不稳定的。发现了两个缺陷。我的环境为：Java HotSpot&trade; 64-Bit Server VM、 eclipse-standard-kepler-SR1-macosx-cocoa、 hadoop2.2.0。</p>
+<p>缺陷:</p>
+<ul>
+<li>Editor could not be initalized.</li>
+<li>NullPointException</li>
+</ul>
+<p>截图如下：
+<img src="http://zhaomingtai.u.qiniudn.com/hadoop2x-eclipse-plugin-exeception.jpg" alt="image" /></p>
+</div>
   <footer>
     <p class="meta">
 <span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
 
 
-<time datetime="2013-12-05T23:55:00+08:00" pubdate>2013年12月05日</time>
+<time datetime="2013-12-15T00:19:00+08:00" pubdate>2013年12月15日</time>
 
-<span class="categories">属于 <a class="category" href="/category/java/">java</a>
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
  分类</span>
 
 
-<span class="categories">被贴了 <a class="tag" href="/tag/java/">java</a>, <a class="tag" href="/tag/mac/">mac</a>, <a class="tag" href="/tag/maven/">maven</a>
+<span class="categories">被贴了 <a class="tag" href="/tag/java/">java</a>, <a class="tag" href="/tag/ant/">ant</a>, <a class="tag" href="/tag/hadoop/">hadoop</a>
  标签</span>
     </p>
 <div class="sharing">
@@ -134,12 +171,16 @@
         <div class="source right"><time datetime="2013-12-09T22:52:00">2013-12-09</time></div>
       </li>
       <li class="post">
-        <a href="/article/2013/12/build-hadoop2x-eclipse-plugin/">编译hadoop 2.x Hadoop-eclipse-plugin插件</a>
-        <div class="source right"><time datetime="2013-12-15T00:19:00">2013-12-15</time></div>
+        <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
+        <div class="source right"><time datetime="2013-12-10T17:32:00">2013-12-10</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">Mac Java乱码 Maven OOM 异常</a>
+        <div class="source right"><time datetime="2013-12-05T23:55:00">2013-12-05</time></div>
       </li>
   </ul>
 </p>    <p class="meta">
-        <a class="basic-alignment right" href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/" title="下一篇: 编译hadoop 1.2.1 hadoop-eclipse-plugin插件">编译hadoop 1.2.1 hadoop-eclipse-plugin插件 &raquo;</a>
+        <a class="basic-alignment left" href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/" title="上一篇: 在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境">&laquo; 在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
     </p>
   </footer>
 </article>
@@ -189,19 +230,56 @@
 <script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
 <script language="JavaScript">
 <!--
-    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/',title:'Mac java乱码 maven OOM 异常',refreshRelativeTimes:true,verbose:true},{});
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2013/12/build-hadoop2x-eclipse-plugin/',title:'编译hadoop 2.x Hadoop-eclipse-plugin插件',refreshRelativeTimes:true,verbose:true},{});
     OpooPress.init();
 
     var disqus_shortname = 'kangaroo';
     
     // var disqus_developer = 1;
-    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/';
-    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/';
-    var disqus_title = 'Mac java乱码 maven OOM 异常';
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2013/12/build-hadoop2x-eclipse-plugin/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2013/12/build-hadoop2x-eclipse-plugin/';
+    var disqus_title = '编译hadoop 2.x Hadoop-eclipse-plugin插件';
     //var disqus_category_id = '';
     OpooPress.showDisqusWidgets();
 //-->
 </script>
+<!-- START: Syntax Highlighter ComPress -->
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+        'applescript			/plugins/syntax-highlighter/scripts/shBrushAppleScript.js',
+        'actionscript3 as3		/plugins/syntax-highlighter/scripts/shBrushAS3.js',
+        'bash shell				/plugins/syntax-highlighter/scripts/shBrushBash.js',
+        'coldfusion cf			/plugins/syntax-highlighter/scripts/shBrushColdFusion.js',
+        'cpp c					/plugins/syntax-highlighter/scripts/shBrushCpp.js',
+        'c# c-sharp csharp		/plugins/syntax-highlighter/scripts/shBrushCSharp.js',
+        'css					/plugins/syntax-highlighter/scripts/shBrushCss.js',
+        'delphi pascal pas		/plugins/syntax-highlighter/scripts/shBrushDelphi.js',
+        'diff patch			    /plugins/syntax-highlighter/scripts/shBrushDiff.js',
+        'erl erlang				/plugins/syntax-highlighter/scripts/shBrushErlang.js',
+        'groovy					/plugins/syntax-highlighter/scripts/shBrushGroovy.js',
+        'java					/plugins/syntax-highlighter/scripts/shBrushJava.js',
+        'jfx javafx				/plugins/syntax-highlighter/scripts/shBrushJavaFX.js',
+        'js jscript javascript	/plugins/syntax-highlighter/scripts/shBrushJScript.js',
+        'perl pl				/plugins/syntax-highlighter/scripts/shBrushPerl.js',
+        'php					/plugins/syntax-highlighter/scripts/shBrushPhp.js',
+        'text plain				/plugins/syntax-highlighter/scripts/shBrushPlain.js',
+        'powershell ps          /plugins/syntax-highlighter/scripts/shBrushPowerShell.js',
+        'py python				/plugins/syntax-highlighter/scripts/shBrushPython.js',
+        'ruby rails ror rb		/plugins/syntax-highlighter/scripts/shBrushRuby.js',
+        'sass scss              /plugins/syntax-highlighter/scripts/shBrushSass.js',
+        'scala					/plugins/syntax-highlighter/scripts/shBrushScala.js',
+        'sql					/plugins/syntax-highlighter/scripts/shBrushSql.js',
+        'vb vbnet				/plugins/syntax-highlighter/scripts/shBrushVb.js',
+        'xml xhtml xslt html	/plugins/syntax-highlighter/scripts/shBrushXml.js'
+    );
+    SyntaxHighlighter.defaults['auto-links'] = false;                 
+    SyntaxHighlighter.defaults['toolbar'] = false;     
+    SyntaxHighlighter.defaults['tab-size'] = 4;
+    SyntaxHighlighter.all();
+</script>
+<!-- END: Syntax Highlighter ComPress -->
 </body>
 </html>
 
