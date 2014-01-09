@@ -189,13 +189,12 @@ Bundle-ClassPath: classes/,lib/commons-cli.jar,lib/commons-httpclient.jar,lib/ha
 
 [kinuxroot]:http://www.cnblogs.com/kinuxroot/archive/2013/05/06/linux_hadoop_eclipse_plugin.html
 
-[hadoop-1.2.1/src/contrib/build-contrib.xml]:http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build-contrib.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:UGF5ciPhL5L_71XPMfHcyczxfbY=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLWNvbnRyaWIueG1sIiwiRSI6MTM4Njc0NzQxN30=&download
+[hadoop-1.2.1/src/contrib/build-contrib.xml]:http://pan.baidu.com/s/1c0mW8Sg
 
-[hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml]:http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:s_IcusoS1921HGL4jPYW0mkGZUw=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLnhtbCIsIkUiOjEzODY3NDc0MDd9&download
+[hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml]:http://pan.baidu.com/s/1qWvvAG0
 
-[hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF/MANIFEST.MF]:http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:s_IcusoS1921HGL4jPYW0mkGZUw=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLnhtbCIsIkUiOjEzODY3NDc0MDd9&download
+[hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF/MANIFEST.MF]:http://pan.baidu.com/s/1qWJclWC
 
-[hadoop-eclipse-plugin-1.2.1.jar]:http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugin-1.2.1.jar?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:PrPGIRgkUtbfDjTJqjyrc7mgWB4=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW4tMS4yLjEuamFyIiwiRSI6MTM4Njc0ODc0NH0=&download
-
+[hadoop-eclipse-plugin-1.2.1.jar]:http://pan.baidu.com/s/1dDoWzvF
 
 

@@ -4,14 +4,16 @@ title: 编译hadoop 2.x Hadoop-eclipse-plugin插件
 date: '2013-12-15 00:19'
 comments: true
 published: true
-keywords: hadoop,hadoop-eclipse-plugin
+keywords: hadoop,hadoop-eclipse-plugin,hadoop eclipse plugin 编译
 description: 使用ant编译hadoop 2.x hadoop-eclipse-plugin插件
 excerpt: 
 categories: ['hadoop']
 tags: ['java','ant','hadoop']
 ---
 
-经过hadoop1.x的发展，编译hadoop2.x版本的eclipse插件视乎比之前要轻松的多。如果你不在意编译过程中提示的警告，那么根据[how to build - hadoop2x-eclipse-plugin]文档就可一步到位。若想自己设置部分变量，可参考[编译hadoop 1.2.1 Hadoop-eclipse-plugin插件]。当然有问题及时和开发社区联系你会收到意想不到的收获.[issuce]站点.
+经过hadoop1.x的发展，编译hadoop2.x版本的eclipse插件视乎比之前要轻松的多。如果你不在意编译过程中提示的警告，那么根据[how to build - hadoop2x-eclipse-plugin]文档就可一步到位。若想自己设置部分变量，可参考[编译hadoop 1.2.1 Hadoop-eclipse-plugin插件]。当然有问题及时和开发社区联系你会收到意想不到的收获.
+
+[issuce]站点.
 
 #### 主要步骤####
 * 介质准备
@@ -66,7 +68,7 @@ $ ant jar -Dversion=2.2.0 -Declipse.home=/opt/eclipse -Dhadoop.home=/usr/share/h
 
 [how to build - hadoop2x-eclipse-plugin]:https://github.com/winghc/hadoop2x-eclipse-plugin
 [编译hadoop 1.2.1 Hadoop-eclipse-plugin插件]:http://kangfoo.u.qiniudn.com/article/2013/12/hadoop-eclipse-plugin-1.2.1/
-[hadoop-eclipse-plugin-2.2.0.jar]:http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugin-2.2.0.jar
+[hadoop-eclipse-plugin-2.2.0.jar]:http://pan.baidu.com/s/1bngnciN
 [issuce]:https://github.com/winghc/hadoop2x-eclipse-plugin/issues
 
 

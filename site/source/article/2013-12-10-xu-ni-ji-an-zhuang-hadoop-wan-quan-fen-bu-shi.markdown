@@ -258,10 +258,12 @@ scp ~/.bashrc hadoop@slave14:~/
 <!--- lang:shell -->
 ```shell
 cd /home/hadoop/env
+mkdir data
 mkdir data/tmp
 mkdir data/name
 mkdir data/data
 chmod 755 data/data/
+mkdir mapreduce
 mkdir mapreduce/system
 mkdir mapreduce/local
 ```
