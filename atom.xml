@@ -3,7 +3,7 @@
   <title><![CDATA[kangfoo's 博客]]></title>
   <link href="http://kangfoo.u.qiniudn.com//atom.xml" rel="self"/>
   <link href="http://kangfoo.u.qiniudn.com//"/>
-  <updated>2014-01-06T21:43:53+08:00</updated>
+  <updated>2014-01-09T23:34:44+08:00</updated>
   <id>http://kangfoo.u.qiniudn.com//</id>
   <author>
     <name><![CDATA[kangfoo]]></name>
@@ -50,7 +50,7 @@ $ ant jar -Dversion=2.2.0 -Declipse.home=/opt/eclipse -Dhadoop.home=/usr/share/h
 <img src="http://zhaomingtai.u.qiniudn.com/hadoop2x-eclipse-plugin-success.jpg" alt="image" /></p>
 </li>
 <li><p>已编译的插件
-<a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugin-2.2.0.jar">hadoop-eclipse-plugin-2.2.0.jar</a></p>
+<a href="http://pan.baidu.com/s/1bngnciN">hadoop-eclipse-plugin-2.2.0.jar</a></p>
 </li>
 <li><p>备注</br>
 目前我在使用这个版本的插件时发现还时挺不稳定的。发现了两个缺陷。我的环境为：Java HotSpot&trade; 64-Bit Server VM、 eclipse-standard-kepler-SR1-macosx-cocoa、 hadoop2.2.0。</p>
@@ -561,10 +561,10 @@ vi build.xml
 </ol>
 <h4>相关源文件</h4>
 <ul>
-<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build-contrib.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:UGF5ciPhL5L_71XPMfHcyczxfbY=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLWNvbnRyaWIueG1sIiwiRSI6MTM4Njc0NzQxN30=&amp;download">hadoop-1.2.1/src/contrib/build-contrib.xml</a></li>
-<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:s_IcusoS1921HGL4jPYW0mkGZUw=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLnhtbCIsIkUiOjEzODY3NDc0MDd9&amp;download">hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml</a></li>
-<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1-build.xml?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:s_IcusoS1921HGL4jPYW0mkGZUw=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLWJ1aWxkLnhtbCIsIkUiOjEzODY3NDc0MDd9&amp;download">hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF/MANIFEST.MF</a></li>
-<li><a href="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugin-1.2.1.jar?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:PrPGIRgkUtbfDjTJqjyrc7mgWB4=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW4tMS4yLjEuamFyIiwiRSI6MTM4Njc0ODc0NH0=&amp;download">hadoop-eclipse-plugin-1.2.1.jar</a></li>
+<li><a href="http://pan.baidu.com/s/1c0mW8Sg">hadoop-1.2.1/src/contrib/build-contrib.xml</a></li>
+<li><a href="http://pan.baidu.com/s/1qWvvAG0">hadoop-1.2.1/src/contrib/eclipse-plugin/build.xml</a></li>
+<li><a href="http://pan.baidu.com/s/1qWJclWC">hadoop-1.2.1/src/contrib/eclipse-plugin/META-INF/MANIFEST.MF</a></li>
+<li><a href="http://pan.baidu.com/s/1dDoWzvF">hadoop-eclipse-plugin-1.2.1.jar</a></li>
 </ul>
 <p><em>在此非常感谢<a href="http://www.cnblogs.com/kinuxroot/archive/2013/05/06/linux_hadoop_eclipse_plugin.html">kinuxroot</a>这位博主的的博文参考。</em></p>
 ]]></content>
