@@ -3,7 +3,7 @@
   <title><![CDATA[kangfoo's 博客]]></title>
   <link href="http://kangfoo.u.qiniudn.com//atom.xml" rel="self"/>
   <link href="http://kangfoo.u.qiniudn.com//"/>
-  <updated>2014-01-18T20:59:29+08:00</updated>
+  <updated>2014-01-18T21:09:22+08:00</updated>
   <id>http://kangfoo.u.qiniudn.com//</id>
   <author>
     <name><![CDATA[kangfoo]]></name>
@@ -42,12 +42,12 @@ $ md5sum rcc rcc.copy
 ## 删除
 $ ./hadoop fs -rmr /test
 </pre></li>
-<li><p>fsck命令。 可以参考文件系统的健康状态；查看一个文件所在的数据块；可以删除一个坏块；可以查找一个缺失的块。 可参见<a href="http://hadoop.apache.org/docs/r1.0.4/cn/hdfs_user_guide.html#fsck">fsck</a>。</br></p>
+<li><p>fsck命令。 可以参考文件系统的健康状态；查看一个文件所在的数据块；可以删除一个坏块；可以查找一个缺失的块。 可参见<a href="http://hadoop.apache.org/docs/r1.0.4/cn/hdfs_user_guide.html#fsck">fsck</a></br></p>
 <!-- lang:shell-->
 <pre class='brush:shell'>## 新建一个文件夹
 $ ./hadoop fsck /
 </pre></li>
-<li><p>archive命令。 创建一个hadoop档案文件。语法：archive -archiveName NAME -p <parent path> <src>* <dest> 可参考<a href="http://hadoop.apache.org/docs/r1.2.1/hadoop_archives.html">hadoop_archives</a></br>。</p>
+<li><p>archive命令。 创建一个hadoop档案文件。语法：archive -archiveName NAME -p <parent path> <src>* <dest> 可参考<a href="http://hadoop.apache.org/docs/r1.2.1/hadoop_archives.html">hadoop_archives</a></br></p>
 <!-- lang:shell-->
 <pre class='brush:shell'>## 创建一个归档文件
 $ ./hadoop archive -archiveName archive.har -p  /test rcc
@@ -73,7 +73,7 @@ $ ./hadoop fs -put ./rcc /test
 $ ./hadoop fs -put ./hadoop /test
 put: org.apache.hadoop.hdfs.protocol.NSQuotaExceededException: The NameSpace quota (directories and files) of directory /test is exceeded: quota=2 file count=3
 </pre></li>
-<li><p>balancer命令。集群平衡工具。</br></p>
+<li><p>balancer命令。集群平衡工具</br></p>
 <!-- lang:shell-->
 <pre class='brush:shell'>##
 $ ./hadoop balancer
