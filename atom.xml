@@ -3,7 +3,7 @@
   <title><![CDATA[kangfoo's 博客]]></title>
   <link href="http://kangfoo.u.qiniudn.com//atom.xml" rel="self"/>
   <link href="http://kangfoo.u.qiniudn.com//"/>
-  <updated>2014-01-09T23:34:44+08:00</updated>
+  <updated>2014-01-18T20:59:29+08:00</updated>
   <id>http://kangfoo.u.qiniudn.com//</id>
   <author>
     <name><![CDATA[kangfoo]]></name>
@@ -11,6 +11,80 @@
   </author>
   <generator uri="http://press.opoo.org/">OpooPress</generator>
 
+  <entry>
+    <title type="html"><![CDATA[hadoop1.x 命令手册列举]]></title>
+    <link href="http://kangfoo.u.qiniudn.com//article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/"/>
+    <updated>2014-01-18T18:29:00+08:00</updated>
+    <id>http://kangfoo.u.qiniudn.com//article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/</id>
+    <content type="html"><![CDATA[<p>hadoop命令一般分为两类:</p>
+<p>用户命令</br> archive, distcp, fs, fsck, jar, job, pipes, version, CLASSNAME</p>
+<p>管理命令</br> balancer, daemonlog, datanode, dfsadmin, jobtracker, namenode, secondarynamenode, tasktracker</p>
+<h4>用户命令</h4>
+<ol>
+<li><p>fs命令,可参见 <a href="http://hadoop.apache.org/docs/r1.2.1/file_system_shell.html">file system shell</a></br></p>
+<!-- lang:shell-->
+<pre class='brush:shell'>## 新建一个文件夹
+$ ./hadoop fs -mkdir /test
+## 上传一个文件到hdfs
+$ ./hadoop fs -put ./rcc /test
+## 查看文件
+$ ./hadoop fs -lsr /test
+## 文件模式  备份个数   用户   用户组   字节大小 最后修改日期 和时间 文件或者目录的绝对路径
+##-rw-r--r--   2   hadoop supergroup 2810   2014-01-18 19:20  /test/rcc
+## 
+## 从hdfs文件系统中复制一个文件到本地
+$ ./hadoop fs -copyToLocal /test/rcc rcc.copy
+## md5对比
+$ md5sum rcc rcc.copy
+# b9d8a383bba2dd1b2ee0ede6c5cabeae  rcc
+# b9d8a383bba2dd1b2ee0ede6c5cabeae  rcc.copy
+##
+## 删除
+$ ./hadoop fs -rmr /test
+</pre></li>
+<li><p>fsck命令。 可以参考文件系统的健康状态；查看一个文件所在的数据块；可以删除一个坏块；可以查找一个缺失的块。 可参见<a href="http://hadoop.apache.org/docs/r1.0.4/cn/hdfs_user_guide.html#fsck">fsck</a>。</br></p>
+<!-- lang:shell-->
+<pre class='brush:shell'>## 新建一个文件夹
+$ ./hadoop fsck /
+</pre></li>
+<li><p>archive命令。 创建一个hadoop档案文件。语法：archive -archiveName NAME -p <parent path> <src>* <dest> 可参考<a href="http://hadoop.apache.org/docs/r1.2.1/hadoop_archives.html">hadoop_archives</a></br>。</p>
+<!-- lang:shell-->
+<pre class='brush:shell'>## 创建一个归档文件
+$ ./hadoop archive -archiveName archive.har -p  /test rcc
+## 查看归档文件列表
+$ ./hadoop dfs -lsr har:///user/hadoop/rcc/archive.har
+## 查看归档文件
+$ ./hadoop dfs -cat har:///user/hadoop/rcc/archive.har/rcc
+</pre></li>
+</ol>
+<h4>管理命令</h4>
+<ol>
+<li><p>dfsadmin</br></p>
+<!-- lang:shell-->
+<pre class='brush:shell'>## 报告文件系统的基本信息和统计信息
+$ ./hadoop dfsadmin -report
+## 安全模式维护命令
+$ ./hadoop dfsadmin -safemode enter
+## -safemode enter | leave | get | wait
+## 不接受对名字空间的更改(只读), 不复制或删除块
+## -setQuota 为每个目录 &lt;dirname&gt;设定配额&lt;quota&gt;。包括文件夹和文件名称。
+$ ./hadoop dfsadmin -setQuota 2 /test
+$ ./hadoop fs -put ./rcc /test
+$ ./hadoop fs -put ./hadoop /test
+put: org.apache.hadoop.hdfs.protocol.NSQuotaExceededException: The NameSpace quota (directories and files) of directory /test is exceeded: quota=2 file count=3
+</pre></li>
+<li><p>balancer命令。集群平衡工具。</br></p>
+<!-- lang:shell-->
+<pre class='brush:shell'>##
+$ ./hadoop balancer
+或者
+$ ./bin/./start-balancer.sh
+</pre></li>
+</ol>
+<h5>其他未列举的命令可以参见官方文档。</h5>
+<p>官方文档链接: <a href="http://hadoop.apache.org/docs/r1.2.1/commands_manual.html">hadoop1.2.1 Commands Guide</a>, <a href="http://hadoop.apache.org/docs/r1.0.4/cn/commands_manual.html">hadoop1.0.4 命令手册</a></p>
+]]></content>
+  </entry>
   <entry>
     <title type="html"><![CDATA[编译hadoop 2.x Hadoop-eclipse-plugin插件]]></title>
     <link href="http://kangfoo.u.qiniudn.com//article/2013/12/build-hadoop2x-eclipse-plugin/"/>
@@ -559,6 +633,7 @@ vi build.xml
 <img src="http://zhaomingtai.u.qiniudn.com/hadoop-eclipse-plugins-1.2.1.png?token=aq6Vqqet0FuJ5-au0uAsoWmT8velHmW1zuXJ56PU:b0nXaq4z_psXKmgw0yBWCQIlw9w=:eyJTIjoiemhhb21pbmd0YWkudS5xaW5pdWRuLmNvbS9oYWRvb3AtZWNsaXBzZS1wbHVnaW5zLTEuMi4xLnBuZyIsIkUiOjEzODY3Mzg2NjB9" alt="image" /></p>
 </li>
 </ol>
+<p><img src="http://" alt="image" /></p>
 <h4>相关源文件</h4>
 <ul>
 <li><a href="http://pan.baidu.com/s/1c0mW8Sg">hadoop-1.2.1/src/contrib/build-contrib.xml</a></li>

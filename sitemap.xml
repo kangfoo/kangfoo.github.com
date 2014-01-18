@@ -2,15 +2,19 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//</loc>
-        <lastmod>2013-12-15T00:19:00+08:00</lastmod>
+        <lastmod>2014-01-18T18:29:00+08:00</lastmod>
 		<changefreq>daily</changefreq>
 		<priority>1.0</priority>
     </url>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//archives/</loc>
-        <lastmod>2013-12-15T00:19:00+08:00</lastmod>
+        <lastmod>2014-01-18T18:29:00+08:00</lastmod>
 		<changefreq>daily</changefreq>
 		<priority>0.8</priority>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/</loc>
+        <lastmod>2014-01-18T18:29:00+08:00</lastmod>
     </url>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//article/2013/12/build-hadoop2x-eclipse-plugin/</loc>

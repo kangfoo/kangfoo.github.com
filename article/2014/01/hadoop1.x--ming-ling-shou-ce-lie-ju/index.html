@@ -4,16 +4,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>编译hadoop 2.x Hadoop-eclipse-plugin插件 - kangfoo's 博客</title>
+  <title>hadoop1.x 命令手册列举 - kangfoo's 博客</title>
   <meta name="author" content="kangfoo">
-  <meta name="description" content="使用ant编译hadoop 2.x hadoop-eclipse-plugin插件">
+  <meta name="description" content="hadoop1.x commands_manual 命令手册列举">
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
   <meta name="Generated" content="2014-01-18T20:59:29+08:00"/>
-  <link rel="canonical" href="/article/2013/12/build-hadoop2x-eclipse-plugin/">
+  <link rel="canonical" href="/article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/">
   
   
   <link href="/favicon.ico" rel="icon">
@@ -83,77 +83,97 @@
 <div>
 <article class="hentry" role="article">
   <header>
-      <h1 class="entry-title">编译hadoop 2.x Hadoop-eclipse-plugin插件</h1>
+      <h1 class="entry-title">Hadoop1.x 命令手册列举</h1>
 
       <p class="meta">
 		
 
 
-<time datetime="2013-12-15T00:19:00+08:00" pubdate>2013年12月15日</time>
+<time datetime="2014-01-18T18:29:00+08:00" pubdate>2014年01月18日</time>
          | <a href="#disqus_thread">评论</a>
       </p>
   </header>
 
-  <div class="entry-content"><p>经过hadoop1.x的发展，编译hadoop2.x版本的eclipse插件视乎比之前要轻松的多。如果你不在意编译过程中提示的警告，那么根据<a href="https://github.com/winghc/hadoop2x-eclipse-plugin">how to build - hadoop2x-eclipse-plugin</a>文档就可一步到位。若想自己设置部分变量，可参考<a href="http://kangfoo.u.qiniudn.com/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>。当然有问题及时和开发社区联系你会收到意想不到的收获.</p>
-<p><a href="https://github.com/winghc/hadoop2x-eclipse-plugin/issues">issuce</a>站点.</p>
-<h4>主要步骤</h4>
-<ul>
-<li>介质准备</li>
-<li>执行</li>
-<li>安装验证</li>
-</ul>
-<h4>具体操作</h4>
+  <div class="entry-content"><p>hadoop命令一般分为两类:</p>
+<p>用户命令</br> archive, distcp, fs, fsck, jar, job, pipes, version, CLASSNAME</p>
+<p>管理命令</br> balancer, daemonlog, datanode, dfsadmin, jobtracker, namenode, secondarynamenode, tasktracker</p>
+<h4>用户命令</h4>
 <ol>
-<li><p>设置语言环境</p>
+<li><p>fs命令,可参见 <a href="http://hadoop.apache.org/docs/r1.2.1/file_system_shell.html">file system shell</a></br></p>
 <!-- lang:shell-->
-<pre class='brush:shell'>$ export LC_ALL=en
+<pre class='brush:shell'>## 新建一个文件夹
+$ ./hadoop fs -mkdir /test
+## 上传一个文件到hdfs
+$ ./hadoop fs -put ./rcc /test
+## 查看文件
+$ ./hadoop fs -lsr /test
+## 文件模式  备份个数   用户   用户组   字节大小 最后修改日期 和时间 文件或者目录的绝对路径
+##-rw-r--r--   2   hadoop supergroup 2810   2014-01-18 19:20  /test/rcc
+## 
+## 从hdfs文件系统中复制一个文件到本地
+$ ./hadoop fs -copyToLocal /test/rcc rcc.copy
+## md5对比
+$ md5sum rcc rcc.copy
+# b9d8a383bba2dd1b2ee0ede6c5cabeae  rcc
+# b9d8a383bba2dd1b2ee0ede6c5cabeae  rcc.copy
+##
+## 删除
+$ ./hadoop fs -rmr /test
 </pre></li>
-<li><p>检查ANT_HOME,JAVA_HOME</p>
-</li>
-<li><p>下载hadoop2x-eclipse-plugin</br>
-目前hadoop2的eclipse-plugins源代码由github脱管，下载地址<a href="https://github.com/winghc/hadoop2x-eclipse-plugin">how to build - hadoop2x-eclipse-plugin</a> 右侧的 &ldquo;Download ZIP&rdquo; 或者 克隆到桌面. 当然你也可以fork到你自己的帐户下,在使用git clone。</p>
-</li>
-<li><p>执行</p>
+<li><p>fsck命令。 可以参考文件系统的健康状态；查看一个文件所在的数据块；可以删除一个坏块；可以查找一个缺失的块。 可参见<a href="http://hadoop.apache.org/docs/r1.0.4/cn/hdfs_user_guide.html#fsck">fsck</a>。</br></p>
 <!-- lang:shell-->
-<pre class='brush:shell'>$ cd src/contrib/eclipse-plugin
-$ ant jar -Dversion=2.2.0 -Declipse.home=/opt/eclipse -Dhadoop.home=/usr/share/hadoop
-</pre><p>将上述java system property eclipse.home 和 hadoop.home 设置成你自己的环境路径。 执行上述命令可能很快或者很慢。请耐心等待。主要慢的target:ivy-download，ivy-resolve-common。最后jar生成在
-<code>$root/build/contrib/eclipse-plugin/hadoop-eclipse-plugin-2.2.0.jar</code>路径下。</p>
-</li>
-<li><p>安装验证</br>
-将生成好的jar,复制到<code>${eclipse.home}/plugins</code>目录下。启动eclipse，新建Map/Reduce Project,配置hadoop location.验证插件完全分布式的插件配置截图和core-site.xml端口配置。</p>
-</li>
-<li><p>效果图</br>
-使用插件访问本地的伪分布式hadoop环境。查看文件texst1.txt和test2.txt同使用命令 hadoop dfs -ls /in 效果相同。
-<img src="http://zhaomingtai.u.qiniudn.com/hadoop2x-eclipse-plugin-success.jpg" alt="image" /></p>
-</li>
-<li><p>已编译的插件
-<a href="http://pan.baidu.com/s/1bngnciN">hadoop-eclipse-plugin-2.2.0.jar</a></p>
-</li>
-<li><p>备注</br>
-目前我在使用这个版本的插件时发现还时挺不稳定的。发现了两个缺陷。我的环境为：Java HotSpot&trade; 64-Bit Server VM、 eclipse-standard-kepler-SR1-macosx-cocoa、 hadoop2.2.0。</p>
-</li>
+<pre class='brush:shell'>## 新建一个文件夹
+$ ./hadoop fsck /
+</pre></li>
+<li><p>archive命令。 创建一个hadoop档案文件。语法：archive -archiveName NAME -p <parent path> <src>* <dest> 可参考<a href="http://hadoop.apache.org/docs/r1.2.1/hadoop_archives.html">hadoop_archives</a></br>。</p>
+<!-- lang:shell-->
+<pre class='brush:shell'>## 创建一个归档文件
+$ ./hadoop archive -archiveName archive.har -p  /test rcc
+## 查看归档文件列表
+$ ./hadoop dfs -lsr har:///user/hadoop/rcc/archive.har
+## 查看归档文件
+$ ./hadoop dfs -cat har:///user/hadoop/rcc/archive.har/rcc
+</pre></li>
 </ol>
-<p>缺陷:</p>
-<ul>
-<li>Editor could not be initalized.</li>
-<li>NullPointException</li>
-</ul>
-<p>截图如下：
-<img src="http://zhaomingtai.u.qiniudn.com/hadoop2x-eclipse-plugin-exeception.jpg" alt="image" /></p>
+<h4>管理命令</h4>
+<ol>
+<li><p>dfsadmin</br></p>
+<!-- lang:shell-->
+<pre class='brush:shell'>## 报告文件系统的基本信息和统计信息
+$ ./hadoop dfsadmin -report
+## 安全模式维护命令
+$ ./hadoop dfsadmin -safemode enter
+## -safemode enter | leave | get | wait
+## 不接受对名字空间的更改(只读), 不复制或删除块
+## -setQuota 为每个目录 &lt;dirname&gt;设定配额&lt;quota&gt;。包括文件夹和文件名称。
+$ ./hadoop dfsadmin -setQuota 2 /test
+$ ./hadoop fs -put ./rcc /test
+$ ./hadoop fs -put ./hadoop /test
+put: org.apache.hadoop.hdfs.protocol.NSQuotaExceededException: The NameSpace quota (directories and files) of directory /test is exceeded: quota=2 file count=3
+</pre></li>
+<li><p>balancer命令。集群平衡工具。</br></p>
+<!-- lang:shell-->
+<pre class='brush:shell'>##
+$ ./hadoop balancer
+或者
+$ ./bin/./start-balancer.sh
+</pre></li>
+</ol>
+<h5>其他未列举的命令可以参见官方文档。</h5>
+<p>官方文档链接: <a href="http://hadoop.apache.org/docs/r1.2.1/commands_manual.html">hadoop1.2.1 Commands Guide</a>, <a href="http://hadoop.apache.org/docs/r1.0.4/cn/commands_manual.html">hadoop1.0.4 命令手册</a></p>
 </div>
   <footer>
     <p class="meta">
 <span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
 
 
-<time datetime="2013-12-15T00:19:00+08:00" pubdate>2013年12月15日</time>
+<time datetime="2014-01-18T18:29:00+08:00" pubdate>2014年01月18日</time>
 
 <span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
  分类</span>
 
 
-<span class="categories">被贴了 <a class="tag" href="/tag/java/">java</a>, <a class="tag" href="/tag/ant/">ant</a>, <a class="tag" href="/tag/hadoop/">hadoop</a>
+<span class="categories">被贴了 <a class="tag" href="/tag/hadoop-shell/">hadoop shell</a>, <a class="tag" href="/tag/hadoop/">hadoop</a>
  标签</span>
     </p>
 <div class="sharing">
@@ -168,25 +188,20 @@ $ ant jar -Dversion=2.2.0 -Declipse.home=/opt/eclipse -Dhadoop.home=/usr/share/h
   <h2>相关文章</h2>
   <ul id="related-posts-list">
       <li class="post">
-        <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
-        <div class="source right"><time datetime="2013-12-09T22:52:00">2013-12-09</time></div>
+        <a href="/article/2013/12/build-hadoop2x-eclipse-plugin/">编译hadoop 2.x Hadoop-eclipse-plugin插件</a>
+        <div class="source right"><time datetime="2013-12-15T00:19:00">2013-12-15</time></div>
       </li>
       <li class="post">
-        <a href="/article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/">Hadoop1.x 命令手册列举</a>
-        <div class="source right"><time datetime="2014-01-18T18:29:00">2014-01-18</time></div>
+        <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
+        <div class="source right"><time datetime="2013-12-09T22:52:00">2013-12-09</time></div>
       </li>
       <li class="post">
         <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
         <div class="source right"><time datetime="2013-12-10T17:32:00">2013-12-10</time></div>
       </li>
-      <li class="post">
-        <a href="/article/2013/12/ping-guo-dian-nao-mavn-luan-ma-he-java-oom--yi-chang/">Mac Java乱码 Maven OOM 异常</a>
-        <div class="source right"><time datetime="2013-12-05T23:55:00">2013-12-05</time></div>
-      </li>
   </ul>
 </p>    <p class="meta">
-        <a class="basic-alignment left" href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/" title="上一篇: 在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境">&laquo; 在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
-        <a class="basic-alignment right" href="/article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/" title="下一篇: hadoop1.x 命令手册列举">hadoop1.x 命令手册列举 &raquo;</a>
+        <a class="basic-alignment left" href="/article/2013/12/build-hadoop2x-eclipse-plugin/" title="上一篇: 编译hadoop 2.x Hadoop-eclipse-plugin插件">&laquo; 编译hadoop 2.x Hadoop-eclipse-plugin插件</a>
     </p>
   </footer>
 </article>
@@ -242,15 +257,15 @@ $ ant jar -Dversion=2.2.0 -Declipse.home=/opt/eclipse -Dhadoop.home=/usr/share/h
 <script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
 <script language="JavaScript">
 <!--
-    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2013/12/build-hadoop2x-eclipse-plugin/',title:'编译hadoop 2.x Hadoop-eclipse-plugin插件',refreshRelativeTimes:true,verbose:true},{});
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/',title:'hadoop1.x 命令手册列举',refreshRelativeTimes:true,verbose:true},{});
     OpooPress.init();
 
     var disqus_shortname = 'kangaroo';
     
     // var disqus_developer = 1;
-    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2013/12/build-hadoop2x-eclipse-plugin/';
-    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2013/12/build-hadoop2x-eclipse-plugin/';
-    var disqus_title = '编译hadoop 2.x Hadoop-eclipse-plugin插件';
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/';
+    var disqus_title = 'hadoop1.x 命令手册列举';
     //var disqus_category_id = '';
     OpooPress.showDisqusWidgets();
 //-->
