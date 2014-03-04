@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hadoop MapReduce 类型与格式 - kangfoo's blog</title>
+  <meta name="author" content="kangfoo">
+  <meta name="description" content="Hadoop MapReduce 类型与格式">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="OpooPressSiteRoot" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Generator" content="OpooPress-1.0.3"/>
+  <meta name="Generated" content="2014-03-05T01:02:11+08:00"/>
+  <link rel="canonical" href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">
+  
+  
+  <link href="/favicon.ico" rel="icon">
+  <link href="/atom.xml" rel="alternate" title="kangfoo's blog" type="application/atom+xml">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+<link href="http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css" rel="stylesheet" type="text/css">
+
+<!--
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic|PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+国内网站：http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css
+国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
+-->
+
+<link type="text/css" rel="stylesheet" href="/plugins/syntax-highlighter/styles/shCoreDefault.css"/>
+  <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+  <!--[if lt IE 9]><script src="/javascripts/unsupported-browser.js"></script><![endif]-->
+  <header role="banner"><hgroup>
+  <h1><a href="/">kangfoo's blog</a></h1>
+    <h2>工作学习笔记，生活掠影。</h2>
+</hgroup>
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:http://kangfoo.u.qiniudn.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="搜索"/>
+  </fieldset>
+</form>
+<fieldset class="mobile-nav">
+  <select onchange="if (this.value) { window.location.href = this.value;}">
+    <option value="">导航&hellip;</option>
+    <option value="/">&raquo; 首页</option>
+
+    <option value="/category/hadoop/">&raquo; hadoop</option>
+    <option value="/category/java/">&raquo; java</option>
+
+    <option value="/archives/">&raquo; 归档</option>
+
+
+    <option value="http://www.opoopress.com/">&raquo; OpooPress</option>
+
+
+    <option value="/about/">&raquo; 关于</option>
+
+
+  </select>
+</fieldset>
+
+<ul class="main-navigation">
+<li><a href="/">首页</a></li>
+<li><a href="/category/hadoop/">hadoop</a></li>
+<li><a href="/category/java/">java</a></li>
+<li><a href="/archives/">归档</a></li>
+<li><a href="http://www.opoopress.com/" target="_blank">OpooPress</a></li>
+<li><a href="/about/">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+<div>
+<article class="hentry" role="article">
+  <header>
+      <h1 class="entry-title">Hadoop MapReduce 类型与格式</h1>
+
+      <p class="meta">
+		
+
+
+<time datetime="2014-03-03T22:18:00+08:00" pubdate>2014年03月03日</time>
+         | <a href="#disqus_thread">评论</a>
+      </p>
+  </header>
+
+  <div class="entry-content"><p>MapReduce 的 map和reduce函数的输入和输出是键/值对(key/value pair) 形式的数据处理模型。</p>
+<h2>MapReduce 的类型</h2>
+<p>Hadoop1.x MapReduce 有2套API.旧api偏向与接口，新api偏向与抽象类，如无特殊默认列举为旧的api作讨论.</p>
+<p>在Hadoop的MapReduce中，map和reduce函数遵循如下格式：</p>
+<ul>
+<li>map(K1, V1) –> list (K2, V2)   // map：对输入分片数据进行过滤数据，组织 key/value 对等操作<br  /></li>
+<li>combine(K2, list(V2)) –> list(K2, V2) // 在map端对输出进行预处理，类似 reduce。combine 不一定适用任何情况，如：对总和求平均数。选用。</li>
+<li>partition(K2, V2) –> integer    // 将中间键值对划分到一个 reduce 分区，返回分区索引号。实际上，分区单独由键决定(值是被忽略的)，分区内的键会排序，相同的键的所有值会合成一个组（list(V2)）<br  /></li>
+<li>reduce(K2, list(V2)) –> list(K3, V3) // 每个 reduce 会处理具有某些特性的键，每个键上都有值的序列，是通过对所有 map 输出的值进行统计得来的，reduce 根据所有map传来的结果，最后进行统计合并操作，并输出结果。</li>
+</ul>
+<p>旧api类代码</p>
+<pre class='brush:java'>public interface Mapper&lt;K1, V1, K2, V2&gt; extends JobConfigurable, Closeable {  
+  void map(K1 key, V1 value, OutputCollector&lt;K2, V2&gt; output, Reporter reporter) throws IOException;
+}
+//
+public interface Reducer&lt;K2, V2, K3, V3&gt; extends JobConfigurable, Closeable {
+  void reduce(K2 key, Iterator&lt;V2&gt; values, OutputCollector&lt;K3, V3&gt; output, Reporter reporter) throws IOException;
+}
+//
+public interface Partitioner&lt;K2, V2&gt; extends JobConfigurable {
+   int getPartition(K2 key, V2 value, int numPartitions);
+}
+</pre><p>新api类代码</p>
+<pre class='brush:java'>public class Mapper&lt;KEYIN, VALUEIN, KEYOUT, VALUEOUT&gt; {
+… …
+  protected void map(KEYIN key, VALUEIN value, 
+                     Context context) throws IOException, InterruptedException {
+    context.write((KEYOUT) key, (VALUEOUT) value);
+  }
+… …
+}
+//
+public class Reducer&lt;KEYIN,VALUEIN,KEYOUT,VALUEOUT&gt; {
+… …
+ protected void reduce(KEYIN key, Iterable&lt;VALUEIN&gt; values, Context context
+                        ) throws IOException, InterruptedException {
+    for(VALUEIN value: values) {
+      context.write((KEYOUT) key, (VALUEOUT) value);
+    }
+  }
+… …
+}
+//
+public interface Partitioner&lt;K2, V2&gt; extends JobConfigurable {
+  int getPartition(K2 key, V2 value, int numPartitions);
+}
+</pre><p>默认的 partitioner 是 HashPartitioner，对键进行哈希操作以决定该记录属于哪个分区让 reduce 处理，每个分区对应一个 reducer 任务。总槽数 solt＝集群中节点数 ＊ 每个节点的任务槽。实际值应该比理论值要小，以空闲一部分在错误容忍是备用。</p>
+<p>HashPartitioner的实现</p>
+<pre class='brush:java'>public class HashPartitioner&lt;K, V&gt; extends Partitioner&lt;K, V&gt; {
+    public int getPartition(K key, V value, int numReduceTasks) {
+        return (key.hashCode() &amp; Integer.MAX_VALUE) % numReduceTasks;
+    }
+}
+</pre><p>hadooop1.x 版本中</p>
+<ul>
+<li>旧的api,map 默认的 IdentityMapper, reduce 默认的是 IdentityReducer</li>
+<li>新的api,map 默认的 Mapper, reduce 默认的是 Reducer</li>
+</ul>
+<p>默认MapReduce函数实例程序</p>
+<pre class='brush:java'>public class MinimalMapReduceWithDefaults extends Configured implements Tool {
+    @Override
+    public int run(String[] args) throws Exception {
+        Job job = JobBuilder.parseInputAndOutput(this, getConf(), args);
+        if (job == null) {
+            return -1;
+            }
+        //
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setMapperClass(Mapper.class);
+        job.setMapOutputKeyClass(LongWritable.class);
+        job.setMapOutputValueClass(Text.class);
+        job.setPartitionerClass(HashPartitioner.class);
+        job.setNumReduceTasks(1);
+        job.setReducerClass(Reducer.class);
+        job.setOutputKeyClass(LongWritable.class);
+        job.setOutputValueClass(Text.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
+        return job.waitForCompletion(true) ? 0 : 1;
+        }
+    //
+    public static void main(String[] args) throws Exception {
+        int exitCode = ToolRunner.run(new MinimalMapReduceWithDefaults(), args);
+        System.exit(exitCode);
+        }
+}
+</pre><h2>输入格式</h2>
+<h3>输入分片与记录</h3>
+<p>一个输入分片(input split)是由单个 map 处理的输入块，即每一个 map 只处理一个输入分片，每个分片被划分为若干个记录( records )，每条记录就是一个 key/value 对，map 一个接一个的处理每条记录，输入分片和记录都是逻辑的，不必将他们对应到文件上。数据分片由数据块大小决定的。</p>
+<p>注意，一个分片不包含数据本身，而是指向数据的引用( reference )。</p>
+<p>输入分片在Java中被表示为InputSplit抽象类</p>
+<pre class='brush:java'>public interface InputSplit extends Writable {
+  long getLength() throws IOException;
+  String[] getLocations() throws IOException;
+}
+</pre><p>InputFormat负责创建输入分片并将它们分割成记录，抽象类如下：</p>
+<pre class='brush:java'>public interface InputFormat&lt;K, V&gt; {
+  InputSplit[] getSplits(JobConf job, int numSplits) throws IOException;
+  RecordReader&lt;K, V&gt; getRecordReader(InputSplit split,
+                                     JobConf job, 
+                                     Reporter reporter) throws IOException;
+}
+</pre><p>客户端通过调用 getSpilts() 方法获得分片数目(怎么调到的？)，在 TaskTracker 或 NodeManager上，MapTask 会将分片信息传给 InputFormat 的
+createRecordReader() 方法，进而这个方法来获得这个分片的 RecordReader，RecordReader 基本就是记录上的迭代器，MapTask 用一个 RecordReader 来生成记录的 key/value 对，然后再传递给 map 函数，如下步骤：</p>
+<ol>
+<li>jobClient调用getSpilts()方法获得分片数目，将numSplits作为参数传入，以参考。InputFomat实现有自己的getSplits()方法。</li>
+<li>客户端将他们发送到jobtracker</li>
+<li>jobtracker使用其存储位置信息来调度map任务从而在tasktracker上处理分片数据</li>
+<li>在tasktracker上，map任务把输入分片传给InputFormat上的getRecordReader()方法，来获取分片的RecordReader。</li>
+<li>map 用一个RecordReader来生成纪录的键值对。</li>
+<li>RecordReader的next()方法被调用，知道返回false。map任务结束。</li>
+</ol>
+<p>MapRunner 类部分代码（旧api）</p>
+<pre class='brush:java'>public class MapRunner&lt;K1, V1, K2, V2&gt;
+    implements MapRunnable&lt;K1, V1, K2, V2&gt; {
+… … 
+ public void run(RecordReader&lt;K1, V1&gt; input, OutputCollector&lt;K2, V2&gt; output,
+                  Reporter reporter)
+    throws IOException {
+    try {
+      // allocate key &amp; value instances that are re-used for all entries
+      K1 key = input.createKey();
+      V1 value = input.createValue();
+      //
+      while (input.next(key, value)) {
+        // map pair to output
+        mapper.map(key, value, output, reporter);
+        if(incrProcCount) {
+          reporter.incrCounter(SkipBadRecords.COUNTER_GROUP, 
+              SkipBadRecords.COUNTER_MAP_PROCESSED_RECORDS, 1);
+        }
+      }
+    } finally {
+      mapper.close();
+    }
+  }
+……
+}
+</pre><h3>FileInputFormat类</h3>
+<p>FileInputFormat是所有使用文件为数据源的InputFormat实现的基类，它提供了两个功能：一个定义哪些文件包含在一个作业的输入中；一个为输入文件生成分片的实现，把分片割成记录的作业由其子类来完成。</p>
+<p><strong>下图为InputFormat类的层次结构</strong>：
+<img src="http://zhaomingtai.u.qiniudn.com/FileInputFormat.png" alt="image" /></p>
+<h4>FileInputFormat 类输入路径</h4>
+<p>FileInputFormat 提供四种静态方法来设定 Job 的输入路径，其中下面的 addInputPath() 方法  addInputPaths() 方法可以将一个或多个路径加入路径列表，setInputPaths() 方法一次设定完整的路径列表(可以替换前面所设路 径)</p>
+<pre class='brush:java'>public static void addInputPath(Job job, Path path);
+public static void addInputPaths(Job job, String commaSeparatedPaths);
+public static void setInputPaths(Job job, Path... inputPaths);
+public static void setInputPaths(Job job, String commaSeparatedPaths);
+</pre><p>如果需要排除特定文件，可以使用 FileInputFormat 的 setInputPathFilter() 设置一个过滤器：
+<code>public static void setInputPathFilter(Job job, Class&lt;? extends PathFilter&gt; filter);</code>
+它默认过滤隐藏文件中以&rdquo;_&ldquo;和&rdquo;.&ldquo;开头的文件</p>
+<pre class='brush:java'>  private static final PathFilter hiddenFileFilter = new PathFilter(){
+      public boolean accept(Path p){
+        String name = p.getName(); 
+        return !name.startsWith("_") &amp;&amp; !name.startsWith("."); 
+      }
+    }; 
+</pre><h4>FileInputFormat 类的输入分片</h4>
+<p>FileInputFormat 类一般分割超过 HDFS 块大小的文件。通常分片与 HDFS 块大小一样，然后分片大小也可以改变的,下面展示了控制分片大小的属性：</p>
+<p>待补。 TODO</p>
+<pre class='brush:java'>FileInputFormat computeSplitSize(long goalSize, long minSize,long blockSize) {
+    return Math.max(minSize, Math.min(goalSize, blockSize));
+}
+</pre><p>即：
+<code>minimumSize &lt; blockSize &lt; maximumSize 分片的大小即为块大小。</code></p>
+<p>重载 FileInputFormat 的 isSplitable() ＝false 可以避免 mapreduce 输入文件被分割。</p>
+<h4>小文件与CombineFileInputFormat</h4>
+<ol>
+<li><p>CombineFileInputFormat 是针对小文件设计的，CombineFileInputFormat 会把多个文件打包到一个分片中，以便每个 mapper 可以处理更多的数据；减少大量小文件的另一种方法可以使用 SequenceFile 将这些小文件合并成一个或者多个大文件。</p>
+</li>
+<li><p>CombineFileInputFormat 不仅对于处理小文件实际上对于处理大文件也有好处，本质上，CombineFileInputFormat 使 map 操作中处理的数据量与 HDFS 中文件的块大小之间的耦合度降低了</p>
+</li>
+<li><p>CombineFileInputFormat 是一个抽象类，没有提供实体类，所以需要实现一个CombineFileInputFormat 具体
+类和 getRecordReader() 方法(旧的接口是这个方法，新的接口InputFormat中则是createRecordReader())</p>
+</li>
+</ol>
+<h4>把整个文件作为一条记录处理</h4>
+<p>有时，mapper 需要访问问一个文件中的全部内容。即使不分割文件，仍然需要一个 RecordReader 来读取文件内容为 record 的值，下面给出实现这个功能的完整程序，详细解释见《Hadoop权威指南》。</p>
+<h4>文本处理</h4>
+<ol>
+<li><p><strong>TextInputFileFormat</strong> 是默认的 InputFormat，每一行就是一个纪录</p>
+</li>
+<li><p>TextInputFileFormat 的 key 是 LongWritable 类型，存储该行在整个文件的偏移量，value 是每行的数据内容，不包括任何终止符(换行符和回车符)，它是Text类型.
+如下例
+On the top of the Crumpetty Tree</br>
+</br>
+The Quangle Wangle sat,</br>
+But his face you could not see,</br>
+On account of his Beaver Hat.</br>
+每条记录表示以下key/value对</br>
+(0, On the top of the Crumpetty Tree)</br>
+(33, The Quangle Wangle sat,)</br>
+(57, But his face you could not see,)</br>
+(89, On account of his Beaver Hat.</p>
+</li>
+<li><p>输入分片与 HDFS 块之间的关系：TextInputFormat 每一条纪录就是一行，很可能某一行跨数据库存放。</p>
+</li>
+</ol>
+<p><img src="http://zhaomingtai.u.qiniudn.com/Figure%207-3.%20Logical%20records%20and%20HDFS%20blocks%20for%20TextInputFormat.png" alt="image" /></p>
+<ol>
+<li><p><strong>KeyValueTextInputFormat</strong>。对下面的文本，KeyValueTextInputFormat 比较适合处理，其中可以通过
+mapreduce.input.keyvaluelinerecordreader.key.value.separator 属性设置指定分隔符，默认
+值为制表符，以下指定&rdquo;→&ldquo;为分隔符
+</br>
+line1→On the top of the Crumpetty Tree</br>
+line2→The Quangle Wangle sat,</br>
+line3→But his face you could not see,</br>
+line4→On account of his Beaver Hat.</p>
+</li>
+<li><p><strong>NLineInputFormat</strong>。如果希望 mapper 收到固定行数的输入，需要使用 NLineInputFormat 作为 InputFormat 。与 TextInputFormat 一样，key是文件中行的字节偏移量，值是行本身。</p>
+</li>
+</ol>
+<p>N 是每个 mapper 收到的输入行数，默认时 N=1，每个 mapper 会正好收到一行输入，mapreduce.input.lineinputformat.linespermap 属性控制 N 的值。以刚才的文本为例。
+如果N=2，则每个输入分片包括两行。第一个 mapper 会收到前两行 key/value 对：</p>
+<p>(0, On the top of the Crumpetty Tree)</br>
+(33, The Quangle Wangle sat,)</br>
+另一个mapper则收到：</br>
+(57, But his face you could not see,)</br>
+(89, On account of his Beaver Hat.)</br></p>
+<h4>二进制输入</h4>
+<p><strong>SequenceFileInputFormat</strong>
+如果要用顺序文件数据作为 MapReduce 的输入，应用 SequenceFileInputFormat。key 和 value 顺序文件，所以要保证map输入的类型匹配</p>
+<p>SequenceFileInputFormat 可以读 MapFile 和 SequenceFile，如果在处理顺序文件时遇到目录，SequenceFileInputFormat 类会认为值正在读 MapFile 数据文件。</p>
+<p><strong>SequenceFileAsTextInputFormat</strong> 是 SequenceFileInputFormat 的变体。将顺序文件(其实就是SequenceFile)的 key 和 value 转成 Text 对象</p>
+<p><strong>SequenceFileAsBinaryInputFormat</strong>是 SequenceFileInputFormat 的变体。将顺序文件的key和value作为二进制对象</p>
+<h4>多种输入</h4>
+<p>对于不同格式，不同表示的文本文件输出的处理，可以用 <strong>MultipleInputs</strong> 类里处理，它允许为每条输入路径指定 InputFormat 和 Mapper。</p>
+<p>MultipleInputs 类有一个重载版本的 addInputPath()方法：</p>
+<ul>
+<li>旧api列举<pre class='brush:java'>public static void addInputPath(JobConf conf, Path path, Class&lt;? extends InputFormat&gt; inputFormatClass) 
+</pre></li>
+<li>新api列举<pre class='brush:java'>public static void addInputPath(Job job, Path path, Class&lt;? extends InputFormat&gt; inputFormatClass) 
+</pre>在有多种输入格式只有一个mapper时候(调用Job的setMapperClass()方法)，这个方法会很有用。</li>
+</ul>
+<h4>DBInputFormat</h4>
+<p>JDBC从关系数据库中读取数据的输入格式(参见权威指南)</p>
+<h2>输出格式</h2>
+<p>OutputFormat类的层次结构</p>
+<p><img src="http://zhaomingtai.u.qiniudn.com/Figure%207-4.%20OutputFormat%20class%20hierarchy.png" alt="image" /></p>
+<h3>文本输出</h3>
+<p>默认输出格式是 <strong>TextOutputFormat</strong>，它本每条记录写成文本行，key/value 任意，这里 key和value 可以用制表符分割，用 mapreduce.output.textoutputformat.separator 书信可以改变制表符，与TextOutputFormat 对应的输入格式是 KeyValueTextInputFormat。</p>
+<p>可以使用 NullWritable 来省略输出的 key 和 value。</p>
+<h3>二进制输出</h3>
+<ul>
+<li><strong>SequenceFileOutputFormat</strong> 将它的输出写为一个顺序文件，因为它的格式紧凑，很容易被压缩，所以易于作为 MapReduce 的输入</li>
+<li>把key/value对作为二进制格式写到一个 SequenceFile 容器中</li>
+<li>MapFileOutputFormat 把 MapFile 作为输出，MapFile 中的 key 必需顺序添加，所以必须确保 reducer 输出的 key 已经排好序。</li>
+</ul>
+<h3>多个输出</h3>
+<ul>
+<li><p><strong>MultipleOutputFormat</strong> 类可以将数据写到多个文件中，这些文件名称源于输出的键和值。MultipleOutputFormat是个抽象类，它有两个子类：<strong>MultipleTextOutputFormat</strong> 和 <strong>MultipleSequenceFileOutputFormat</strong> 。它们是 TextOutputFormat 的和 SequenceOutputFormat 的多版本。</p>
+</li>
+<li><p><strong>MultipleOutputs</strong> 类
+用于生成多个输出的库，可以为不同的输出产生不同的类型，无法控制输出的命名。它用于在原有输出基础上附加输出。输出是制定名称的。</p>
+</li>
+</ul>
+<h4>MultipleOutputFormat和MultipleOutputs的区别</h4>
+<p>这两个类库的功能几乎相同。MultipleOutputs 功能更齐全，但 MultipleOutputFormat 对 目录结构和文件命令更多de控制。</p>
+<div  style="height:0px;border-bottom:1px dashed red"></div>
+<table width="100%" border="1" cellpadding="3"  cellspacing="0" bordercolor="#eeeeee">
+<tbody>
+<tr>
+    <td><em>特征   </em></td>
+    <td><em>MultipleOutputFormat </em></td>
+    <td><em>MultipleOutputs </em></td>
+</tr>
+<tr>
+    <td>完全控制文件名和目录名 </td>
+    <td>是 </td>
+    <td>否 </td>
+</tr>
+<tr>
+    <td>不同输出有不同的键和值类型 </td>
+    <td>否 </td>
+    <td>是 </td>
+</tr>
+<tr>
+    <td>从同一作业的map和reduce使用 </td>
+    <td>否 </td>
+    <td>是 </td>
+</tr>
+<tr>
+    <td>每个纪录多个输出 </td>
+    <td>否 </td>
+    <td>是 </td>
+</tr>
+<tr>
+    <td>与任意OutputFormat一起使用 </td>
+    <td>否，需要子类 </td>
+    <td>是 </td>
+</tr>
+</tbody>
+</table>
+<h3>延时输出</h3>
+<p>有些文件应用倾向于不创建空文件，此时就可以利用 LazyOutputFormat (Hadoop 0.21.0版本之后开始提供)，它是一个封装输出格式，可以保证指定分区第一条记录输出时才真正的创建文件，要使用它，用JobConf和相关输出格式作为参数来调用 setOutputFormatClass() 方法.</p>
+<p>Streaming 和 Pigs 支持 -LazyOutput 选项来启用 LazyOutputFormat功能。</p>
+<h3>数据库输出</h3>
+<p>参见 关系数据和 HBase的输出格式。</p>
+<h2>练习代码</h2>
+<p>代码路径
+https://github.com/kangfoo/hadoop1.study/blob/master/kangfoo/study.hdfs/src/main/java/com/kangfoo/study/hadoop1/mp/typeformat </br>
+使用 maven 打包之后用 hadoop jar 命令执行</br>
+步骤同 Hadoop example jar 类</p>
+<ol>
+<li><p>使用 TextInputFormat 类型测试 wordcount
+TestMapreduceInputFormat
+上传一个文件</p>
+<pre class='brush:shell'>$ ./bin/hadoop fs -mkdir /test/input1
+$ ./bin/hadoop fs -put ./wordcount.txt /test/input1
+</pre><p>使用maven 打包 或者用eclipse hadoop 插件, 执行主函数时设置如下参数</br></p>
+<pre class='brush:text'>hdfs://master11:9000/test/input1/wordcount.txt hdfs://master11:9000/numbers.seq hdfs://master11:9000/test/output5
+</pre><p>没改过端口默认 namenode RPC 交互端口 8020 将上述的 9000 改成你自己的端口即可。</br>
+部分日志</p>
+<pre class='brush:shell'>## 准备运行程序和测试数据
+lrwxrwxrwx.  1 hadoop hadoop      86 2月  17 21:02 study.hdfs-0.0.1-SNAPSHOT.jar -&gt; /home/hadoop/env/kangfoo.study/kangfoo/study.hdfs/target/study.hdfs-0.0.1-SNAPSHOT.jar
+-rw-rw-r--.  1 hadoop hadoop    1983 2月  17 20:18 wordcount.txt
+##执行
+$ ./bin/hadoop jar study.hdfs-0.0.1-SNAPSHOT.jar TestMapreduceInputFormat /test/input1/wordcount.txt /test/output1
+</pre></li>
+<li><p>使用SequenceInputFormat类型测试wordcound
+使用Hadoop权威指南中的示例创建 /numbers.seq 文件</p>
+<pre class='brush:shell'>$ ./bin/hadoop fs -text /numbers.seq
+$ ./bin/hadoop jar study.hdfs-0.0.1-SNAPSHOT.jar TestMapreduceSequenceInputFormat /numbers.seq /test/output2
+</pre></li>
+<li><p>多文件输入</p>
+<pre class='brush:shell'>$  ./bin/hadoop jar study.hdfs-0.0.1-SNAPSHOT.jar TestMapreduceMultipleInputs /test/input1/wordcount.txt /numbers.seq /test/output3
+</pre></li>
+</ol>
+<h2>博客参考</h2>
+<p><a href="http://www.taobaotest.com/categories/12/blogs">淘宝博客</a></p>
+</div>
+  <footer>
+    <p class="meta">
+<span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
+
+
+<time datetime="2014-03-03T22:18:00+08:00" pubdate>2014年03月03日</time>
+
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
+ 分类</span>
+
+
+<span class="categories">被贴了 <a class="tag" href="/tag/hadoop1/">hadoop1</a>
+ 标签</span>
+    </p>
+<div class="sharing">
+  
+<!-- sharebar button begin -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- sharebar button end -->
+
+</div>
+<p>
+  <h2>相关文章</h2>
+  <ul id="related-posts-list">
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
+        <div class="source right"><time datetime="2014-03-03T22:17:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:19:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:20:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:21:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+        <div class="source right"><time datetime="2014-03-03T22:22:00">2014-03-03</time></div>
+      </li>
+  </ul>
+</p>    <p class="meta">
+        <a class="basic-alignment left" href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/" title="上一篇: Hadoop MapReduce 工作机制">&laquo; Hadoop MapReduce 工作机制</a>
+        <a class="basic-alignment right" href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/" title="下一篇: Hadoop MapReduce Combiner 组件">Hadoop MapReduce Combiner 组件 &raquo;</a>
+    </p>
+  </footer>
+</article>
+  <section>
+    <h1>评论</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+<section>
+  <h1>近期文章</h1>
+  <ul id="recent_posts">
+  
+  
+      <li class="post">
+        <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-join/">Hadoop MapReduce Join</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h2>近期评论</h2>
+ <script language="JavaScript">
+  <!--
+	var is_https = ('https:' == document.location.protocol);
+	var rcw_script_src = (is_https ? 'https:' : 'http:') + '//kangaroo.disqus.com/recent_comments_widget.js?num_items=5&excerpt_length=100&hide_avatars=' + (is_https ? '1' : '0&avatar_size=32');
+	var rcw_script = '<scr' + 'ipt type="text/javascript" src="' + rcw_script_src + '"></scr' + 'ipt>';
+	document.writeln(rcw_script);
+  //-->
+  </script>
+</section>
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  版权所有 &copy; 2014 - kangfoo -
+  <span class="credit">Powered by <a href="http://www.opoopress.com/">OpooPress</a></span>
+ 
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000232528'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000232528%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+</footer>
+<script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
+<script language="JavaScript">
+<!--
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/',title:'Hadoop MapReduce 类型与格式',refreshRelativeTimes:true,verbose:true},{});
+    OpooPress.init();
+
+    var disqus_shortname = 'kangaroo';
+    
+    // var disqus_developer = 1;
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/';
+    var disqus_title = 'Hadoop MapReduce 类型与格式';
+    //var disqus_category_id = '';
+    OpooPress.showDisqusWidgets();
+//-->
+</script>
+<!-- START: Syntax Highlighter ComPress -->
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+        'applescript			/plugins/syntax-highlighter/scripts/shBrushAppleScript.js',
+        'actionscript3 as3		/plugins/syntax-highlighter/scripts/shBrushAS3.js',
+        'bash shell				/plugins/syntax-highlighter/scripts/shBrushBash.js',
+        'coldfusion cf			/plugins/syntax-highlighter/scripts/shBrushColdFusion.js',
+        'cpp c					/plugins/syntax-highlighter/scripts/shBrushCpp.js',
+        'c# c-sharp csharp		/plugins/syntax-highlighter/scripts/shBrushCSharp.js',
+        'css					/plugins/syntax-highlighter/scripts/shBrushCss.js',
+        'delphi pascal pas		/plugins/syntax-highlighter/scripts/shBrushDelphi.js',
+        'diff patch			    /plugins/syntax-highlighter/scripts/shBrushDiff.js',
+        'erl erlang				/plugins/syntax-highlighter/scripts/shBrushErlang.js',
+        'groovy					/plugins/syntax-highlighter/scripts/shBrushGroovy.js',
+        'java					/plugins/syntax-highlighter/scripts/shBrushJava.js',
+        'jfx javafx				/plugins/syntax-highlighter/scripts/shBrushJavaFX.js',
+        'js jscript javascript	/plugins/syntax-highlighter/scripts/shBrushJScript.js',
+        'perl pl				/plugins/syntax-highlighter/scripts/shBrushPerl.js',
+        'php					/plugins/syntax-highlighter/scripts/shBrushPhp.js',
+        'text plain				/plugins/syntax-highlighter/scripts/shBrushPlain.js',
+        'powershell ps          /plugins/syntax-highlighter/scripts/shBrushPowerShell.js',
+        'py python				/plugins/syntax-highlighter/scripts/shBrushPython.js',
+        'ruby rails ror rb		/plugins/syntax-highlighter/scripts/shBrushRuby.js',
+        'sass scss              /plugins/syntax-highlighter/scripts/shBrushSass.js',
+        'scala					/plugins/syntax-highlighter/scripts/shBrushScala.js',
+        'sql					/plugins/syntax-highlighter/scripts/shBrushSql.js',
+        'vb vbnet				/plugins/syntax-highlighter/scripts/shBrushVb.js',
+        'xml xhtml xslt html	/plugins/syntax-highlighter/scripts/shBrushXml.js'
+    );
+    SyntaxHighlighter.defaults['auto-links'] = false;                 
+    SyntaxHighlighter.defaults['toolbar'] = false;     
+    SyntaxHighlighter.defaults['tab-size'] = 4;
+    SyntaxHighlighter.all();
+</script>
+<!-- END: Syntax Highlighter ComPress -->
+</body>
+</html>
+

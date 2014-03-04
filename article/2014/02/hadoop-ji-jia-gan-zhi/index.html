@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hadoop 机架感知 - kangfoo's blog</title>
+  <meta name="author" content="kangfoo">
+  <meta name="description" content="Hadoop 机架感知">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="OpooPressSiteRoot" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Generator" content="OpooPress-1.0.3"/>
+  <meta name="Generated" content="2014-03-05T01:02:11+08:00"/>
+  <link rel="canonical" href="/article/2014/02/hadoop-ji-jia-gan-zhi/">
+  
+  
+  <link href="/favicon.ico" rel="icon">
+  <link href="/atom.xml" rel="alternate" title="kangfoo's blog" type="application/atom+xml">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+<link href="http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css" rel="stylesheet" type="text/css">
+
+<!--
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic|PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+国内网站：http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css
+国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
+-->
+
+  <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+  <!--[if lt IE 9]><script src="/javascripts/unsupported-browser.js"></script><![endif]-->
+  <header role="banner"><hgroup>
+  <h1><a href="/">kangfoo's blog</a></h1>
+    <h2>工作学习笔记，生活掠影。</h2>
+</hgroup>
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:http://kangfoo.u.qiniudn.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="搜索"/>
+  </fieldset>
+</form>
+<fieldset class="mobile-nav">
+  <select onchange="if (this.value) { window.location.href = this.value;}">
+    <option value="">导航&hellip;</option>
+    <option value="/">&raquo; 首页</option>
+
+    <option value="/category/hadoop/">&raquo; hadoop</option>
+    <option value="/category/java/">&raquo; java</option>
+
+    <option value="/archives/">&raquo; 归档</option>
+
+
+    <option value="http://www.opoopress.com/">&raquo; OpooPress</option>
+
+
+    <option value="/about/">&raquo; 关于</option>
+
+
+  </select>
+</fieldset>
+
+<ul class="main-navigation">
+<li><a href="/">首页</a></li>
+<li><a href="/category/hadoop/">hadoop</a></li>
+<li><a href="/category/java/">java</a></li>
+<li><a href="/archives/">归档</a></li>
+<li><a href="http://www.opoopress.com/" target="_blank">OpooPress</a></li>
+<li><a href="/about/">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+<div>
+<article class="hentry" role="article">
+  <header>
+      <h1 class="entry-title">Hadoop 机架感知</h1>
+
+      <p class="meta">
+		
+
+
+<time datetime="2014-02-26T00:52:00+08:00" pubdate>2014年02月26日</time>
+         | <a href="#disqus_thread">评论</a>
+      </p>
+  </header>
+
+  <div class="entry-content"><p>HDFS 和 Map/Reduce 的组件是能够感知机架的。</p>
+<p>NameNode 和 JobTracker 通过调用管理员配置模块中的 API resolve 来获取集群里每个 slave 的机架id。该 API 将 slave 的 DNS 名称（或者IP地址）转换成机架id。使用哪个模块是通过配置项 topology.node.switch.mapping.impl 来指定的。模块的默认实现会调用 topology.script.file.name 配置项指定的一个的脚本/命令。 如果 topology.script.file.name 未被设置，对于所有传入的IP地址，模块会返回 /default-rack 作为机架 id。</p>
+<p>在 Map/Reduce 部分还有一个额外的配置项 mapred.cache.task.levels ，该参数决定 cache 的级数（在网络拓扑中）。例如，如果默认值是2，会建立两级的 cache—— 一级针对主机（主机 -> 任务的映射）另一级针对机架（机架 -> 任务的映射）。</p>
+<p>我目前没有模拟环境先纪录个参考博客 <a href="http://www.cnblogs.com/ggjucheng/archive/2013/01/03/2843015.html">机架感知</a> 以备后用。</p>
+</div>
+  <footer>
+    <p class="meta">
+<span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
+
+
+<time datetime="2014-02-26T00:52:00+08:00" pubdate>2014年02月26日</time>
+
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
+ 分类</span>
+
+
+<span class="categories">被贴了 <a class="tag" href="/tag/hadoop1/">hadoop1</a>
+ 标签</span>
+    </p>
+<div class="sharing">
+  
+<!-- sharebar button begin -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- sharebar button end -->
+
+</div>
+<p>
+  <h2>相关文章</h2>
+  <ul id="related-posts-list">
+      <li class="post">
+        <a href="/article/2014/02/shi-yong-secondenamenode-hui-fu-namenode/">模拟使用 SecondaryNameNode 恢复 NameNode</a>
+        <div class="source right"><time datetime="2014-02-26T00:50:00">2014-02-26</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/02/java-jni--lian-xi/">Java JNI练习</a>
+        <div class="source right"><time datetime="2014-02-26T00:55:00">2014-02-26</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/02/nativehadoop--bian-yi/">Native-hadoop 编译</a>
+        <div class="source right"><time datetime="2014-02-26T00:57:00">2014-02-26</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/02/hadoop-c-pipes--bian-yi/">Hadoop Pipes 编译</a>
+        <div class="source right"><time datetime="2014-02-26T01:01:00">2014-02-26</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/02/hadoop-hdfs-1/">Hadoop 分布式文件系统</a>
+        <div class="source right"><time datetime="2014-02-25T22:46:00">2014-02-25</time></div>
+      </li>
+  </ul>
+</p>    <p class="meta">
+        <a class="basic-alignment left" href="/article/2014/02/shi-yong-secondenamenode-hui-fu-namenode/" title="上一篇: 模拟使用 SecondaryNameNode 恢复 NameNode">&laquo; 模拟使用 SecondaryNameNode 恢复 NameNode</a>
+        <a class="basic-alignment right" href="/article/2014/02/hdfs-api--lian-xi-shi-yong/" title="下一篇: HDFS API 练习使用">HDFS API 练习使用 &raquo;</a>
+    </p>
+  </footer>
+</article>
+  <section>
+    <h1>评论</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+<section>
+  <h1>近期文章</h1>
+  <ul id="recent_posts">
+  
+  
+      <li class="post">
+        <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-join/">Hadoop MapReduce Join</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h2>近期评论</h2>
+ <script language="JavaScript">
+  <!--
+	var is_https = ('https:' == document.location.protocol);
+	var rcw_script_src = (is_https ? 'https:' : 'http:') + '//kangaroo.disqus.com/recent_comments_widget.js?num_items=5&excerpt_length=100&hide_avatars=' + (is_https ? '1' : '0&avatar_size=32');
+	var rcw_script = '<scr' + 'ipt type="text/javascript" src="' + rcw_script_src + '"></scr' + 'ipt>';
+	document.writeln(rcw_script);
+  //-->
+  </script>
+</section>
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  版权所有 &copy; 2014 - kangfoo -
+  <span class="credit">Powered by <a href="http://www.opoopress.com/">OpooPress</a></span>
+ 
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000232528'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000232528%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+</footer>
+<script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
+<script language="JavaScript">
+<!--
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2014/02/hadoop-ji-jia-gan-zhi/',title:'Hadoop 机架感知',refreshRelativeTimes:true,verbose:true},{});
+    OpooPress.init();
+
+    var disqus_shortname = 'kangaroo';
+    
+    // var disqus_developer = 1;
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2014/02/hadoop-ji-jia-gan-zhi/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2014/02/hadoop-ji-jia-gan-zhi/';
+    var disqus_title = 'Hadoop 机架感知';
+    //var disqus_category_id = '';
+    OpooPress.showDisqusWidgets();
+//-->
+</script>
+</body>
+</html>
+

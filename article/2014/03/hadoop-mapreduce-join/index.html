@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hadoop MapReduce Join - kangfoo's blog</title>
+  <meta name="author" content="kangfoo">
+  <meta name="description" content="Hadoop MapReduce Join">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="OpooPressSiteRoot" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Generator" content="OpooPress-1.0.3"/>
+  <meta name="Generated" content="2014-03-05T01:02:11+08:00"/>
+  <link rel="canonical" href="/article/2014/03/hadoop-mapreduce-join/">
+  
+  
+  <link href="/favicon.ico" rel="icon">
+  <link href="/atom.xml" rel="alternate" title="kangfoo's blog" type="application/atom+xml">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+<link href="http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css" rel="stylesheet" type="text/css">
+
+<!--
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic|PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+国内网站：http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css
+国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
+-->
+
+<link type="text/css" rel="stylesheet" href="/plugins/syntax-highlighter/styles/shCoreDefault.css"/>
+  <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+  <!--[if lt IE 9]><script src="/javascripts/unsupported-browser.js"></script><![endif]-->
+  <header role="banner"><hgroup>
+  <h1><a href="/">kangfoo's blog</a></h1>
+    <h2>工作学习笔记，生活掠影。</h2>
+</hgroup>
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:http://kangfoo.u.qiniudn.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="搜索"/>
+  </fieldset>
+</form>
+<fieldset class="mobile-nav">
+  <select onchange="if (this.value) { window.location.href = this.value;}">
+    <option value="">导航&hellip;</option>
+    <option value="/">&raquo; 首页</option>
+
+    <option value="/category/hadoop/">&raquo; hadoop</option>
+    <option value="/category/java/">&raquo; java</option>
+
+    <option value="/archives/">&raquo; 归档</option>
+
+
+    <option value="http://www.opoopress.com/">&raquo; OpooPress</option>
+
+
+    <option value="/about/">&raquo; 关于</option>
+
+
+  </select>
+</fieldset>
+
+<ul class="main-navigation">
+<li><a href="/">首页</a></li>
+<li><a href="/category/hadoop/">hadoop</a></li>
+<li><a href="/category/java/">java</a></li>
+<li><a href="/archives/">归档</a></li>
+<li><a href="http://www.opoopress.com/" target="_blank">OpooPress</a></li>
+<li><a href="/about/">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+<div>
+<article class="hentry" role="article">
+  <header>
+      <h1 class="entry-title">Hadoop MapReduce Join</h1>
+
+      <p class="meta">
+		
+
+
+<time datetime="2014-03-03T22:23:00+08:00" pubdate>2014年03月03日</time>
+         | <a href="#disqus_thread">评论</a>
+      </p>
+  </header>
+
+  <div class="entry-content"><p>在 Hadoop 中可以通过 MapReduce，Pig，hive，Cascading编程进行大型数据集间的连接操作。连接操作如果由 Mapper 执行，则称为“map端连接”；如果由 Reduce 执行，则称为“Reduce端连接”。</p>
+<p>连接操作的具体实现技术取决于数据集的规模以及分区方式。</br>
+若一个数据集很大而另一个数据集很小，以至于可以分发到集群中的每一个节点之中，则可以执行一个 MapReduce 作业，将各个数据集的数据放到一起，从而实现连接。</br>
+若两个数据规模均很大，没有哪个数据集可以完全复制到集群的每个节点，可以使用 MapReduce 作业进行连接，使用 Map 端连接还是 Reduce 端连接取决于数据的组织方式。</br></p>
+<p>Map端连接将所有的工作在 map 中操作，效率高但是不通用。而 Reduce 端连接利用了 shuff 机制，进行连接，效率不高。</p>
+<p>DistributedCache 能够在任务运行过程中及时地将文件和存档复制到任务节点进行本地缓存以供使用。各个文件通常只复制到一个节点一次。可用 api 或者命令行在需要的时候将本地文件添加到 hdfs 文件系统中。</p>
+<p>本文中的示例 <strong>出自于 <a href="http://new.osforce.cn/?mu=20140227220525KZol8ENMYdFQ6SjMveU26nEZ">开源力量</a> LouisT 老师的<a href="http://new.osforce.cn/course/101?mc101=20140301233857au7XG16o9ukfev1pmFCOfv2s">开源力量培训课-Hadoop Development</a>课件。</strong></p>
+<h3>Map端连接</h3>
+<p>Map 端联接是指数据到达 map 处理函数之前进行合并的。它要求 map 的输入数据必须先分区并以特定的方式排序。各个输入数据集被划分成相同数量的分区，并均按相同的键排序（连接键）。同一键的所有输入纪录均会放在同一个分区。以满足 MapReduce 作业的输出。</p>
+<p>若作业的 Reduce 数量相同、键相同、输入文件是不可切分的，那么 map 端连接操作可以连接多个作业的输出。</p>
+<p>在 Map 端连接效率比 Reduce 端连接效率高（Reduce端Shuff耗时），但是要求比较苛刻。</p>
+<h4>基本思路</h4>
+<ol>
+<li>将需要 join 的两个文件，一个存储在 HDFS 中，一个使用 DistributedCache.addCacheFile() 将需要 join 另一个文件加入到所有 Map 的缓存里(DistributedCache.addCacheFile() 需要在作业提交前设置)；</li>
+<li>在 Map 函数里读取该文件，进行 Join；</li>
+<li>将结果输出到 reduce 端；</li>
+</ol>
+<h4>使用步骤</h4>
+<ol>
+<li>在 HDFS 中上传文件（文本文件、压缩文件、jar包等）；</li>
+<li>调用相关API添加文件信息；</li>
+<li>task运行前直接调用文件读写API获取文件；</li>
+</ol>
+<h3>Reduce端Join</h3>
+<p>reduce 端联接比 map 端联接更普遍，因为输入的数据不需要特定的结构；效率低（所有数据必须经过shuffle过程）。</p>
+<h4>基本思路</h4>
+<ol>
+<li>Map 端读取所有文件，并在输出的内容里加上标识代表数据是从哪个文件里来的；</li>
+<li>在 reduce 处理函数里，对按照标识对数据进行保存；</li>
+<li>然后根据 Key 的 Join 来求出结果直接输出；</li>
+</ol>
+<h3>示例程序</h3>
+<p>使用 MapReduce map 端join 或者 reduce 端 join 实现如下两张表 emp, dep 中的 SQL 联合查询的数据效果。</p>
+<pre class='brush:text'>Table EMP：（新建文件EMP，第一行属性名不要）
+----------------------------------------
+Name      Sex      Age     DepNo
+zhang      male     20           1     
+li              female  25           2
+wang       female  30           3
+zhou        male     35           2
+----------------------------------------
+Table Dep：（新建文件DEP，第一行属性名不要）
+DepNo     DepName
+     1            Sales
+     2            Dev
+     3            Mgt
+------------------------------------------------------------     
+SQL：
+select name,sex ,age, depName from emp inner join DEP on EMP.DepNo = Dep.DepNo
+----------------------------------------
+实现效果：
+$ ./bin/hadoop fs -cat /reduceSideJoin/output11/part-r-00000
+zhang male 20 sales
+li female 25 dev
+wang female 30 dev
+zhou male 35 dev
+</pre><p>Map 端 Join 的例子：<a href="https://github.com/kangfoo/hadoop1.study/blob/master/kangfoo/study.hdfs/src/main/java/com/kangfoo/study/hadoop1/mp/join/TestMapSideJoin.java">TestMapSideJoin</a> </br>
+Reduce 端 Join 的例子：<a href="https://github.com/kangfoo/hadoop1.study/blob/master/kangfoo/study.hdfs/src/main/java/com/kangfoo/study/hadoop1/mp/join/TestReduceSideJoin.java">TestReduceSideJoin</a> </br></p>
+</div>
+  <footer>
+    <p class="meta">
+<span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
+
+
+<time datetime="2014-03-03T22:23:00+08:00" pubdate>2014年03月03日</time>
+
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
+ 分类</span>
+
+
+<span class="categories">被贴了 <a class="tag" href="/tag/hadoop1/">hadoop1</a>
+ 标签</span>
+    </p>
+<div class="sharing">
+  
+<!-- sharebar button begin -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- sharebar button end -->
+
+</div>
+<p>
+  <h2>相关文章</h2>
+  <ul id="related-posts-list">
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+        <div class="source right"><time datetime="2014-03-03T22:22:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
+        <div class="source right"><time datetime="2014-03-03T22:24:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:21:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:20:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
+        <div class="source right"><time datetime="2014-03-03T22:26:00">2014-03-03</time></div>
+      </li>
+  </ul>
+</p>    <p class="meta">
+        <a class="basic-alignment left" href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/" title="上一篇: Hadoop MapReduce 计数器">&laquo; Hadoop MapReduce 计数器</a>
+        <a class="basic-alignment right" href="/article/2014/03/hadoop-mapreduce-sort/" title="下一篇: Hadoop MapReduce Sort">Hadoop MapReduce Sort &raquo;</a>
+    </p>
+  </footer>
+</article>
+  <section>
+    <h1>评论</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+<section>
+  <h1>近期文章</h1>
+  <ul id="recent_posts">
+  
+  
+      <li class="post">
+        <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-join/">Hadoop MapReduce Join</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h2>近期评论</h2>
+ <script language="JavaScript">
+  <!--
+	var is_https = ('https:' == document.location.protocol);
+	var rcw_script_src = (is_https ? 'https:' : 'http:') + '//kangaroo.disqus.com/recent_comments_widget.js?num_items=5&excerpt_length=100&hide_avatars=' + (is_https ? '1' : '0&avatar_size=32');
+	var rcw_script = '<scr' + 'ipt type="text/javascript" src="' + rcw_script_src + '"></scr' + 'ipt>';
+	document.writeln(rcw_script);
+  //-->
+  </script>
+</section>
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  版权所有 &copy; 2014 - kangfoo -
+  <span class="credit">Powered by <a href="http://www.opoopress.com/">OpooPress</a></span>
+ 
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000232528'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000232528%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+</footer>
+<script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
+<script language="JavaScript">
+<!--
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2014/03/hadoop-mapreduce-join/',title:'Hadoop MapReduce Join',refreshRelativeTimes:true,verbose:true},{});
+    OpooPress.init();
+
+    var disqus_shortname = 'kangaroo';
+    
+    // var disqus_developer = 1;
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce-join/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce-join/';
+    var disqus_title = 'Hadoop MapReduce Join';
+    //var disqus_category_id = '';
+    OpooPress.showDisqusWidgets();
+//-->
+</script>
+<!-- START: Syntax Highlighter ComPress -->
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+        'applescript			/plugins/syntax-highlighter/scripts/shBrushAppleScript.js',
+        'actionscript3 as3		/plugins/syntax-highlighter/scripts/shBrushAS3.js',
+        'bash shell				/plugins/syntax-highlighter/scripts/shBrushBash.js',
+        'coldfusion cf			/plugins/syntax-highlighter/scripts/shBrushColdFusion.js',
+        'cpp c					/plugins/syntax-highlighter/scripts/shBrushCpp.js',
+        'c# c-sharp csharp		/plugins/syntax-highlighter/scripts/shBrushCSharp.js',
+        'css					/plugins/syntax-highlighter/scripts/shBrushCss.js',
+        'delphi pascal pas		/plugins/syntax-highlighter/scripts/shBrushDelphi.js',
+        'diff patch			    /plugins/syntax-highlighter/scripts/shBrushDiff.js',
+        'erl erlang				/plugins/syntax-highlighter/scripts/shBrushErlang.js',
+        'groovy					/plugins/syntax-highlighter/scripts/shBrushGroovy.js',
+        'java					/plugins/syntax-highlighter/scripts/shBrushJava.js',
+        'jfx javafx				/plugins/syntax-highlighter/scripts/shBrushJavaFX.js',
+        'js jscript javascript	/plugins/syntax-highlighter/scripts/shBrushJScript.js',
+        'perl pl				/plugins/syntax-highlighter/scripts/shBrushPerl.js',
+        'php					/plugins/syntax-highlighter/scripts/shBrushPhp.js',
+        'text plain				/plugins/syntax-highlighter/scripts/shBrushPlain.js',
+        'powershell ps          /plugins/syntax-highlighter/scripts/shBrushPowerShell.js',
+        'py python				/plugins/syntax-highlighter/scripts/shBrushPython.js',
+        'ruby rails ror rb		/plugins/syntax-highlighter/scripts/shBrushRuby.js',
+        'sass scss              /plugins/syntax-highlighter/scripts/shBrushSass.js',
+        'scala					/plugins/syntax-highlighter/scripts/shBrushScala.js',
+        'sql					/plugins/syntax-highlighter/scripts/shBrushSql.js',
+        'vb vbnet				/plugins/syntax-highlighter/scripts/shBrushVb.js',
+        'xml xhtml xslt html	/plugins/syntax-highlighter/scripts/shBrushXml.js'
+    );
+    SyntaxHighlighter.defaults['auto-links'] = false;                 
+    SyntaxHighlighter.defaults['toolbar'] = false;     
+    SyntaxHighlighter.defaults['tab-size'] = 4;
+    SyntaxHighlighter.all();
+</script>
+<!-- END: Syntax Highlighter ComPress -->
+</body>
+</html>
+

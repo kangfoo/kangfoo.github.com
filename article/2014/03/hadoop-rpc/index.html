@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hadoop RPC - kangfoo's blog</title>
+  <meta name="author" content="kangfoo">
+  <meta name="description" content="Hadoop RPC">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="OpooPressSiteRoot" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Generator" content="OpooPress-1.0.3"/>
+  <meta name="Generated" content="2014-03-05T01:02:11+08:00"/>
+  <link rel="canonical" href="/article/2014/03/hadoop-rpc/">
+  
+  
+  <link href="/favicon.ico" rel="icon">
+  <link href="/atom.xml" rel="alternate" title="kangfoo's blog" type="application/atom+xml">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+<link href="http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css" rel="stylesheet" type="text/css">
+
+<!--
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic|PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+国内网站：http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css
+国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
+-->
+
+<link type="text/css" rel="stylesheet" href="/plugins/syntax-highlighter/styles/shCoreDefault.css"/>
+  <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+  <!--[if lt IE 9]><script src="/javascripts/unsupported-browser.js"></script><![endif]-->
+  <header role="banner"><hgroup>
+  <h1><a href="/">kangfoo's blog</a></h1>
+    <h2>工作学习笔记，生活掠影。</h2>
+</hgroup>
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:http://kangfoo.u.qiniudn.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="搜索"/>
+  </fieldset>
+</form>
+<fieldset class="mobile-nav">
+  <select onchange="if (this.value) { window.location.href = this.value;}">
+    <option value="">导航&hellip;</option>
+    <option value="/">&raquo; 首页</option>
+
+    <option value="/category/hadoop/">&raquo; hadoop</option>
+    <option value="/category/java/">&raquo; java</option>
+
+    <option value="/archives/">&raquo; 归档</option>
+
+
+    <option value="http://www.opoopress.com/">&raquo; OpooPress</option>
+
+
+    <option value="/about/">&raquo; 关于</option>
+
+
+  </select>
+</fieldset>
+
+<ul class="main-navigation">
+<li><a href="/">首页</a></li>
+<li><a href="/category/hadoop/">hadoop</a></li>
+<li><a href="/category/java/">java</a></li>
+<li><a href="/archives/">归档</a></li>
+<li><a href="http://www.opoopress.com/" target="_blank">OpooPress</a></li>
+<li><a href="/about/">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+<div>
+<article class="hentry" role="article">
+  <header>
+      <h1 class="entry-title">Hadoop RPC</h1>
+
+      <p class="meta">
+		
+
+
+<time datetime="2014-03-02T23:33:00+08:00" pubdate>2014年03月02日</time>
+         | <a href="#disqus_thread">评论</a>
+      </p>
+  </header>
+
+  <div class="entry-content"><p>Remote Procedure Call 远程方法调用。不需要了解网络细节，某一程序即可使用该协议请求来自网络内另一台及其程序的服务。它是一个 Client/Server 的结构,提供服务的一方称为Server，消费服务的一方称为Client。</p>
+<p>Hadoop 底层的交互都是通过 rpc 进行的。例 如：datanode 和 namenode、tasktracker 和 jobtracker、secondary namenode 和 namenode 之间的通信都是通过 rpc 实现的。</p>
+<p>TODO: 此文未写明了。明显需要画 4张图， rpc 原理图，Hadoop rpc 时序图， 客户端 流程图，服端流程图。最好帖几个包图＋ 类图（组件图）。待完善。</p>
+<p><strong>要实现远程过程调用，需要有3要素</strong>：
+1、server 必须发布服务
+2、在 client 和 server 两端都需要有模块来处理协议和连接
+3、server 发布的服务，需要将接口给到 client</p>
+<h2>Hadoop RPC</h2>
+<ol>
+<li>序列化层。 Client 与 Server  端通讯传递的信息采用实现自 Writable 类型</li>
+<li>函数调用层。 Hadoop RPC 通过动态代理和 java 反射实现函数调用</li>
+<li>网络传输层。Hadoop RPC 采用 TCP/IP socket 机制</li>
+<li>服务器框架层。Hadoop RPC 采用 java NIO 事件驱动模型提高 RPC Server 吞吐量</li>
+</ol>
+<p>TODO 缺个 RPC 图</p>
+<p>Hadoop RPC 源代码主要在org.apache.hadoop.ipc包下。org.apache.hadoop.ipc.RPC 内部包含5个内部类。</p>
+<ul>
+<li>Invocation ：用于封装方法名和参数，作为数据传输层，相当于VO（Value Object）。</li>
+<li>ClientCache ：用于存储client对象，用 socket factory 作为 hash key,存储结构为 hashMap <SocketFactory, Client>。</li>
+<li>Invoker ：是动态代理中的调用实现类，继承了 java.lang.reflect.InvocationHandler。</li>
+<li>Server ：是ipc.Server的实现类。</li>
+<li>VersionMismatch : 协议版本。</li>
+</ul>
+<h3>从客户端开始进行通讯源代码分析</h3>
+<p>org.apache.hadoop.ipc.Client 有5个内部类</p>
+<ul>
+<li>Call: A call waiting for a value.</li>
+<li>Connection: Thread that reads responses and notifies callers.  Each connection owns a socket connected to a remote address.  Calls are multiplexed through this socket: responses may be delivered out of order.</li>
+<li>ConnectionId: This class holds the address and the user ticket. The client connections to servers are uniquely identified by <remoteAddress, protocol, ticket></li>
+<li>ParallelCall: Call implementation used for parallel calls.</li>
+<li>ParallelResults: Result collector for parallel calls.</li>
+</ul>
+<p><strong>客户端和服务端建立连接的大致执行过程为</strong>：</p>
+<ol>
+<li><p>在 Object org.apache.hadoop.ipc.RPC.Invoker.invoke(Object proxy, Method method, Object[] args) 方法中调用</br>
+client.call(new Invocation(method, args), remoteId);</p>
+</li>
+<li><p>上述的 new Invocation(method, args) 是 org.apache.hadoop.ipc.RPC 的内部类，它包含被调用的方法名称及其参数。此处主要是设置方法和参数。 client 为 org.apache.hadoop.ipc.Client 的实例对象。</p>
+</li>
+<li><p>org.apache.hadoop.ipc.Client.call() 方法的具体源代码。在call()方法中 getConnection()内部获取一个 org.apache.hadoop.ipc.Client.Connection 对象并启动 io 流 setupIOstreams()。</p>
+<pre class='brush:java'>Writable org.apache.hadoop.ipc.Client.call(Writable param, ConnectionId remoteId) throwsInterruptedException, IOException {
+Call call = new Call(param); //A call waiting for a value.   
+// Get a connection from the pool, or create a new one and add it to the
+// pool.  Connections to a given ConnectionId are reused. 
+Connection connection = getConnection(remoteId, call);// 主要在 org.apache.hadoop.net 包下。
+connection.sendParam(call); //客户端发送数据过程
+boolean interrupted = false;
+synchronized (call) {
+   while (!call.done) {
+    try {
+      call.wait();                           // wait for the result
+    } catch (InterruptedException ie) {
+      // save the fact that we were interrupted
+      interrupted = true;
+    }
+  }
+… …
+}
+}
+// Get a connection from the pool, or create a new one and add it to the
+// pool.  Connections to a given ConnectionId are reused. 
+private Connection getConnection(ConnectionId remoteId,
+                               Call call)
+                               throws IOException, InterruptedException {
+if (!running.get()) {
+  // the client is stopped
+  throw new IOException("The client is stopped");
+}
+Connection connection;
+// we could avoid this allocation for each RPC by having a  
+// connectionsId object and with set() method. We need to manage the
+// refs for keys in HashMap properly. For now its ok.
+do {
+  synchronized (connections) {
+    connection = connections.get(remoteId);
+    if (connection == null) {
+      connection = new Connection(remoteId);
+      connections.put(remoteId, connection);
+    }
+  }
+} while (!connection.addCall(call)); 
+//we don't invoke the method below inside "synchronized (connections)"
+//block above. The reason for that is if the server happens to be slow,
+//it will take longer to establish a connection and that will slow the
+//entire system down.
+connection.setupIOstreams(); // 向服务段发送一个 header 并等待结果
+return connection;
+}
+</pre></li>
+<li><p>setupIOstreams() 方法。</p>
+<pre class='brush:java'>void org.apache.hadoop.ipc.Client.Connection.setupIOstreams() throws InterruptedException {
+// Connect to the server and set up the I/O streams. It then sends
+// a header to the server and starts
+// the connection thread that waits for responses.
+while (true) {
+      setupConnection();//  建立连接
+      InputStream inStream = NetUtils.getInputStream(socket); // 输入
+      OutputStream outStream = NetUtils.getOutputStream(socket); // 输出
+      writeRpcHeader(outStream);
+      }
+… … 
+// update last activity time
+  touch();
+// start the receiver thread after the socket connection has been set up            start(); 
+}        
+</pre></li>
+<li><p>启动org.apache.hadoop.ipc.Client.Connection
+客户端获取服务器端放回数据过程</p>
+<pre class='brush:java'>void org.apache.hadoop.ipc.Client.Connection.run()
+while (waitForWork()) {//wait here for work - read or close connection
+    receiveResponse();
+  }
+</pre></li>
+</ol>
+<h3>ipc.Server源码分析</h3>
+<p>ipc.Server 有6个内部类：</p>
+<ul>
+<li>Call ：用于存储客户端发来的请求</li>
+<li>Listener ： 监听类，用于监听客户端发来的请求，同时Listener内部还有一个静态类，Listener.Reader，当监听器监听到用户请求，便让Reader读取用户请求。</li>
+<li>ExceptionsHandler: 异常管理</li>
+<li>Responder ：响应RPC请求类，请求处理完毕，由Responder发送给请求客户端。</li>
+<li>Connection ：连接类，真正的客户端请求读取逻辑在这个类中。</li>
+<li>Handler ：请求处理类，会循环阻塞读取callQueue中的call对象，并对其进行操作。</li>
+</ul>
+<p>大致过程为：</p>
+<ol>
+<li><p>Namenode的初始化时，RPC的server对象是通过ipc.RPC类的getServer()方法获得的。</p>
+<pre class='brush:java'>void org.apache.hadoop.hdfs.server.namenode.NameNode.initialize(Configuration conf) throwsIOException
+// create rpc server
+InetSocketAddress dnSocketAddr = getServiceRpcServerAddress(conf);
+if (dnSocketAddr != null) {
+  int serviceHandlerCount =
+    conf.getInt(DFSConfigKeys.DFS_NAMENODE_SERVICE_HANDLER_COUNT_KEY,
+                DFSConfigKeys.DFS_NAMENODE_SERVICE_HANDLER_COUNT_DEFAULT);
+  this.serviceRpcServer = RPC.getServer(this, dnSocketAddr.getHostName(), 
+      dnSocketAddr.getPort(), serviceHandlerCount,
+      false, conf, namesystem.getDelegationTokenSecretManager());
+  this.serviceRPCAddress = this.serviceRpcServer.getListenerAddress();
+  setRpcServiceServerAddress(conf);
+}
+… …
+this.server.start();  //start RPC server  
+</pre></li>
+<li><p>启动 server</p>
+<pre class='brush:java'>void org.apache.hadoop.ipc.Server.start()
+// Starts the service.  Must be called before any calls will be handled.
+public synchronized void start() {
+responder.start();
+listener.start();
+handlers = new Handler[handlerCount];
+for (int i = 0; i &lt; handlerCount; i++) {
+  handlers[i] = new Handler(i);
+  handlers[i].start(); //处理call
+}
+}
+</pre></li>
+<li><p>Server处理请求, server 同样使用非阻塞 nio 以提高吞吐量</p>
+<pre class='brush:java'>org.apache.hadoop.ipc.Server.Listener.Listener(Server) throws IOException
+public Listener() throws IOException {
+  address = new InetSocketAddress(bindAddress, port);
+  // Create a new server socket and set to non blocking mode
+  acceptChannel = ServerSocketChannel.open();
+  acceptChannel.configureBlocking(false);
+… … }     
+</pre></li>
+<li><p>真正建立连接</p>
+<pre class='brush:java'>void org.apache.hadoop.ipc.Server.Listener.doAccept(SelectionKey key) throws IOException,OutOfMemoryError
+</pre><p>Reader 读数据接收请求</p>
+<pre class='brush:java'>void org.apache.hadoop.ipc.Server.Listener.doRead(SelectionKey key) throws InterruptedException
+try {
+    count = c.readAndProcess();
+  } catch (InterruptedException ieo) {
+    LOG.info(getName() + ": readAndProcess caught InterruptedException", ieo);
+    throw ieo;
+  }
+</pre><pre class='brush:java'>int org.apache.hadoop.ipc.Server.Connection.readAndProcess() throws IOException,InterruptedException
+if (!rpcHeaderRead) {
+      //Every connection is expected to send the header.
+      if (rpcHeaderBuffer == null) {
+        rpcHeaderBuffer = ByteBuffer.allocate(2);
+      }
+      count = channelRead(channel, rpcHeaderBuffer);
+      if (count &lt; 0 || rpcHeaderBuffer.remaining() &gt; 0) {
+        return count;
+      }
+      int version = rpcHeaderBuffer.get(0);
+… … 
+processOneRpc(data.array()); // 数据处理
+</pre></li>
+<li><p>下面贴出Server.Connection类中的processOneRpc()方法和processData()方法的源码。</p>
+<pre class='brush:java'>void org.apache.hadoop.ipc.Server.Connection.processOneRpc(byte[] buf) throws IOException,InterruptedException
+private void processOneRpc(byte[] buf) throws IOException,
+    InterruptedException {
+  if (headerRead) {
+    processData(buf);
+  } else {
+    processHeader(buf);
+    headerRead = true;
+    if (!authorizeConnection()) {
+      throw new AccessControlException("Connection from " + this
+          + " for protocol " + header.getProtocol()
+          + " is unauthorized for user " + user);
+    }
+  }
+}
+</pre></li>
+<li><p>处理call</p>
+<pre class='brush:java'>void org.apache.hadoop.ipc.Server.Handler.run()
+while (running) {
+    try {
+      final Call call = callQueue.take(); // pop the queue; maybe blocked here
+      … … 
+      CurCall.set(call);
+      try {
+        // Make the call as the user via Subject.doAs, thus associating
+        // the call with the Subject
+        if (call.connection.user == null) {
+          value = call(call.connection.protocol, call.param, 
+                       call.timestamp);
+        } else {
+… …}
+</pre></li>
+<li><p>返回请求</p>
+</li>
+</ol>
+<p>下面贴出Server.Responder类中的doRespond()方法源码：</p>
+<pre class='brush:java'>void org.apache.hadoop.ipc.Server.Responder.doRespond(Call call) throws IOException
+    //
+    // Enqueue a response from the application.
+    //
+    void doRespond(Call call) throws IOException {
+      synchronized (call.connection.responseQueue) {
+        call.connection.responseQueue.addLast(call);
+        if (call.connection.responseQueue.size() == 1) {
+          processResponse(call.connection.responseQueue, true);
+        }
+      }
+    }
+</pre><p>补充：
+notify()让因wait()进入阻塞队列里的线程（blocked状态）变为runnable，然后发出notify()动作的线程继续执行完，待其完成后，进行调度时，调用wait()的线程可能会被再次调度而进入running状态。</p>
+<p>参考资源：</p>
+</div>
+  <footer>
+    <p class="meta">
+<span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
+
+
+<time datetime="2014-03-02T23:33:00+08:00" pubdate>2014年03月02日</time>
+
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
+ 分类</span>
+
+
+<span class="categories">被贴了 <a class="tag" href="/tag/hadoop1/">hadoop1</a>
+ 标签</span>
+    </p>
+<div class="sharing">
+  
+<!-- sharebar button begin -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- sharebar button end -->
+
+</div>
+<p>
+  <h2>相关文章</h2>
+  <ul id="related-posts-list">
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
+        <div class="source right"><time datetime="2014-03-03T22:17:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+        <div class="source right"><time datetime="2014-03-03T22:18:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:19:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:20:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:21:00">2014-03-03</time></div>
+      </li>
+  </ul>
+</p>    <p class="meta">
+        <a class="basic-alignment left" href="/article/2014/02/hadoop-io-1/" title="上一篇: Hadoop I/O">&laquo; Hadoop I/O</a>
+        <a class="basic-alignment right" href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/" title="下一篇: Hadoop MapReduce 工作机制">Hadoop MapReduce 工作机制 &raquo;</a>
+    </p>
+  </footer>
+</article>
+  <section>
+    <h1>评论</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+<section>
+  <h1>近期文章</h1>
+  <ul id="recent_posts">
+  
+  
+      <li class="post">
+        <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-join/">Hadoop MapReduce Join</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h2>近期评论</h2>
+ <script language="JavaScript">
+  <!--
+	var is_https = ('https:' == document.location.protocol);
+	var rcw_script_src = (is_https ? 'https:' : 'http:') + '//kangaroo.disqus.com/recent_comments_widget.js?num_items=5&excerpt_length=100&hide_avatars=' + (is_https ? '1' : '0&avatar_size=32');
+	var rcw_script = '<scr' + 'ipt type="text/javascript" src="' + rcw_script_src + '"></scr' + 'ipt>';
+	document.writeln(rcw_script);
+  //-->
+  </script>
+</section>
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  版权所有 &copy; 2014 - kangfoo -
+  <span class="credit">Powered by <a href="http://www.opoopress.com/">OpooPress</a></span>
+ 
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000232528'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000232528%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+</footer>
+<script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
+<script language="JavaScript">
+<!--
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2014/03/hadoop-rpc/',title:'Hadoop RPC',refreshRelativeTimes:true,verbose:true},{});
+    OpooPress.init();
+
+    var disqus_shortname = 'kangaroo';
+    
+    // var disqus_developer = 1;
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-rpc/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-rpc/';
+    var disqus_title = 'Hadoop RPC';
+    //var disqus_category_id = '';
+    OpooPress.showDisqusWidgets();
+//-->
+</script>
+<!-- START: Syntax Highlighter ComPress -->
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+        'applescript			/plugins/syntax-highlighter/scripts/shBrushAppleScript.js',
+        'actionscript3 as3		/plugins/syntax-highlighter/scripts/shBrushAS3.js',
+        'bash shell				/plugins/syntax-highlighter/scripts/shBrushBash.js',
+        'coldfusion cf			/plugins/syntax-highlighter/scripts/shBrushColdFusion.js',
+        'cpp c					/plugins/syntax-highlighter/scripts/shBrushCpp.js',
+        'c# c-sharp csharp		/plugins/syntax-highlighter/scripts/shBrushCSharp.js',
+        'css					/plugins/syntax-highlighter/scripts/shBrushCss.js',
+        'delphi pascal pas		/plugins/syntax-highlighter/scripts/shBrushDelphi.js',
+        'diff patch			    /plugins/syntax-highlighter/scripts/shBrushDiff.js',
+        'erl erlang				/plugins/syntax-highlighter/scripts/shBrushErlang.js',
+        'groovy					/plugins/syntax-highlighter/scripts/shBrushGroovy.js',
+        'java					/plugins/syntax-highlighter/scripts/shBrushJava.js',
+        'jfx javafx				/plugins/syntax-highlighter/scripts/shBrushJavaFX.js',
+        'js jscript javascript	/plugins/syntax-highlighter/scripts/shBrushJScript.js',
+        'perl pl				/plugins/syntax-highlighter/scripts/shBrushPerl.js',
+        'php					/plugins/syntax-highlighter/scripts/shBrushPhp.js',
+        'text plain				/plugins/syntax-highlighter/scripts/shBrushPlain.js',
+        'powershell ps          /plugins/syntax-highlighter/scripts/shBrushPowerShell.js',
+        'py python				/plugins/syntax-highlighter/scripts/shBrushPython.js',
+        'ruby rails ror rb		/plugins/syntax-highlighter/scripts/shBrushRuby.js',
+        'sass scss              /plugins/syntax-highlighter/scripts/shBrushSass.js',
+        'scala					/plugins/syntax-highlighter/scripts/shBrushScala.js',
+        'sql					/plugins/syntax-highlighter/scripts/shBrushSql.js',
+        'vb vbnet				/plugins/syntax-highlighter/scripts/shBrushVb.js',
+        'xml xhtml xslt html	/plugins/syntax-highlighter/scripts/shBrushXml.js'
+    );
+    SyntaxHighlighter.defaults['auto-links'] = false;                 
+    SyntaxHighlighter.defaults['toolbar'] = false;     
+    SyntaxHighlighter.defaults['tab-size'] = 4;
+    SyntaxHighlighter.all();
+</script>
+<!-- END: Syntax Highlighter ComPress -->
+</body>
+</html>
+

@@ -2,15 +2,95 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//</loc>
-        <lastmod>2014-01-19T17:00:00+08:00</lastmod>
+        <lastmod>2014-03-05T01:01:00+08:00</lastmod>
 		<changefreq>daily</changefreq>
 		<priority>1.0</priority>
     </url>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//archives/</loc>
-        <lastmod>2014-01-19T17:00:00+08:00</lastmod>
+        <lastmod>2014-03-05T01:01:00+08:00</lastmod>
 		<changefreq>daily</changefreq>
 		<priority>0.8</priority>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/</loc>
+        <lastmod>2014-03-05T01:01:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-pipes--streaming/</loc>
+        <lastmod>2014-03-03T22:26:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce-sort/</loc>
+        <lastmod>2014-03-03T22:24:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce-join/</loc>
+        <lastmod>2014-03-03T22:23:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce--ji-shu-qi/</loc>
+        <lastmod>2014-03-03T22:22:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce-recordreader-zu-jian/</loc>
+        <lastmod>2014-03-03T22:21:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce-partitioner--zu-jian/</loc>
+        <lastmod>2014-03-03T22:20:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce-combiner--zu-jian/</loc>
+        <lastmod>2014-03-03T22:19:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/</loc>
+        <lastmod>2014-03-03T22:18:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/</loc>
+        <lastmod>2014-03-03T22:17:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-rpc/</loc>
+        <lastmod>2014-03-02T23:33:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/hadoop-io-1/</loc>
+        <lastmod>2014-02-26T23:50:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/hadoop-c-pipes--bian-yi/</loc>
+        <lastmod>2014-02-26T01:01:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/nativehadoop--bian-yi/</loc>
+        <lastmod>2014-02-26T00:57:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/java-jni--lian-xi/</loc>
+        <lastmod>2014-02-26T00:55:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/hdfs-api--lian-xi-shi-yong/</loc>
+        <lastmod>2014-02-26T00:53:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/hadoop-ji-jia-gan-zhi/</loc>
+        <lastmod>2014-02-26T00:52:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/shi-yong-secondenamenode-hui-fu-namenode/</loc>
+        <lastmod>2014-02-26T00:50:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/hadoop-hdfs-1/</loc>
+        <lastmod>2014-02-25T22:46:00+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kangfoo.u.qiniudn.com//article/2014/02/hadoop1.x--xue-xi-zhun-bei/</loc>
+        <lastmod>2014-02-24T23:28:00+08:00</lastmod>
     </url>
     <url>
         <loc>http://kangfoo.u.qiniudn.com//article/2014/01/hadoop1.x-wordcount-fen-xi/</loc>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hadoop Pipes & Streaming - kangfoo's blog</title>
+  <meta name="author" content="kangfoo">
+  <meta name="description" content="Hadoop Pipes & Streaming">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="OpooPressSiteRoot" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Generator" content="OpooPress-1.0.3"/>
+  <meta name="Generated" content="2014-03-05T01:02:11+08:00"/>
+  <link rel="canonical" href="/article/2014/03/hadoop-pipes--streaming/">
+  
+  
+  <link href="/favicon.ico" rel="icon">
+  <link href="/atom.xml" rel="alternate" title="kangfoo's blog" type="application/atom+xml">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+<link href="http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css" rel="stylesheet" type="text/css">
+
+<!--
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic|PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+国内网站：http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css
+国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
+-->
+
+<link type="text/css" rel="stylesheet" href="/plugins/syntax-highlighter/styles/shCoreDefault.css"/>
+  <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+  <!--[if lt IE 9]><script src="/javascripts/unsupported-browser.js"></script><![endif]-->
+  <header role="banner"><hgroup>
+  <h1><a href="/">kangfoo's blog</a></h1>
+    <h2>工作学习笔记，生活掠影。</h2>
+</hgroup>
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:http://kangfoo.u.qiniudn.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="搜索"/>
+  </fieldset>
+</form>
+<fieldset class="mobile-nav">
+  <select onchange="if (this.value) { window.location.href = this.value;}">
+    <option value="">导航&hellip;</option>
+    <option value="/">&raquo; 首页</option>
+
+    <option value="/category/hadoop/">&raquo; hadoop</option>
+    <option value="/category/java/">&raquo; java</option>
+
+    <option value="/archives/">&raquo; 归档</option>
+
+
+    <option value="http://www.opoopress.com/">&raquo; OpooPress</option>
+
+
+    <option value="/about/">&raquo; 关于</option>
+
+
+  </select>
+</fieldset>
+
+<ul class="main-navigation">
+<li><a href="/">首页</a></li>
+<li><a href="/category/hadoop/">hadoop</a></li>
+<li><a href="/category/java/">java</a></li>
+<li><a href="/archives/">归档</a></li>
+<li><a href="http://www.opoopress.com/" target="_blank">OpooPress</a></li>
+<li><a href="/about/">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+<div>
+<article class="hentry" role="article">
+  <header>
+      <h1 class="entry-title">Hadoop Pipes & Streaming</h1>
+
+      <p class="meta">
+		
+
+
+<time datetime="2014-03-03T22:26:00+08:00" pubdate>2014年03月03日</time>
+         | <a href="#disqus_thread">评论</a>
+      </p>
+  </header>
+
+  <div class="entry-content"><p>申明：本文大部分出自于 <a href="http://new.osforce.cn/?mu=20140227220525KZol8ENMYdFQ6SjMveU26nEZ">开源力量</a> LouisT 老师的<a href="http://new.osforce.cn/course/101?mc101=20140301233857au7XG16o9ukfev1pmFCOfv2s">开源力量培训课-Hadoop Development</a>课件 和 Apache 官方文档。</p>
+<h2>Streaming</h2>
+<ul>
+<li>Streaming 是 hadoop 里面提供的一个工具</li>
+<li>Streaming 框架允许任何程序语言实现的程序在 Hadoop MapReduce 中使用，方便任何程序向 Hadoop 平台移植，具有很强的扩展性；</li>
+<li>mapper 和 reducer 会从标准输入中读取用户数据，一行一行处理后发送给标准输出。Streaming 工具会创建 MapReduce 作业，发送给各个 tasktracker，同时监控整个作业的执行过程；</li>
+<li>如果一个文件（可执行或者脚本）作为 mapper，mapper 初始化时，每一个 mapper 任务会把该文件作为一个单独进程启动，mapper 任务运行时，它把输入切法成行并把每一行提供给可执行文件进程的标准输入。同 时，mapper 收集可执行文件进程标准输出的内容，并把收到的每一行内容转化成 key/value，作为 mapper的输出。默认情况下，一行中第一个 tab 之前的部分作为 key，之后的（不包括）作为value。如果没有 tab，整行作为 key 值，value值为null。对于reducer，类似；</li>
+</ul>
+<h3>Streaming 优点</h3>
+<ol>
+<li><p>开发效率高，便于移植。Hadoop Streaming 使用 Unix 标准流作为 Hadoop 和应用程序之间的接口。在单机上可按照 cat input | mapper | sort | reducer > output 进行测试，若单机上测试通过，集群上一般控制好内存也可以很好的执行成功。</p>
+</li>
+<li><p>提高运行效率。对内存要求较高，可用C/C++控制内存。比纯java实现更好。</p>
+</li>
+</ol>
+<h3>Streaming缺点</h3>
+<ol>
+<li><p>Hadoop Streaming 默认只能处理文本数据，（0.21.0之后可以处理二进制数据）。</p>
+</li>
+<li><p>Steaming 中的 mapper 和 reducer 默认只能想标准输出写数据，不能方便的多路输出。</p>
+</li>
+</ol>
+<p>更详细内容请参考于： http://hadoop.apache.org/docs/r1.2.1/streaming.html</p>
+<pre class='brush:shell'>$HADOOP_HOME/bin/hadoop  jar $HADOOP_HOME/hadoop-streaming.jar \
+    -input myInputDirs \
+    -output myOutputDir \
+    -mapper /bin/cat \
+    -reducer /bin/wc
+</pre><h3>streaming示例</h3>
+<p>perl 语言的<a href="https://github.com/kangfoo/hadoop1.study/tree/master/kangfoo/study.hdfs/src/main/java/com/kangfoo/study/hadoop1/streaming">streaming示例</a> 代码</p>
+<pre class='brush:perl'>-rw-rw-r--. 1 hadoop hadoop     48 2月  22 10:47 data
+-rw-rw-r--. 1 hadoop hadoop 107399 2月  22 10:41 hadoop-streaming-1.2.1.jar
+-rw-rw-r--. 1 hadoop hadoop    186 2月  22 10:45 mapper.pl
+-rw-rw-r--. 1 hadoop hadoop    297 2月  22 10:55 reducer.pl
+##
+$ ../bin/hadoop jar hadoop-streaming-1.2.1.jar -mapper mapper.pl -reducer reducer.pl -input /test/streaming -output /test/streamingout1 -file mapper.pl -file reducer.pl 
+</pre><h2>Hadoop pipes</h2>
+<ol>
+<li>Hadoop pipes 是 Hadoop MapReduce 的 C++ 的接口代称。不同于使用标准输入和输出来实现 map 代码和 reduce 代码之间的 Streaming。</li>
+<li>Pipes 使用套接字 socket 作为 tasktracker 与 C++ 版本函数的进程间的通讯，未使用 JNI。</li>
+<li>与 Streaming 不同，Pipes 是 Socket 通讯，Streaming 是标准输入输出。</li>
+</ol>
+<h3>编译 Hadoop Pipes</h3>
+<p>编译c++ pipes( 确保操作系统提前安装好了 openssl,zlib,glib,openssl-devel)
+Hadoop更目录下执行
+ant -Dcompile.c++=yes examples</p>
+<p>具体请参见《Hadoop Pipes 编译》</p>
+<h3>Hadoop官方示例：</h3>
+<pre class='brush:shell'>hadoop/src/examples/pipes/impl
+ config.h.in
+ sort.cc
+wordcount-nopipe.cc
+wordcount-part.cc
+wordcount-simple.cc
+</pre><p>运行前需要把可执行文件和输入数据上传到 hdfs：</p>
+<pre class='brush:shell'>$ ./bin/hadoop fs -mkdir /test/pipes/input
+$ ./bin/hadoop fs -put a.txt /test/pipes/input 
+$ ./bin/hadoop fs -cat /test/pipes/input/a.txt 
+hello hadoop hello hive hello hbase hello zk
+</pre><p>上传执行文件，重新命名为/test/pipes/exec</p>
+<pre class='brush:shell'>$ ./bin/hadoop fs -put ./build/c++-examples/Linux-amd64-64/bin/wordcount-simple /test/pipes/exec
+</pre><p>在编译好的文件夹目录下执行</p>
+<pre>$ cd hadoop/build/c++-examples/Linux-amd64-64/bin
+$ ../../../../bin/hadoop pipes -Dhadoop.pipes.java.recordreader=true -Dhadoop.pipes.java.recordwriter=true -reduces 4 -input /test/pipes/input -output /test/pipes/input/output1 -program /test/pipes/execs
+</pre><p>执行结果如下：</p>
+<pre>$ ./bin/hadoop fs -cat /test/pipes/input/output1/part-00000 hbase 1 
+$ ./bin/hadoop fs -cat /test/pipes/input/output1/part-00001 hello 4 hive 1 
+$ ./bin/hadoop fs -cat /test/pipes/input/output1/part-00002 hadoop 1 zk 1 
+$ ./bin/hadoop fs -cat /test/pipes/input/output1/part-00003
+</pre><h3>参考博客：</h3>
+<ul>
+<li><a href="http://dongxicheng.org/mapreduce/hadoop-pipes-programming/">Hadoop pipes编程</a></li>
+<li><a href="http://hongweiyi.com/2012/05/hadoop-pipes-src/">Hadoop Pipes运行机制</a></li>
+</ul>
+</div>
+  <footer>
+    <p class="meta">
+<span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
+
+
+<time datetime="2014-03-03T22:26:00+08:00" pubdate>2014年03月03日</time>
+
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
+ 分类</span>
+
+
+<span class="categories">被贴了 <a class="tag" href="/tag/hadoop1/">hadoop1</a>
+ 标签</span>
+    </p>
+<div class="sharing">
+  
+<!-- sharebar button begin -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- sharebar button end -->
+
+</div>
+<p>
+  <h2>相关文章</h2>
+  <ul id="related-posts-list">
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
+        <div class="source right"><time datetime="2014-03-03T22:24:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-join/">Hadoop MapReduce Join</a>
+        <div class="source right"><time datetime="2014-03-03T22:23:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+        <div class="source right"><time datetime="2014-03-03T22:22:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:21:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:20:00">2014-03-03</time></div>
+      </li>
+  </ul>
+</p>    <p class="meta">
+        <a class="basic-alignment left" href="/article/2014/03/hadoop-mapreduce-sort/" title="上一篇: Hadoop MapReduce Sort">&laquo; Hadoop MapReduce Sort</a>
+        <a class="basic-alignment right" href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/" title="下一篇: Hadoop MapReduce 学习参考博客汇总">Hadoop MapReduce 学习参考博客汇总 &raquo;</a>
+    </p>
+  </footer>
+</article>
+  <section>
+    <h1>评论</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+<section>
+  <h1>近期文章</h1>
+  <ul id="recent_posts">
+  
+  
+      <li class="post">
+        <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-join/">Hadoop MapReduce Join</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h2>近期评论</h2>
+ <script language="JavaScript">
+  <!--
+	var is_https = ('https:' == document.location.protocol);
+	var rcw_script_src = (is_https ? 'https:' : 'http:') + '//kangaroo.disqus.com/recent_comments_widget.js?num_items=5&excerpt_length=100&hide_avatars=' + (is_https ? '1' : '0&avatar_size=32');
+	var rcw_script = '<scr' + 'ipt type="text/javascript" src="' + rcw_script_src + '"></scr' + 'ipt>';
+	document.writeln(rcw_script);
+  //-->
+  </script>
+</section>
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  版权所有 &copy; 2014 - kangfoo -
+  <span class="credit">Powered by <a href="http://www.opoopress.com/">OpooPress</a></span>
+ 
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000232528'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000232528%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+</footer>
+<script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
+<script language="JavaScript">
+<!--
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2014/03/hadoop-pipes--streaming/',title:'Hadoop Pipes & Streaming',refreshRelativeTimes:true,verbose:true},{});
+    OpooPress.init();
+
+    var disqus_shortname = 'kangaroo';
+    
+    // var disqus_developer = 1;
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-pipes--streaming/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-pipes--streaming/';
+    var disqus_title = 'Hadoop Pipes & Streaming';
+    //var disqus_category_id = '';
+    OpooPress.showDisqusWidgets();
+//-->
+</script>
+<!-- START: Syntax Highlighter ComPress -->
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+        'applescript			/plugins/syntax-highlighter/scripts/shBrushAppleScript.js',
+        'actionscript3 as3		/plugins/syntax-highlighter/scripts/shBrushAS3.js',
+        'bash shell				/plugins/syntax-highlighter/scripts/shBrushBash.js',
+        'coldfusion cf			/plugins/syntax-highlighter/scripts/shBrushColdFusion.js',
+        'cpp c					/plugins/syntax-highlighter/scripts/shBrushCpp.js',
+        'c# c-sharp csharp		/plugins/syntax-highlighter/scripts/shBrushCSharp.js',
+        'css					/plugins/syntax-highlighter/scripts/shBrushCss.js',
+        'delphi pascal pas		/plugins/syntax-highlighter/scripts/shBrushDelphi.js',
+        'diff patch			    /plugins/syntax-highlighter/scripts/shBrushDiff.js',
+        'erl erlang				/plugins/syntax-highlighter/scripts/shBrushErlang.js',
+        'groovy					/plugins/syntax-highlighter/scripts/shBrushGroovy.js',
+        'java					/plugins/syntax-highlighter/scripts/shBrushJava.js',
+        'jfx javafx				/plugins/syntax-highlighter/scripts/shBrushJavaFX.js',
+        'js jscript javascript	/plugins/syntax-highlighter/scripts/shBrushJScript.js',
+        'perl pl				/plugins/syntax-highlighter/scripts/shBrushPerl.js',
+        'php					/plugins/syntax-highlighter/scripts/shBrushPhp.js',
+        'text plain				/plugins/syntax-highlighter/scripts/shBrushPlain.js',
+        'powershell ps          /plugins/syntax-highlighter/scripts/shBrushPowerShell.js',
+        'py python				/plugins/syntax-highlighter/scripts/shBrushPython.js',
+        'ruby rails ror rb		/plugins/syntax-highlighter/scripts/shBrushRuby.js',
+        'sass scss              /plugins/syntax-highlighter/scripts/shBrushSass.js',
+        'scala					/plugins/syntax-highlighter/scripts/shBrushScala.js',
+        'sql					/plugins/syntax-highlighter/scripts/shBrushSql.js',
+        'vb vbnet				/plugins/syntax-highlighter/scripts/shBrushVb.js',
+        'xml xhtml xslt html	/plugins/syntax-highlighter/scripts/shBrushXml.js'
+    );
+    SyntaxHighlighter.defaults['auto-links'] = false;                 
+    SyntaxHighlighter.defaults['toolbar'] = false;     
+    SyntaxHighlighter.defaults['tab-size'] = 4;
+    SyntaxHighlighter.all();
+</script>
+<!-- END: Syntax Highlighter ComPress -->
+</body>
+</html>
+

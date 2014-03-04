@@ -4,20 +4,20 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境 - kangfoo's 博客</title>
+  <title>在oracle virtual box 虚拟机中搭建hadoop1.2.1完全分布式环境 - kangfoo's blog</title>
   <meta name="author" content="kangfoo">
-  
+  <meta name="description" content="hadoop,centos,virtual box,hadoop完全分布式安装">
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2014-01-19T19:27:56+08:00"/>
+  <meta name="Generated" content="2014-03-05T01:02:11+08:00"/>
   <link rel="canonical" href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">
   
   
   <link href="/favicon.ico" rel="icon">
-  <link href="/atom.xml" rel="alternate" title="kangfoo's 博客" type="application/atom+xml">
+  <link href="/atom.xml" rel="alternate" title="kangfoo's blog" type="application/atom+xml">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 
@@ -36,7 +36,7 @@
 <body>
   <!--[if lt IE 9]><script src="/javascripts/unsupported-browser.js"></script><![endif]-->
   <header role="banner"><hgroup>
-  <h1><a href="/">kangfoo's 博客</a></h1>
+  <h1><a href="/">kangfoo's blog</a></h1>
     <h2>工作学习笔记，生活掠影。</h2>
 </hgroup>
 </header>
@@ -95,8 +95,8 @@
   </header>
 
   <div class="entry-content"><h2>一、初衷</h2>
-<p>对于学习Hadoop的我来将，没有足够的硬件设备，但又想安装完全分布式的Hadoop，一个master两个slave。手上就一台能联网的笔记本，那就使用oracle vitual box进行环境搭建把。环境搭建的效果为：在虚拟机中虚拟3台centos6.4 64位系统，每台都配置双网卡NAT,host-only模式。在宿主机器上安装eclipse进行Hadoop开发。</p>
-<p>Hadoop环境搭建很大部分是在准备操作系统。具体如何搭建Hadoop其实就像解压缩普通的tar类似。然后再适当的配置Hadoop的dfs,mapredurce相关的配置，调整操作系统就可以开始着手学习Hadoop了。</p>
+<p>对于学习 Hadoop 的我来讲，没有足够的硬件设备，但又想安装完全分布式的Hadoop，一个 master 两个 slave。手上就一台能联网的笔记本，那就使用 oracle vitual box 进行环境搭建吧。环境搭建的效果为：在虚拟机中虚拟3台 centos6.4 64 位系统，每台都配置双网卡 NAT,host-only 模式。在宿主机器上安装 eclipse 进行 Hadoop 开发。</p>
+<p>Hadoop 环境搭建很大部分是在准备操作系统。具体如何搭建 Hadoop 其实就像解压缩普通的 tar 类似。然后再适当的配置 Hadoop 的 dfs,mapredurce 相关的配置，调整操作系统就可以开始着手学习 Hadoop了。</p>
 <h2>二、拓补图</h2>
 <p>图片制作中… …</p>
 <ul>
@@ -457,6 +457,8 @@ value  第一个为你自己搭建hadoop的用户名,第二个为用户所属组
  分类</span>
 
 
+<span class="categories">被贴了 <a class="tag" href="/tag/hadoop1/">hadoop1</a>
+ 标签</span>
     </p>
 <div class="sharing">
   
@@ -470,20 +472,24 @@ value  第一个为你自己搭建hadoop的用户名,第二个为用户所属组
   <h2>相关文章</h2>
   <ul id="related-posts-list">
       <li class="post">
-        <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
-        <div class="source right"><time datetime="2013-12-09T22:52:00">2013-12-09</time></div>
-      </li>
-      <li class="post">
-        <a href="/article/2013/12/build-hadoop2x-eclipse-plugin/">编译hadoop 2.x Hadoop-eclipse-plugin插件</a>
-        <div class="source right"><time datetime="2013-12-15T00:19:00">2013-12-15</time></div>
-      </li>
-      <li class="post">
         <a href="/article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/">Hadoop1.x 命令手册列举</a>
         <div class="source right"><time datetime="2014-01-18T18:29:00">2014-01-18</time></div>
       </li>
       <li class="post">
         <a href="/article/2014/01/hadoop1.x-wordcount-fen-xi/">Hadoop1.x Wordcount分析</a>
         <div class="source right"><time datetime="2014-01-19T17:00:00">2014-01-19</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/02/hadoop1.x--xue-xi-zhun-bei/">Hadoop1.x 学习准备</a>
+        <div class="source right"><time datetime="2014-02-24T23:28:00">2014-02-24</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/02/hadoop-hdfs-1/">Hadoop 分布式文件系统</a>
+        <div class="source right"><time datetime="2014-02-25T22:46:00">2014-02-25</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/02/shi-yong-secondenamenode-hui-fu-namenode/">模拟使用 SecondaryNameNode 恢复 NameNode</a>
+        <div class="source right"><time datetime="2014-02-26T00:50:00">2014-02-26</time></div>
       </li>
   </ul>
 </p>    <p class="meta">
@@ -504,19 +510,34 @@ value  第一个为你自己搭建hadoop的用户名,第二个为用户所属组
   
   
       <li class="post">
-        <a href="/article/2014/01/hadoop1.x-wordcount-fen-xi/">Hadoop1.x Wordcount分析</a>
+        <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a>
       </li>
       <li class="post">
-        <a href="/article/2014/01/hadoop1.x--ming-ling-shou-ce-lie-ju/">Hadoop1.x 命令手册列举</a>
+        <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
       </li>
       <li class="post">
-        <a href="/article/2013/12/build-hadoop2x-eclipse-plugin/">编译hadoop 2.x Hadoop-eclipse-plugin插件</a>
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
       </li>
       <li class="post">
-        <a href="/article/2013/12/xu-ni-ji-an-zhuang-hadoop-wan-quan-fen-bu-shi/">在oracle Virtual Box 虚拟机中搭建hadoop1.2.1完全分布式环境</a>
+        <a href="/article/2014/03/hadoop-mapreduce-join/">Hadoop MapReduce Join</a>
       </li>
       <li class="post">
-        <a href="/article/2013/12/hadoop-eclipse-plugin-1.2.1/">编译hadoop 1.2.1 Hadoop-eclipse-plugin插件</a>
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
       </li>
   </ul>
 </section>

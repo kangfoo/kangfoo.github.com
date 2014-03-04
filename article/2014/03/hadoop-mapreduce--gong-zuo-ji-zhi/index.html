@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="zh"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Hadoop MapReduce 工作机制 - kangfoo's blog</title>
+  <meta name="author" content="kangfoo">
+  <meta name="description" content="Hadoop MapReduce 工作机制">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="OpooPressSiteRoot" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="Generator" content="OpooPress-1.0.3"/>
+  <meta name="Generated" content="2014-03-05T01:02:11+08:00"/>
+  <link rel="canonical" href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">
+  
+  
+  <link href="/favicon.ico" rel="icon">
+  <link href="/atom.xml" rel="alternate" title="kangfoo's blog" type="application/atom+xml">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+<!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+
+<link href="http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css" rel="stylesheet" type="text/css">
+
+<!--
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic|PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+国内网站：http://dn-opstatic.qbox.me/themes/default/stylesheets/fonts.css
+国际网站：http://static.opoo.org/themes/default/stylesheets/fonts.css
+-->
+
+<link type="text/css" rel="stylesheet" href="/plugins/syntax-highlighter/styles/shCoreDefault.css"/>
+  <!--[if lt IE 9]><script src="/javascripts/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+  <!--[if lt IE 9]><script src="/javascripts/unsupported-browser.js"></script><![endif]-->
+  <header role="banner"><hgroup>
+  <h1><a href="/">kangfoo's blog</a></h1>
+    <h2>工作学习笔记，生活掠影。</h2>
+</hgroup>
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:http://kangfoo.u.qiniudn.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="搜索"/>
+  </fieldset>
+</form>
+<fieldset class="mobile-nav">
+  <select onchange="if (this.value) { window.location.href = this.value;}">
+    <option value="">导航&hellip;</option>
+    <option value="/">&raquo; 首页</option>
+
+    <option value="/category/hadoop/">&raquo; hadoop</option>
+    <option value="/category/java/">&raquo; java</option>
+
+    <option value="/archives/">&raquo; 归档</option>
+
+
+    <option value="http://www.opoopress.com/">&raquo; OpooPress</option>
+
+
+    <option value="/about/">&raquo; 关于</option>
+
+
+  </select>
+</fieldset>
+
+<ul class="main-navigation">
+<li><a href="/">首页</a></li>
+<li><a href="/category/hadoop/">hadoop</a></li>
+<li><a href="/category/java/">java</a></li>
+<li><a href="/archives/">归档</a></li>
+<li><a href="http://www.opoopress.com/" target="_blank">OpooPress</a></li>
+<li><a href="/about/">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+<div>
+<article class="hentry" role="article">
+  <header>
+      <h1 class="entry-title">Hadoop MapReduce 工作机制</h1>
+
+      <p class="meta">
+		
+
+
+<time datetime="2014-03-03T22:17:00+08:00" pubdate>2014年03月03日</time>
+         | <a href="#disqus_thread">评论</a>
+      </p>
+  </header>
+
+  <div class="entry-content"><h2>工作流程</h2>
+<ol>
+<li>作业配置</li>
+<li>作业提交</li>
+<li>作业初始化</li>
+<li>作业分配</li>
+<li>作业执行</li>
+<li>进度和状态更新</li>
+<li>作业完成</li>
+<li>错误处理</li>
+<li>作业调度</li>
+<li>shule（mapreduce核心）和sort</li>
+</ol>
+<h3>作业配置</h3>
+<p>相对不难理解。 具体略。</p>
+<h3>作业提交</h3>
+<p><img src="http://zhaomingtai.u.qiniudn.com/mapredurce1.png" alt="image" /></p>
+<p>首先熟悉上图，4个实例对象： client jvm、jobTracker、TaskTracker、SharedFileSystem</p>
+<p>MapReduce 作业可以使用 JobClient.runJob(conf) 进行 job 的提交。如上图，这个执行过程主要包含了4个独立的实例。</p>
+<ul>
+<li>客户端。提交MapReduce作业。</li>
+<li>jobtracker：协调作业的运行。jobtracker一个java应用程序。</li>
+<li>tasktracker：运行作业划分后的任务。tasktracker一个java应用程序。</li>
+<li>shared filesystem(分布式文件系统，如:HDFS)</li>
+</ul>
+<p>以下是Hadoop1.x 中旧版本的 MapReduce JobClient API. <strong>org.apache.hadoop.mapred.JobClient</strong></p>
+<pre class='brush:java'>/** JobClient is the primary interface for the user-job to interact with the JobTracker. JobClient provides facilities to submit jobs, track their progress, access component-tasks' reports/logs, get the Map-Reduce cluster status information etc.
+The job submission process involves:
+Checking the input and output specifications of the job.
+Computing the InputSplits for the job.
+Setup the requisite accounting information for the DistributedCache of the job, if necessary.
+Copying the job's jar and configuration to the map-reduce system directory on the distributed file-system.
+Submitting the job to the JobTracker and optionally monitoring it's status.
+Normally the user creates the application, describes various facets of the job via JobConf and then uses the JobClient to submit the job and monitor its progress. */ 
+Here is an example on how to use JobClient:
+     // Create a new JobConf
+     JobConf job = new JobConf(new Configuration(), MyJob.class);
+     // Specify various job-specific parameters     
+     job.setJobName("myjob");
+     job.setInputPath(new Path("in"));
+     job.setOutputPath(new Path("out"));
+     job.setMapperClass(MyJob.MyMapper.class);
+     job.setReducerClass(MyJob.MyReducer.class);
+     // Submit the job, then poll for progress until the job is complete
+     JobClient.runJob(job);   
+// JobClient.runJob(job) --&gt; JobClient. submitJob(job) --&gt;  submitJobInternal(job) 
+</pre><p>新API放在 org.apache.hadoop.mapreduce.* 包下. 使用 Job 类代替 JobClient。又由job.waitForCompletion(true) 内部进行 JobClient.submitJobInternal() 封装。</p>
+<p>新旧API请参考博文 <a href="http://www.cnblogs.com/beanmoon/archive/2012/12/06/2804905.html">Hadoop编程笔记（二）：Hadoop新旧编程API的区别</a></p>
+<p>hadoop1.x 旧 API JobClient.runJob(job) 调用submitJob() 之后，便每秒轮询作业进度monitorAndPrintJob。并将其进度、执行结果信息打印到控制台上。</p>
+<p>接着再看看 JobClient 的 submitJob() 方法的实现基本过程。上图步骤 2，3，4.</p>
+<ol>
+<li><p>向 jobtracker 请求一个新的 jobId. (<code>JobID jobId = jobSubmitClient.getNewJobId();</code> <code>void org.apache.hadoop.mapred.JobClient.init(JobConf conf) throws IOException</code> , 集群环境下是 RPC JobSubmissionProtocol 代理。本地环境使用 LocalJobRunner。</p>
+</li>
+<li><p>检查作业的相关的输出路径并提交 job 以及相关的 jar 到 job tracker, 相关的 libjar 通过distributedCache 传递给 jobtracker.</p>
+<pre class='brush:java'>submitJobInternal(… …); 
+// --&gt;
+copyAndConfigureFiles(jobCopy, submitJobDir); 
+// --&gt; 
+copyAndConfigureFiles(job, jobSubmitDir, replication); 
+… 
+// --&gt; 
+output.checkOutputSpecs(context);
+</pre></li>
+<li><p>计算作业的分片。将 SplitMetaInfo 信息写入 JobSplit。 Maptask 的个数 ＝ 输入的文件大小除以块的大小。</p>
+<pre class='brush:java'>int maps = writeSplits(context, submitJobDir);
+(JobConf)jobCopy.setNumMapTasks(maps);
+// --&gt; 
+maps = writeNewSplits(job, jobSubmitDir); 
+// --&gt; （重写，要详细）
+JobSplitWriter.createSplitFiles(jobSubmitDir, conf,
+    jobSubmitDir.getFileSystem(conf), array); // List&lt;InputSplit&gt; splits = input.getSplits(job); 
+// --&gt;
+SplitMetaInfo[] info = writeNewSplits(conf, splits, out);
+</pre></li>
+<li><p>写JobConf信息到配置文件 job.xml。 <code>jobCopy.writeXml(out);</code></p>
+</li>
+<li><p>准备提交job。 RPC 通讯到 JobTracker 或者 LocalJobRunner.</p>
+<pre class='brush:java'>jobSubmitClient.submitJob(jobId, submitJobDir.toString(), jobCopy.getCredentials());
+</pre></li>
+</ol>
+<h3>作业初始化</h3>
+<ol>
+<li><p>当 JobTracker 接收到了 submitJob() 方法的调用后，会把此调用放入一个内部队列中，交由作业调度器(job scheduler)进行调度。</p>
+<pre class='brush:java'>submitJob(jobId, jobSubmitDir, null, ts, false);
+// --&gt;
+jobInfo = new JobInfo(jobId, new Text(ugi.getShortUserName()),
+      new Path(jobSubmitDir));
+</pre></li>
+<li><p>作业调度器并对job进行初始化。初始化包括创建一个表示正在运行作业的对象——封装任务和纪录信息，以便跟踪任务的状态和进程（步骤5）。</p>
+<pre class='brush:java'>job = new JobInProgress(this, this.conf, jobInfo, 0, ts);
+// --&gt;
+status = addJob(jobId, job);
+// --&gt;
+synchronized (jobs) {
+  synchronized (taskScheduler) {
+    jobs.put(job.getProfile().getJobID(), job);
+    for (JobInProgressListener listener : jobInProgressListeners) {
+      listener.jobAdded(job);
+    }
+  }
+}
+</pre></li>
+<li><p>创建任务列表。在 JobInProgress的 initTask()方法中</p>
+</li>
+<li><p>从共享文件系统中获取 JobClient 已计算好的输入分片信息（步骤6）</p>
+</li>
+<li><p>创建 Map 任务和 Reduce 任务，为每个 MapTask 和 ReduceTask 生成 TaskProgress 对象。</p>
+</li>
+<li><p>创建的 reduce 任务的数量由 JobConf 的 mapred.reduce.task 属性决定，可用 setNumReduceTasks() 方法设置，然后调度器创建相应数量的要运行的 reduce 任务。任务被分配了 id。</p>
+<pre class='brush:java'>JobInProgress initTasks() 
+… …
+TaskSplitMetaInfo[] splits = createSplits(jobId); // read input splits and create a map per a split
+// --&gt;
+allSplitMetaInfo[i] = new JobSplit.TaskSplitMetaInfo(splitIndex, 
+      splitMetaInfo.getLocations(), 
+      splitMetaInfo.getInputDataLength());
+maps = new TaskInProgress[numMapTasks]; // 每个分片创建一个map任务
+this.reduces = new TaskInProgress[numReduceTasks]; // 创建reduce任务
+</pre></li>
+</ol>
+<h3>任务分配</h3>
+<p>Tasktracker 和 JobTracker 通过心跳通信分配一个任务</p>
+<ol>
+<li><p>TaskTracker 定期发送心跳，告知 JobTracker, tasktracker 是否还存活，并充当两者之间的消息通道。</p>
+</li>
+<li><p>TaskTracker 主动向 JobTracker 询问是否有作业。若自己有空闲的 solt,就可在心跳阶段得到 JobTracker 发送过来的 Map 任务或 Reduce 任务。对于 map 任务和 task 任务，TaskTracker 有固定数量的任务槽，准确数量由 tasktracker 核的个数核内存的大小来确定。默认调度器在处理 reduce 任务槽之前，会填充满空闲的 map 任务槽，因此，如果 tasktracker 至少有一个空闲的 map 任务槽，tasktracker 会为它选择一个 map 任务，否则选择一个 reduce 任务。选择 map 任务时，jobTracker 会考虑数据本地化（任务运行在输入分片所在的节点），而 reduce 任务不考虑数据本地化。任务还可能是机架本地化。</p>
+</li>
+<li><p>TaskTracker 和 JobTracker heartbeat代码</p>
+<pre class='brush:java'>TaskTracker.transmitHeartBeat()
+// --&gt;
+//
+// Check if we should ask for a new Task
+//
+if (askForNewTask) {
+  askForNewTask = enoughFreeSpace(localMinSpaceStart);
+  long freeDiskSpace = getFreeSpace();
+  long totVmem = getTotalVirtualMemoryOnTT();
+  long totPmem = getTotalPhysicalMemoryOnTT();
+  long availableVmem = getAvailableVirtualMemoryOnTT();
+  long availablePmem = getAvailablePhysicalMemoryOnTT();
+  long cumuCpuTime = getCumulativeCpuTimeOnTT();
+  long cpuFreq = getCpuFrequencyOnTT();
+  int numCpu = getNumProcessorsOnTT();
+  float cpuUsage = getCpuUsageOnTT();
+// --&gt;
+// Xmit the heartbeat
+HeartbeatResponse heartbeatResponse = jobClient.heartbeat(status, 
+                                                          justStarted,
+                                                          justInited,
+                                                          askForNewTask, 
+                                                          heartbeatResponseId);
+注： InterTrackerProtocol jobClient RPC 到 JobTracker.heartbeat() 
+JobTracker.heartbeat()
+// --&gt;
+// Process this heartbeat 
+short newResponseId = (short)(responseId + 1);
+status.setLastSeen(now);
+if (!processHeartbeat(status, initialContact, now)) {
+  if (prevHeartbeatResponse != null) {
+    trackerToHeartbeatResponseMap.remove(trackerName);
+  }
+  return new HeartbeatResponse(newResponseId, 
+               new TaskTrackerAction[] {new ReinitTrackerAction()});
+}
+</pre></li>
+</ol>
+<h3>任务执行</h3>
+<p>tasktracker 执行任务大致步骤：</p>
+<ol>
+<li>被分配到一个任务后，从共享文件中把作业的jar复制到本地，并将程序执行需要的全部文件（配置信息、数据分片）复制到本地</li>
+<li>为任务新建一个本地工作目录</li>
+<li>内部类TaskRunner实例启动一个新的jvm运行任务</li>
+</ol>
+<p>Tasktracker.TaskRunner.startNewTask()代码</p>
+<pre class='brush:java'>// --&gt;
+RunningJob rjob = localizeJob(tip);
+// --&gt;
+launchTaskForJob(tip, new JobConf(rjob.getJobConf()), rjob); 
+// --&gt;
+tip.launchTask(rjob);
+// --&gt;
+setTaskRunner(task.createRunner(TaskTracker.this, this, rjob));
+this.runner.start(); // MapTaskRunner 或者 ReduceTaskRunner
+//
+//startNewTask 方法完整代码：
+void startNewTask(final TaskInProgress tip) throws InterruptedException {
+    Thread launchThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          RunningJob rjob = localizeJob(tip);//初始化job工作目录
+          tip.getTask().setJobFile(rjob.getLocalizedJobConf().toString());
+          // Localization is done. Neither rjob.jobConf nor rjob.ugi can be null
+          launchTaskForJob(tip, new JobConf(rjob.getJobConf()), rjob); // 启动taskrunner执行task
+        } catch (Throwable e) {
+          String msg = ("Error initializing " + tip.getTask().getTaskID() + 
+                        ":\n" + StringUtils.stringifyException(e));
+          LOG.warn(msg);
+          tip.reportDiagnosticInfo(msg);
+          try {
+            tip.kill(true);
+            tip.cleanup(false, true);
+          } catch (IOException ie2) {
+            LOG.info("Error cleaning up " + tip.getTask().getTaskID(), ie2);
+          } catch (InterruptedException ie2) {
+            LOG.info("Error cleaning up " + tip.getTask().getTaskID(), ie2);
+          }
+          if (e instanceof Error) {
+            LOG.error("TaskLauncher error " + 
+                StringUtils.stringifyException(e));
+          }
+        }
+      }
+    });
+    launchThread.start();
+  }
+</pre><h3>进度和状态更新</h3>
+<ol>
+<li>状态包括：作业或认为的状态（成功，失败，运行中）、map 和 reduce 的进度、作业计数器的值、状态消息或描述</li>
+<li>task 运行时，将自己的状态发送给 TaskTracker,由 TaskTracker 心跳机制向 JobTracker 汇报</li>
+<li>状态进度由计数器实现</li>
+</ol>
+<p>如图：
+<img src="http://zhaomingtai.u.qiniudn.com/updateStatusMapredurce.png" alt="image" /></p>
+<h3>作业完成</h3>
+<ol>
+<li>jobtracker收到最后一个任务完成通知后，便把作业任务状态置为成功</li>
+<li>同时jobtracker,tasktracker清理作业的工作状态</li>
+</ol>
+<h3>错误处理</h3>
+<h4>task 失败</h4>
+<ol>
+<li>map 或者 reduce 任务中的用户代码运行异常，子 jvm 在进程退出之前向其父 tasktracker 发送报告, 并打印日志。tasktracker 会将此 task attempt 标记为 failed,释放一个任务槽 slot，以运行另一个任务。streaming 任务以非零退出代码，则标记为 failed.</li>
+<li>子进程jvm突然退出（jvm bug）。tasktracker 注意到会将其标记为 failed。</li>
+<li>任务挂起。tasktracker 注意到一段时间没有收到进度的更新，便将任务标记为 failed。此 jvm 子进程将被自动杀死。任务超时时间间隔通常为10分钟，使用 mapred.task.timeout 属性进行配置。以毫秒为单位。超时设置为0表示将关闭超时判定，长时间运行不会被标记为 failed，也不会释放任务槽。</li>
+<li>tasktracker 通过心跳将子任务标记为失败后，自身计数器减一，以便向 jobtracker 申请新的任务</li>
+<li>jobtracker 通过心跳知道一个 task attempt 失败之后，便重新调度该任务的执行（避开将失败的任务分配给执行失败的tasktracker）。默认执行失败尝试4次，若仍没有执行成功，整个作业就执行失败。</li>
+</ol>
+<h4>tasktracker 失败</h4>
+<ol>
+<li>一个 tasktracker 由于崩溃或者运行过于缓慢而失败，就会停止将 jobtracker 心跳。默认间隔可由 mapred.tasktracker.expriy.interval 设置，毫秒为单位。</li>
+<li>同时 jobtracker 将从等待任务调度的 tasktracker 池将此 tasktracker 移除。jobtracker 重新安排此 tasktracker 上已运行并成功完成的 map 任务重新运行。</li>
+<li>若 tasktracker 上面的失败任务数远远高于集群的平均失败数，tasktracker 将被列入黑名单。重启后失效。</li>
+</ol>
+<h4>jobtracker失败</h4>
+<p>Hadoop jobtracker 失败是一个单点故障。作业失败。可在后续版本中启动多个 jobtracker,使用zookeeper协调控制（YARN）。</p>
+<h3>作业调度</h3>
+<ol>
+<li>hadoop默认使用先进先出调度器（FIFO）
+先遵循优先级优先，在按作业到来顺序调度。缺点：高优先级别的长时间运行的task占用资源，低级优先级，短作业得不到调度。</li>
+<li>公平调度器（FairScheduler）
+目标：让每个用户公平的共享集群的能力.默认情况下，每个用户都有自己的池。支持抢占，若一个池在特定的时间内未得到公平的资源分配共享，调度器将终止运行池中得到过多资源的任务，以便将任务槽让给资源不足的池。
+详细文档参见：http://hadoop.apache.org/docs/r1.2.1/fair_scheduler.html</li>
+<li>容量调度器（CapacityScheduler）
+支持多队列，每个队列配置一定的资源，采用FIFO调度策略。对每个用户提交的作业所占的资源进行限定。
+详细文档参见：http://hadoop.apache.org/docs/r1.2.1/capacity_scheduler.html</li>
+</ol>
+<h3>shuffle和sort</h3>
+<p>mapreduce 执行排序，将 map 输出作为输入传递给 reduce 称为 shuffle。其确保每个 reduce 的输入都时按键排序。shuffle 是调优 mapreduce 重要的阶段。</p>
+<p>mapreduce 的 shuffle 和排序如下图：
+<img src="http://zhaomingtai.u.qiniudn.com/shuffle_sort.png" alt="image" /></p>
+<h4>map端</h4>
+<ol>
+<li>map端并不是简单的将中间结果输出到磁盘。而是先用缓冲的方式写到内存，并预排序。</li>
+<li>每个map任务都有一个环形缓冲区，用于存储任务的输出。默认100mb，由 io.sort.mb 设置。 io.sort.spill.percent 设置阀值，默认80%。</li>
+<li>一旦内存缓冲区到达阀值，由一个后台线程将内存中内容 spill 到磁盘中。在写磁盘前，线程会根据数据最终要传送的 reducer 数目划分成相应的分区。每一个分区中，后台线程按键进行内排序，如果有一个 combiner 它会在排序后的输出上运行。</li>
+<li>在任务完成之前，多个溢出写文件会被合并成一个已分区已排序的输出文件。最终成为 reduce 的输入文件。属性 io.sort.factor 控制一次最多能合并多少流（分区），默认10.</li>
+<li>如果已指定 combiner,并且溢出写文件次数至少为3（min.num.spills.for.combiner 属性），则 combiner 就会在输出文件写到磁盘之前运行。目的时 map 输出更紧凑，写到磁盘上的数据更少。combiner 在输入上反复运行并不影响最终结果。</li>
+<li>压缩 map 输出。写磁盘速度更快、节省磁盘空间、减少传给 reduce 数据量。默认不压缩。可使 mapred.compress.map.output=true 启用压缩，并指定压缩库, mapred.map.output.compression.codec。</li>
+<li>reducer 通过HTTP方式获取输出文件的分区。由于文件分区的工作线程数量任务的 tracker.http.threads 属性控制。</li>
+</ol>
+<p>MapTask代码,内部类MapOutputBuffer.collect()方法在收集key/value到容器中,一旦满足预值，则开始溢出写文件由sortAndSpill() 执行。</p>
+<pre class='brush:java'>// sufficient acct space
+          kvfull = kvnext == kvstart;
+          final boolean kvsoftlimit = ((kvnext &gt; kvend)
+              ? kvnext - kvend &gt; softRecordLimit
+              : kvend - kvnext &lt;= kvoffsets.length - softRecordLimit);
+          if (kvstart == kvend &amp;&amp; kvsoftlimit) {
+            LOG.info("Spilling map output: record full = " + kvsoftlimit);
+            startSpill();
+          }
+// --&gt; startSpill();
+ spillReady.signal(); //    private final Condition spillReady = spillLock.newCondition();
+// --&gt; 溢出写文件主要由内部类 SpillThread（Thread） 执行
+    try {
+              spillLock.unlock();
+              sortAndSpill(); // 排序并溢出
+            } 
+// --&gt; sortAndSpill()
+ // create spill file
+        final SpillRecord spillRec = new SpillRecord(partitions);
+ // sorter = ReflectionUtils.newInstance(job.getClass("map.sort.class", QuickSort.class, IndexedSorter.class), job);
+… …
+ sorter.sort(MapOutputBuffer.this, kvstart, endPosition, reporter);
+// --&gt;
+ if (combinerRunner == null) {
+… …
+ // Note: we would like to avoid the combiner if we've fewer
+              // than some threshold of records for a partition
+              if (spstart != spindex) {
+                combineCollector.setWriter(writer);
+                RawKeyValueIterator kvIter =
+                  new MRResultIterator(spstart, spindex);
+                combinerRunner.combine(kvIter, combineCollector);
+              }
+}
+</pre><h4>reduce 端</h4>
+<ol>
+<li>reduce 端 shuffle 过程分为三个阶段：复制 map 输出、排序合并、reduce 处理</li>
+<li>reduce 可以接收多个 map 的输出。若 map 相当小，则会复制到 reduce tasktracker 的内存中（mapred.job.shuffle.input.buffer.pecent控制百分比）。一旦内存缓冲区达到阀值大小（由 mapped.iob.shuffle.merge.percent 决定）或者达到map输出阀值( mapred.inmem.merge.threshold 控制)，则合并后溢出写到磁盘</li>
+<li>map任务在不同时间完成，tasktracker 通过心跳从 jobtracker 获取 map 输出位置。并开始复制 map 输出文件。</li>
+<li>reduce 任务由少量复制线程，可并行复制 map 输出文件。由属性 mapred.reduce.parallel.copies 控制。</li>
+<li>reduce 阶段不会等待所有输入合并成一个大文件后在进行处理，而是把部分合并的结果直接进行处理。</li>
+</ol>
+<p>ReduceTask源代码,run()方法</p>
+<pre class='brush:java'>// --&gt; 3个阶段
+ if (isMapOrReduce()) {
+      copyPhase = getProgress().addPhase("copy");
+      sortPhase  = getProgress().addPhase("sort");
+      reducePhase = getProgress().addPhase("reduce");
+    }
+// --&gt; copy 阶段
+if (!isLocal) {
+      reduceCopier = new ReduceCopier(umbilical, job, reporter);
+      if (!reduceCopier.fetchOutputs()) {
+        if(reduceCopier.mergeThrowable instanceof FSError) {
+          throw (FSError)reduceCopier.mergeThrowable;
+        }
+        throw new IOException("Task: " + getTaskID() + 
+            " - The reduce copier failed", reduceCopier.mergeThrowable);
+      }
+    }
+    copyPhase.complete();                         // copy is already complete
+// --&gt; sort 阶段
+setPhase(TaskStatus.Phase.SORT);
+    statusUpdate(umbilical);
+    final FileSystem rfs = FileSystem.getLocal(job).getRaw();
+    RawKeyValueIterator rIter = isLocal
+      ? Merger.merge(job, rfs, job.getMapOutputKeyClass(),
+          job.getMapOutputValueClass(), codec, getMapFiles(rfs, true),
+          !conf.getKeepFailedTaskFiles(), job.getInt("io.sort.factor", 100),
+          new Path(getTaskID().toString()), job.getOutputKeyComparator(),
+          reporter, spilledRecordsCounter, null)
+      : reduceCopier.createKVIterator(job, rfs, reporter);
+    // free up the data structures
+    mapOutputFilesOnDisk.clear();
+    sortPhase.complete();                         // sort is complete
+// --&gt; reduce 阶段
+setPhase(TaskStatus.Phase.REDUCE); 
+    statusUpdate(umbilical);
+    Class keyClass = job.getMapOutputKeyClass();
+    Class valueClass = job.getMapOutputValueClass();
+    RawComparator comparator = job.getOutputValueGroupingComparator();
+    if (useNewApi) {
+      runNewReducer(job, umbilical, reporter, rIter, comparator, 
+                    keyClass, valueClass);
+    } else {
+      runOldReducer(job, umbilical, reporter, rIter, comparator, 
+                    keyClass, valueClass);
+    }
+// --&gt; done 执行结果
+    done(umbilical, reporter);
+</pre><h4>有关mapreduce shuffle和sort 原理、过程和调优</h4>
+<p><a href="http://www.alidata.org/archives/1470">hadoop作业调优参数整理及原理</a>, <a href="http://langyu.iteye.com/blog/992916">MapReduce:详解Shuffle过程</a> 介绍的非常详尽。</p>
+</div>
+  <footer>
+    <p class="meta">
+<span class="byline author vcard">作者 <span class="fn">kangfoo</span></span>      
+
+
+<time datetime="2014-03-03T22:17:00+08:00" pubdate>2014年03月03日</time>
+
+<span class="categories">属于 <a class="category" href="/category/hadoop/">hadoop</a>
+ 分类</span>
+
+
+<span class="categories">被贴了 <a class="tag" href="/tag/hadoop1/">hadoop1</a>
+ 标签</span>
+    </p>
+<div class="sharing">
+  
+<!-- sharebar button begin -->
+<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到豆瓣网" href="#" class="bds_douban" data-cmd="douban"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到网易微博" href="#" class="bds_t163" data-cmd="t163"></a><a title="分享到有道云笔记" href="#" class="bds_youdao" data-cmd="youdao"></a><a title="分享到Facebook" href="#" class="bds_fbook" data-cmd="fbook"></a><a title="分享到delicious" href="#" class="bds_deli" data-cmd="deli"></a><a title="分享到Twitter" href="#" class="bds_twi" data-cmd="twi"></a><a title="分享到打印" href="#" class="bds_print" data-cmd="print"></a><a title="分享到复制网址" href="#" class="bds_copy" data-cmd="copy"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["douban","tsina","tqq","t163","youdao","fbook","deli","twi","print","copy"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":false}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86326610.js?cdnversion='+~(-new Date()/36e5)];</script>
+<!-- sharebar button end -->
+
+</div>
+<p>
+  <h2>相关文章</h2>
+  <ul id="related-posts-list">
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+        <div class="source right"><time datetime="2014-03-03T22:18:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:19:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:20:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+        <div class="source right"><time datetime="2014-03-03T22:21:00">2014-03-03</time></div>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+        <div class="source right"><time datetime="2014-03-03T22:22:00">2014-03-03</time></div>
+      </li>
+  </ul>
+</p>    <p class="meta">
+        <a class="basic-alignment left" href="/article/2014/03/hadoop-rpc/" title="上一篇: Hadoop RPC">&laquo; Hadoop RPC</a>
+        <a class="basic-alignment right" href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/" title="下一篇: Hadoop MapReduce 类型与格式">Hadoop MapReduce 类型与格式 &raquo;</a>
+    </p>
+  </footer>
+</article>
+  <section>
+    <h1>评论</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+  </section>
+</div>
+<aside class="sidebar">
+<section>
+  <h1>近期文章</h1>
+  <ul id="recent_posts">
+  
+  
+      <li class="post">
+        <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-sort/">Hadoop MapReduce Sort</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-join/">Hadoop MapReduce Join</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--ji-shu-qi/">Hadoop MapReduce 计数器</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-recordreader-zu-jian/">Hadoop MapReduce RecordReader 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-partitioner--zu-jian/">Hadoop MapReduce Partitioner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce-combiner--zu-jian/">Hadoop MapReduce Combiner 组件</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--lei-xing-yu-ge-shi/">Hadoop MapReduce 类型与格式</a>
+      </li>
+      <li class="post">
+        <a href="/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/">Hadoop MapReduce 工作机制</a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h2>近期评论</h2>
+ <script language="JavaScript">
+  <!--
+	var is_https = ('https:' == document.location.protocol);
+	var rcw_script_src = (is_https ? 'https:' : 'http:') + '//kangaroo.disqus.com/recent_comments_widget.js?num_items=5&excerpt_length=100&hide_avatars=' + (is_https ? '1' : '0&avatar_size=32');
+	var rcw_script = '<scr' + 'ipt type="text/javascript" src="' + rcw_script_src + '"></scr' + 'ipt>';
+	document.writeln(rcw_script);
+  //-->
+  </script>
+</section>
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  版权所有 &copy; 2014 - kangfoo -
+  <span class="credit">Powered by <a href="http://www.opoopress.com/">OpooPress</a></span>
+ 
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000232528'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000232528%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+</footer>
+<script type="text/javascript" src="/javascripts/opoopress.min.js"></script>
+<script language="JavaScript">
+<!--
+    window.OpooPress = new OpooPressApp({siteUrl:'http://kangfoo.u.qiniudn.com/',rootUrl:'',pageUrl:'/article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/',title:'Hadoop MapReduce 工作机制',refreshRelativeTimes:true,verbose:true},{});
+    OpooPress.init();
+
+    var disqus_shortname = 'kangaroo';
+    
+    // var disqus_developer = 1;
+    var disqus_identifier = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/';
+    var disqus_url = 'http://kangfoo.u.qiniudn.com//article/2014/03/hadoop-mapreduce--gong-zuo-ji-zhi/';
+    var disqus_title = 'Hadoop MapReduce 工作机制';
+    //var disqus_category_id = '';
+    OpooPress.showDisqusWidgets();
+//-->
+</script>
+<!-- START: Syntax Highlighter ComPress -->
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/plugins/syntax-highlighter/scripts/shAutoloader.js"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+        'applescript			/plugins/syntax-highlighter/scripts/shBrushAppleScript.js',
+        'actionscript3 as3		/plugins/syntax-highlighter/scripts/shBrushAS3.js',
+        'bash shell				/plugins/syntax-highlighter/scripts/shBrushBash.js',
+        'coldfusion cf			/plugins/syntax-highlighter/scripts/shBrushColdFusion.js',
+        'cpp c					/plugins/syntax-highlighter/scripts/shBrushCpp.js',
+        'c# c-sharp csharp		/plugins/syntax-highlighter/scripts/shBrushCSharp.js',
+        'css					/plugins/syntax-highlighter/scripts/shBrushCss.js',
+        'delphi pascal pas		/plugins/syntax-highlighter/scripts/shBrushDelphi.js',
+        'diff patch			    /plugins/syntax-highlighter/scripts/shBrushDiff.js',
+        'erl erlang				/plugins/syntax-highlighter/scripts/shBrushErlang.js',
+        'groovy					/plugins/syntax-highlighter/scripts/shBrushGroovy.js',
+        'java					/plugins/syntax-highlighter/scripts/shBrushJava.js',
+        'jfx javafx				/plugins/syntax-highlighter/scripts/shBrushJavaFX.js',
+        'js jscript javascript	/plugins/syntax-highlighter/scripts/shBrushJScript.js',
+        'perl pl				/plugins/syntax-highlighter/scripts/shBrushPerl.js',
+        'php					/plugins/syntax-highlighter/scripts/shBrushPhp.js',
+        'text plain				/plugins/syntax-highlighter/scripts/shBrushPlain.js',
+        'powershell ps          /plugins/syntax-highlighter/scripts/shBrushPowerShell.js',
+        'py python				/plugins/syntax-highlighter/scripts/shBrushPython.js',
+        'ruby rails ror rb		/plugins/syntax-highlighter/scripts/shBrushRuby.js',
+        'sass scss              /plugins/syntax-highlighter/scripts/shBrushSass.js',
+        'scala					/plugins/syntax-highlighter/scripts/shBrushScala.js',
+        'sql					/plugins/syntax-highlighter/scripts/shBrushSql.js',
+        'vb vbnet				/plugins/syntax-highlighter/scripts/shBrushVb.js',
+        'xml xhtml xslt html	/plugins/syntax-highlighter/scripts/shBrushXml.js'
+    );
+    SyntaxHighlighter.defaults['auto-links'] = false;                 
+    SyntaxHighlighter.defaults['toolbar'] = false;     
+    SyntaxHighlighter.defaults['tab-size'] = 4;
+    SyntaxHighlighter.all();
+</script>
+<!-- END: Syntax Highlighter ComPress -->
+</body>
+</html>
+
