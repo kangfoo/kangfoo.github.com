@@ -1,0 +1,140 @@
+---
+layout: post
+title: hadoop1.x wordcount分析
+date: '2014-01-19 17:00'
+comments: true
+published: true
+keywords: hadoop,hadoop wordcount, hadoop example
+description: hadoop wordcount示例分析
+excerpt: 
+categories: ['hadoop']
+tags: ['hadoop1']
+---
+hadoop mapreduce 过程粗略的分为：map, redurce(copy, sort, reduce)两个阶段。具体的工作机制还是挺复杂的，这里主要通过hadoop example jar中提供的wordcount来对hadoop mapredurce做个简单的理解。Wordcount程序输入文件类型，计算单词的频率。输出是文本文件：每行是单词和它出现的频率，用Tab键隔开。
+
+Hadoop内置的计数器，
+
+1. 首先确保Hadoop集群正常运行，并了解mapredurce工作时涉及到的基本的文件备配。`vi mapred-site.xml`
+<!--- lang:xml -->
+```xml 
+<configuration>
+  <property>
+   <name>mapred.job.tracker</name> <!--JobTracker的主机（或者IP）和端口。 -->
+   <value>master11:9001</value>
+  </property>
+  <property>
+   <name>mapred.system.dir</name> <!--Map/Reduce框架存储系统文件的HDFS路径。-->
+   <value>/home/${'$'}{user.name}/env/mapreduce/system</value>
+  </property>
+  <property>
+   <name>mapred.local.dir</name> <!--Map/Reduce在本地文件系统下中间结果存放路径. -->
+   <value>/home/${'$'}{user.name}/env/mapreduce/local</value>
+  </property>
+</configuration>
+```
+
+1. 上传一个文件到hdfs文件系统</br>
+<!--- lang:shell -->
+```shell 
+$ ./bin/hadoop fs -mkdir /test/input
+$ ./bin/hadoop fs -put ./testDir/part0 /test/input
+$ ./bin/hadoop fs -lsr /
+## part0 文件中的内容为：
+hadoop zookeeper hbase hive
+rest osgi http ftp
+hadoop zookeeper
+```
+
+1. 执行workcount
+`$ ./bin/hadoop jar hadoop-examples-1.2.1.jar wordcount /test/input /test/output`</br>日志如下
+<!--- lang:shell -->
+```shell
+14/01/19 18:23:25 INFO input.FileInputFormat: Total input paths to process : 1
+## 使用 native-hadoop library
+14/01/19 18:23:25 INFO util.NativeCodeLoader: Loaded the native-hadoop library
+14/01/19 18:23:25 WARN snappy.LoadSnappy: Snappy native library not loaded
+14/01/19 18:23:25 INFO mapred.JobClient: Running job: job_201401181723_0005
+14/01/19 18:23:26 INFO mapred.JobClient:  map 0% reduce 0%
+14/01/19 18:23:32 INFO mapred.JobClient:  map 100% reduce 0%
+14/01/19 18:23:40 INFO mapred.JobClient:  map 100% reduce 33%
+14/01/19 18:23:42 INFO mapred.JobClient:  map 100% reduce 100%
+## jobid job_201401181723_0005 (job_yyyyMMddHHmm_(顺序自然数，不足4位补0，已保证磁盘文件目录顺序))
+14/01/19 18:23:43 INFO mapred.JobClient: Job complete: job_201401181723_0005
+## Counters 计数器
+14/01/19 18:23:43 INFO mapred.JobClient: Counters: 29
+## Job Counters
+14/01/19 18:23:43 INFO mapred.JobClient:   Job Counters
+14/01/19 18:23:43 INFO mapred.JobClient:     Launched reduce tasks=1
+14/01/19 18:23:43 INFO mapred.JobClient:     SLOTS_MILLIS_MAPS=6925
+14/01/19 18:23:43 INFO mapred.JobClient:     Total time spent by all reduces waiting after reserving slots (ms)=0
+14/01/19 18:23:43 INFO mapred.JobClient:     Total time spent by all maps waiting after reserving slots (ms)=0
+14/01/19 18:23:43 INFO mapred.JobClient:     Launched map tasks=1
+14/01/19 18:23:43 INFO mapred.JobClient:     Data-local map tasks=1
+14/01/19 18:23:43 INFO mapred.JobClient:     SLOTS_MILLIS_REDUCES=9688
+## File Output Format Counters
+14/01/19 18:23:43 INFO mapred.JobClient:   File Output Format Counters
+14/01/19 18:23:43 INFO mapred.JobClient:     Bytes Written=63
+## FileSystemCounters
+14/01/19 18:23:43 INFO mapred.JobClient:   FileSystemCounters
+14/01/19 18:23:43 INFO mapred.JobClient:     FILE_BYTES_READ=101
+14/01/19 18:23:43 INFO mapred.JobClient:     HDFS_BYTES_READ=167
+14/01/19 18:23:43 INFO mapred.JobClient:     FILE_BYTES_WRITTEN=112312
+14/01/19 18:23:43 INFO mapred.JobClient:     HDFS_BYTES_WRITTEN=63
+## File Input Format Counters
+14/01/19 18:23:43 INFO mapred.JobClient:   File Input Format Counters
+14/01/19 18:23:43 INFO mapred.JobClient:     Bytes Read=65
+## Map-Reduce Framework
+14/01/19 18:23:43 INFO mapred.JobClient:   Map-Reduce Framework
+14/01/19 18:23:43 INFO mapred.JobClient:     Map output materialized bytes=101
+14/01/19 18:23:43 INFO mapred.JobClient:     Map input records=3
+14/01/19 18:23:43 INFO mapred.JobClient:     Reduce shuffle bytes=101
+14/01/19 18:23:43 INFO mapred.JobClient:     Spilled Records=16
+14/01/19 18:23:43 INFO mapred.JobClient:     Map output bytes=104
+14/01/19 18:23:43 INFO mapred.JobClient:     Total committed heap usage (bytes)=176230400
+14/01/19 18:23:43 INFO mapred.JobClient:     CPU time spent (ms)=840
+14/01/19 18:23:43 INFO mapred.JobClient:     Combine input records=10
+14/01/19 18:23:43 INFO mapred.JobClient:     SPLIT_RAW_BYTES=102
+14/01/19 18:23:43 INFO mapred.JobClient:     Reduce input records=8
+14/01/19 18:23:43 INFO mapred.JobClient:     Reduce input groups=8
+14/01/19 18:23:43 INFO mapred.JobClient:     Combine output records=8
+14/01/19 18:23:43 INFO mapred.JobClient:     Physical memory (bytes) snapshot=251568128
+14/01/19 18:23:43 INFO mapred.JobClient:     Reduce output records=8
+14/01/19 18:23:43 INFO mapred.JobClient:     Virtual memory (bytes) snapshot=1453596672
+14/01/19 18:23:43 INFO mapred.JobClient:     Map output records=10
+```
+
+1. 运行之后的文件系统结构
+</br>日志如下
+<!--- lang:shell -->
+```shell
+drwxr-xr-x   - hadoop supergroup          0 2014-01-19 18:23 /test
+drwxr-xr-x   - hadoop supergroup          0 2014-01-19 18:23 /test/input
+-rw-r--r--   2 hadoop supergroup         65 2014-01-19 18:23 /test/input/part0
+drwxr-xr-x   - hadoop supergroup          0 2014-01-19 18:23 /test/output
+-rw-r--r--   2 hadoop supergroup          0 2014-01-19 18:23 /test/output/_SUCCESS
+drwxr-xr-x   - hadoop supergroup          0 2014-01-19 18:23 /test/output/_logs
+drwxr-xr-x   - hadoop supergroup          0 2014-01-19 18:23 /test/output/_logs/history
+## job 执行结果的数据文件
+-rw-r--r--   2 hadoop supergroup      13647 2014-01-19 18:23 /test/output/_logs/history/job_201401181723_0005_1390127005579_hadoop_word+count
+## job 配置文件
+-rw-r--r--   2 hadoop supergroup      48374 2014-01-19 18:23 /test/output/_logs/history/job_201401181723_0005_conf.xml
+## 只分了1个
+-rw-r--r--   2 hadoop supergroup         63 2014-01-19 18:23 /test/output/part-r-00000
+drwxr-xr-x   - hadoop supergroup          0 2013-12-22 14:02 /user
+drwxr-xr-x   - hadoop supergroup          0 2014-01-18 23:16 /user/hadoop
+```
+
+1. 查看结果。`$ ./bin/hadoop fs -cat /test/output/part-r-00000`
+<!--- lang:text -->
+```text
+ftp     1
+hadoop  2
+hbase   1
+hive    1
+http    1
+osgi    1
+rest    1
+zookeeper       2
+```
+
+1. 更详细的信息可web访问 http://master11:50030/jobtracker.jsp 进行查看.

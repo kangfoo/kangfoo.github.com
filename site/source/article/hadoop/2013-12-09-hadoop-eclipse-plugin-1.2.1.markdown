@@ -8,7 +8,7 @@ keywords: hadoop,hadoop-eclipse-plugin
 description: 使用ant编译hadoop 1.2.1 hadoop-eclipse-plugin插件
 excerpt: 
 categories: ['hadoop']
-tags: ['java','ant','hadoop']
+tags: ['java','ant','hadoop1']
 ---
 编译hadoop1.x.x版本的eclipse插件为何如此繁琐？
 

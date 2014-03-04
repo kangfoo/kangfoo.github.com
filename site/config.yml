@@ -54,12 +54,12 @@
 
 locale: zh_CN
 url: http://kangfoo.u.qiniudn.com/
-title: kangfoo's 博客
+title: kangfoo's blog
 subtitle: 工作学习笔记，生活掠影。
 author: kangfoo
 simple_search: http://google.com/search
 description: "好记性不如乱笔头！"
-keywords: "kangfoo,baso4233, 博客"
+keywords: "kangfoo,baso4233"
 
 # 默认的日期格式是 "ordinal"(相当于 java 日期格式的 "MMM d yyyy"，输出 "四月 15 2013")
 # 可以直接指定一个 java 日期格式化字符串，例如 "yyyy年MM月dd日"
@@ -69,7 +69,7 @@ date_format: "yyyy年MM月dd日"
 subscribe_rss: /atom.xml
 subscribe_email: 
 # RSS feeds can list your email address if you like
-email: xfgcsk@163.com
+email: baseo4233@126.com
 
 # 如果发布到子目录如 ‘http://site.com/project’ 则设置 'root: /project'
 root: /
@@ -108,10 +108,10 @@ tag_names: {"opensource":"开源项目"}
 tag_title_prefix: "标签："
 
 # 首页每页显示的文章数
-paginate: 10          		
+paginate: 5          		
 
 # 最近文章数量
-recent_posts: 5
+recent_posts: 10
 
 # 相关文章数量
 related_posts: 5   	

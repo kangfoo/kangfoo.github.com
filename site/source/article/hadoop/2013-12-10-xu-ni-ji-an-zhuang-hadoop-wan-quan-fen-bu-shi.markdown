@@ -5,16 +5,16 @@ date: '2013-12-10 17:32'
 comments: true
 published: true
 keywords: hadoop,centos,virtual box,hadoop完全分布式安装
-description: 
+description: hadoop,centos,virtual box,hadoop完全分布式安装
 excerpt: 
 categories: ['hadoop']
-tags: 
+tags: ['hadoop1']
 ---
 ## 一、初衷
 
-对于学习Hadoop的我来将，没有足够的硬件设备，但又想安装完全分布式的Hadoop，一个master两个slave。手上就一台能联网的笔记本，那就使用oracle vitual box进行环境搭建把。环境搭建的效果为：在虚拟机中虚拟3台centos6.4 64位系统，每台都配置双网卡NAT,host-only模式。在宿主机器上安装eclipse进行Hadoop开发。
+对于学习 Hadoop 的我来讲，没有足够的硬件设备，但又想安装完全分布式的Hadoop，一个 master 两个 slave。手上就一台能联网的笔记本，那就使用 oracle vitual box 进行环境搭建吧。环境搭建的效果为：在虚拟机中虚拟3台 centos6.4 64 位系统，每台都配置双网卡 NAT,host-only 模式。在宿主机器上安装 eclipse 进行 Hadoop 开发。
 
-Hadoop环境搭建很大部分是在准备操作系统。具体如何搭建Hadoop其实就像解压缩普通的tar类似。然后再适当的配置Hadoop的dfs,mapredurce相关的配置，调整操作系统就可以开始着手学习Hadoop了。
+Hadoop 环境搭建很大部分是在准备操作系统。具体如何搭建 Hadoop 其实就像解压缩普通的 tar 类似。然后再适当的配置 Hadoop 的 dfs,mapredurce 相关的配置，调整操作系统就可以开始着手学习 Hadoop了。
 
 ## 二、拓补图
 

@@ -1,0 +1,54 @@
+---
+layout: post
+title: Hadoop1.x 学习准备
+date: '2014-02-24 23:28'
+comments: true
+published: true
+keywords: hadoop
+description: hadoop 学习笔记
+excerpt: 
+categories: ['hadoop']
+tags: ['hadoop1']
+---
+
+  开始学习Hadoop之前先了解下[Hadoop之父Doug Cutting] 膜拜是必须的。路子是一步不走出来了。各位前辈给我们留下了宝贝的资源。不加以学习利用有些说不过去。
+
+  我个人是从2013年夏天开始拿到 《Hadoop权威指南》第二版的，但由于各种原因，也可以直接说我比较懒，从夏天到冬季中途到是翻过那书，感觉每次都没由什么实际的记忆和理解过程。在12月初，发现[开源力量]提供了相关的网上视频在线教学课程。选择适合自己的就是对的。
+，我毅然成为了其中的一员。
+目前我没有从事相关的工作，出于在工作之外寻找乐趣，就来了。
+
+  学习之前还是多看些相关的资源比较容易找到赶脚。
+######资源列举：
+* [hadoop book] 
+* [hadoop 权威指南源代码]
+* [Hadoop 1.2.1 官方网站]
+* [CDH 版本 Hadoop]
+* [cloudera blog]
+* [hortonworks blog]
+* [apache jira]
+* [董的博客]
+* [Hadoop源码分析－百度文库]
+* [Google三大论文－百度文库（英文版本的我总是打不开，待补）]
+* [在线查看源代码]
+* [在线绘制UML图等] 
+
+  
+部分网站可能是比较难打开的。经常遇到问题谷歌之后发现很多问题还是跳转到这些权威论坛上面了。先登记在案，以备使用。在此仅以纪录我学习《Hadoop权威指南》一书的笔记。
+笔记中图片资源大部分出自于原书英文版，章节内容来自于原书中/英文版 ＋ 开源力量 LouisT 老师ppt/课堂示例及扩展，当然不乏在网站上找到各位博主的精品博客参考。
+
+我自己的练习代码存放在 [github。](https://github.com/kangfoo/hadoop1.study/tree/master#hadoop1study)
+
+[Hadoop之父Doug Cutting]: http://www.programmer.com.cn/15929/
+[开源力量]: http://new.osforce.cn/course/explore/bigdata
+[hadoop book]: http://hadoopbook.com/
+[hadoop 权威指南源代码]: https://github.com/tomwhite/hadoop-book
+[Hadoop 1.2.1 官方网站]: http://hadoop.apache.org/docs/r1.2.1/ 
+[CDH 版本 Hadoop]: http://www.cloudera.com/content/support/en/documentation/cdh4-documentation/cdh4-documentation-v4-latest.html
+[cloudera blog]: http://blog.cloudera.com/blog/
+[hortonworks blog]: http://hortonworks.com/blog/
+[apache jira]:  https://issues.apache.org/jira/secure/BrowseProjects.jspa#all
+[董的博客]: http://dongxicheng.org/
+[Hadoop源码分析－百度文库]: http://wenku.baidu.com/view/ffc10130eefdc8d376ee32ec.html
+[Google三大论文－百度文库（英文版本的我总是打不开，待补）]: http://wenku.baidu.com/link?url=TUHOh2GOIBfJx4KDgmlXP7YwhvCaZv8OLPHBzkqDXNL5pvI_qrQ8c0AjAP7_d931KkrHAPM7Hocifq1iEnaSjOxQcYghgYNs4ocPVhNNX0y
+[在线查看源代码]: http://grepcode.com/search/?query=hadoop&entity=project
+[在线绘制UML图等]: http://cloud.ozyegin.edu.tr/Hadoop-UML-Diagrams/Documentation/html/d1/d25/interfaceorg_1_1apache_1_1hadoop_1_1hdfs_1_1server_1_1protocol_1_1_namenode_protocol.html

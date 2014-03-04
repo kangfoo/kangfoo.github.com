@@ -1,0 +1,103 @@
+---
+layout: post
+title: hadoop1.x 命令手册列举
+date: '2014-01-18 18:29'
+comments: true
+published: true
+keywords: hadoop1.x, commands manual 命令手册列举
+description: hadoop1.x commands_manual 命令手册列举
+excerpt: 
+categories:  ['hadoop']
+tags: ['hadoop1'] 
+---
+hadoop命令一般分为两类:
+
+用户命令</br> archive, distcp, fs, fsck, jar, job, pipes, version, CLASSNAME
+
+管理命令</br> balancer, daemonlog, datanode, dfsadmin, jobtracker, namenode, secondarynamenode, tasktracker
+
+#### 用户命令
+
+1. fs命令,可参见 [file system shell]</br>
+<!-- lang:shell-->
+```shell
+## 新建一个文件夹
+$ ./hadoop fs -mkdir /test
+## 上传一个文件到hdfs
+$ ./hadoop fs -put ./rcc /test
+## 查看文件
+$ ./hadoop fs -lsr /test
+## 文件模式  备份个数   用户   用户组   字节大小 最后修改日期 和时间 文件或者目录的绝对路径
+##-rw-r--r--   2   hadoop supergroup 2810   2014-01-18 19:20  /test/rcc
+## 
+## 从hdfs文件系统中复制一个文件到本地
+$ ./hadoop fs -copyToLocal /test/rcc rcc.copy
+## md5对比
+$ md5sum rcc rcc.copy
+# b9d8a383bba2dd1b2ee0ede6c5cabeae  rcc
+# b9d8a383bba2dd1b2ee0ede6c5cabeae  rcc.copy
+##
+## 删除
+$ ./hadoop fs -rmr /test
+```
+
+1. fsck命令。 可以参考文件系统的健康状态；查看一个文件所在的数据块；可以删除一个坏块；可以查找一个缺失的块。 可参见[fsck]</br>
+<!-- lang:shell-->
+```shell
+## 新建一个文件夹
+$ ./hadoop fsck /
+```
+1. archive命令。 创建一个hadoop档案文件。语法：archive -archiveName NAME -p ${'<'}parent path> ${'<'}src>* ${'<'}dest> 可参考[hadoop_archives]</br>
+<!-- lang:shell-->
+```shell
+## 创建一个归档文件
+$ ./hadoop archive -archiveName archive.har -p  /test rcc
+## 查看归档文件列表
+$ ./hadoop dfs -lsr har:///user/hadoop/rcc/archive.har
+## 查看归档文件
+$ ./hadoop dfs -cat har:///user/hadoop/rcc/archive.har/rcc
+```
+
+1. distcp 并行复制。可以从 Hadoop 文件系统中复制大量数据，也可以将大量数据复制到HDFS文件系统中。它其实是个没有reducer的MapReduce作业。
+<!-- lang:shell-->
+```shell
+$ hadoop distcp hadfs://datanode1/test1 hdfs://datanode2/
+## 跨 RPC 版本可使用 http 方式进行复制
+$ hadoop distcp http://datanode1:50070/test1 hdfs://datanode2/
+```
+#### 管理命令
+
+1. dfsadmin</br>
+<!-- lang:shell-->
+```shell
+## 报告文件系统的基本信息和统计信息
+$ ./hadoop dfsadmin -report
+## 安全模式维护命令
+$ ./hadoop dfsadmin -safemode enter
+## -safemode enter | leave | get | wait
+## 不接受对名字空间的更改(只读), 不复制或删除块
+## -setQuota 为每个目录 <dirname>设定配额<quota>。包括文件夹和文件名称。
+$ ./hadoop dfsadmin -setQuota 2 /test
+$ ./hadoop fs -put ./rcc /test
+$ ./hadoop fs -put ./hadoop /test
+put: org.apache.hadoop.hdfs.protocol.NSQuotaExceededException: The NameSpace quota (directories and files) of directory /test is exceeded: quota=2 file count=3
+```
+
+1. balancer命令。集群平衡工具</br>
+<!-- lang:shell-->
+```shell
+##
+$ ./hadoop balancer
+或者
+$ ./bin/./start-balancer.sh
+```
+
+##### 其他未列举的命令可以参见官方文档。
+官方文档链接: [hadoop1.2.1 Commands Guide], [hadoop1.0.4 命令手册]
+
+
+[file system shell]:http://hadoop.apache.org/docs/r1.2.1/file_system_shell.html
+[hadoop1.2.1 Commands Guide]:http://hadoop.apache.org/docs/r1.2.1/commands_manual.html
+[hadoop1.0.4 命令手册]:http://hadoop.apache.org/docs/r1.0.4/cn/commands_manual.html
+[fsck]:http://hadoop.apache.org/docs/r1.0.4/cn/hdfs_user_guide.html#fsck
+[hadoop_archives]:http://hadoop.apache.org/docs/r1.2.1/hadoop_archives.html
