@@ -11,13 +11,14 @@ categories: ['hadoop']
 tags: ['hadoop1']
 ---
 
-  开始学习Hadoop之前先了解下[Hadoop之父Doug Cutting] 膜拜是必须的。路子是一步不走出来了。各位前辈给我们留下了宝贝的资源。不加以学习利用有些说不过去。
+  开始学习Hadoop之前先了解下[Hadoop之父Doug Cutting] , 膜拜是必须的。路子是一步不走出来了。各位前辈给我们留下了宝贝的资源, 不加以学习利用有些说不过去。
 
-  我个人是从2013年夏天开始拿到 《Hadoop权威指南》第二版的，但由于各种原因，也可以直接说我比较懒，从夏天到冬季中途到是翻过那书，感觉每次都没由什么实际的记忆和理解过程。在12月初，发现[开源力量]提供了相关的网上视频在线教学课程。选择适合自己的就是对的。
+  我个人是从2013年夏天开始拿到 《Hadoop权威指南》第二版的，但由于各种原因，也可以直接说我比较懒，从夏天到冬季中途到是翻过那书，感觉每次都没由什么实际的记忆和理解过程。在12月初，发现[开源力量]提供了的[开源力量培训课-Hadoop Development]网上视频在线教学课程。选择适合自己的就是对的。
 ，我毅然成为了其中的一员。
 目前我没有从事相关的工作，出于在工作之外寻找乐趣，就来了。
 
   学习之前还是多看些相关的资源比较容易找到赶脚。
+  
 ######资源列举：
 * [hadoop book] 
 * [hadoop 权威指南源代码]
@@ -39,7 +40,11 @@ tags: ['hadoop1']
 我自己的练习代码存放在 [github。](https://github.com/kangfoo/hadoop1.study/tree/master#hadoop1study)
 
 [Hadoop之父Doug Cutting]: http://www.programmer.com.cn/15929/
-[开源力量]: http://new.osforce.cn/course/explore/bigdata
+
+[开源力量]: http://new.osforce.cn/?mu=20140227220525KZol8ENMYdFQ6SjMveU26nEZ
+
+[开源力量培训课-Hadoop Development]: http://new.osforce.cn/course/101?mc101=20140301233857au7XG16o9ukfev1pmFCOfv2s
+
 [hadoop book]: http://hadoopbook.com/
 [hadoop 权威指南源代码]: https://github.com/tomwhite/hadoop-book
 [Hadoop 1.2.1 官方网站]: http://hadoop.apache.org/docs/r1.2.1/ 
