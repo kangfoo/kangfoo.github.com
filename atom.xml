@@ -3,7 +3,7 @@
   <title><![CDATA[kangfoo's blog]]></title>
   <link href="http://kangfoo.u.qiniudn.com//atom.xml" rel="self"/>
   <link href="http://kangfoo.u.qiniudn.com//"/>
-  <updated>2014-03-05T01:02:11+08:00</updated>
+  <updated>2015-03-03T22:33:07+08:00</updated>
   <id>http://kangfoo.u.qiniudn.com//</id>
   <author>
     <name><![CDATA[kangfoo]]></name>
@@ -12,11 +12,57 @@
   <generator uri="http://press.opoo.org/">OpooPress</generator>
 
   <entry>
-    <title type="html"><![CDATA[Hadoop MapReduce 学习参考博客汇总]]></title>
-    <link href="http://kangfoo.u.qiniudn.com//article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/"/>
-    <updated>2014-03-05T01:01:00+08:00</updated>
-    <id>http://kangfoo.u.qiniudn.com//article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/</id>
-    <content type="html"><![CDATA[<p>TODO.</p>
+    <title type="html"><![CDATA[springbatch入门]]></title>
+    <link href="http://kangfoo.u.qiniudn.com//article/2015/03/spring-batch--ru-men/"/>
+    <updated>2015-03-03T22:23:00+08:00</updated>
+    <id>http://kangfoo.u.qiniudn.com//article/2015/03/spring-batch--ru-men/</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>批处理
+在企业级应用系统当中，面对日益复杂的义务及一定规模的数据量，频繁的人机操作会引入一定的时间成本和管理风险。可以采取定时读取大批数据，在执行相应的工作流程，并归档。我首先想到的就是直接使用批处理进行解决。以解决我可能要面对的与特定时间周期相关、数据量大、尽量少人工干涉、自动完成、事后督察等工作。这些工作可以用 存储过程 + shell 等方式实现，但作为应用程序而言，我倾向于使用JAVA api. jdk 7 才有原生的API支持(这是 <a href="http://docs.oracle.com/javaee/7/tutorial/doc/batch-processing.htm">JAVA 7 Batch Processing Tutorial</a>)。貌似6要费费劲。我一直是spring 的粉丝。SpringBatch 自然会上场的。</p>
+</li>
+<li><p>spring batch
+一般的批处理都分有三个阶段
+读数据（我的数据目前大部分来自于文件）
+处理数据（业务逻辑）
+写数据（将业务结果写入数据库）
+这些过程又必选考虑效率、事物的粒度、监控、资源开销。读和写、业务处理一般都是独立的模块可直接解耦。谷歌了一番，看中了 spring batch。</p>
+</li>
+</ol>
+<p>那么 spring batch 可以给我们带来什么好处？
+Spring Batch作为Spring的一个顶级子项目，是一款优秀的大数据量并行处理框架。通过Spring Batch可以构建出轻量级的健壮的并行处理应用，支持事务、并发、监控，提供统一的接口管理和任务管理。</p>
+<p>谷歌文档一堆呀。先列举下我认为不错的。</p>
+<ul>
+<li><a href="http://projects.spring.io/spring-batch/#quick-start">spring-batch-quick-start</a></li>
+<li><a href="http://docs.spring.io/spring-batch/">spring-batch-docs</a></li>
+<li><a href="http://blog.csdn.net/shorn/article/details/7744579">2.1.8 中文版的翻译</a></li>
+<li><a href="http://wenku.baidu.com/view/9134505a0b1c59eef8c7b456">基​于​S​p​r​i​n​g​ ​B​a​t​c​h​的​大​数​据​量​并​行​处​理</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-springbatch1/">使用 Spring Batch 构建企业级批处理应用: 第 1 部分</a></li>
+<li><a href="http://spring.io/guides/gs/batch-processing/">spring 官方教程示例</a></li>
+<li><a href="https://github.com/chrisjs/maven-springbatch-archetype">maven-springbatch-archetype</a>  maven archetype 插件默认使用的是 springbatch 2.2.5 稳定版的。其默认生成的示例和<a href="http://spring.io/guides/gs/batch-processing/"> spring batch 官方文档</a>上提供的数据完全一致，官方介绍。</li>
+</ul>
+<p>好吧工具算是找的差不多了。
+也要开始我的第一个 demo 了。具体的概念先放放。东西弄出来了，在慢慢细嚼。</p>
+<ol>
+<li><p>首先 git clone <a href="https://github.com/chrisjs/maven-springbatch-archetype">maven-springbatch-archetype</a> maven 插件。同时请确保你自己的版本，我当前使用的 1.4-SNAPSHOT ，按照 readme 一步步执行吧。</p>
+</li>
+<li><p>生成我们自己的样板工程代码结构</p>
+<pre class='brush:shell'>mvn archetype:generate \
+-DarchetypeGroupId=com.dtzq \
+-DarchetypeArtifactId=maven-springbatch-archetype \
+-DarchetypeVersion=1.4-SNAPSHOT \
+-DgroupId=com.kangfoo.study.hygeia \
+-DartifactId=springbatch.test \
+-Dversion=1.0-SNAPSHOT \
+-Dpackage=com.kangfoo.study.hygeia.springbatch.test
+</pre></li>
+<li><p>题外话。第一次在 github 向他人维护的项目提交代码，弄了会儿，玩转了。
+主要借鉴<a href="http://site.douban.com/196781/widget/notes/12161495/note/269163206/">花20分钟写的-大白话讲解如何给github上项目贡献代码</a>
+先记录在案。</p>
+</li>
+<li><p>spring batch + quartz
+http://www.mkyong.com/spring-batch/spring-batch-and-quartz-scheduler-example/</p>
+</li>
+</ol>
 ]]></content>
   </entry>
   <entry>
@@ -2778,8 +2824,8 @@ hdfs 架构一页。且读过程和写过程各独立一页。</p>
     <link href="http://kangfoo.u.qiniudn.com//article/2014/02/hadoop1.x--xue-xi-zhun-bei/"/>
     <updated>2014-02-24T23:28:00+08:00</updated>
     <id>http://kangfoo.u.qiniudn.com//article/2014/02/hadoop1.x--xue-xi-zhun-bei/</id>
-    <content type="html"><![CDATA[<p>开始学习Hadoop之前先了解下<a href="http://www.programmer.com.cn/15929/">Hadoop之父Doug Cutting</a> 膜拜是必须的。路子是一步不走出来了。各位前辈给我们留下了宝贝的资源。不加以学习利用有些说不过去。</p>
-<p>我个人是从2013年夏天开始拿到 《Hadoop权威指南》第二版的，但由于各种原因，也可以直接说我比较懒，从夏天到冬季中途到是翻过那书，感觉每次都没由什么实际的记忆和理解过程。在12月初，发现<a href="http://new.osforce.cn/course/explore/bigdata">开源力量</a>提供了相关的网上视频在线教学课程。选择适合自己的就是对的。
+    <content type="html"><![CDATA[<p>开始学习Hadoop之前先了解下<a href="http://www.programmer.com.cn/15929/">Hadoop之父Doug Cutting</a> , 膜拜是必须的。路子是一步不走出来了。各位前辈给我们留下了宝贝的资源, 不加以学习利用有些说不过去。</p>
+<p>我个人是从2013年夏天开始拿到 《Hadoop权威指南》第二版的，但由于各种原因，也可以直接说我比较懒，从夏天到冬季中途到是翻过那书，感觉每次都没由什么实际的记忆和理解过程。在12月初，发现<a href="http://new.osforce.cn/?mu=20140227220525KZol8ENMYdFQ6SjMveU26nEZ">开源力量</a>提供了的<a href="http://new.osforce.cn/course/101?mc101=20140301233857au7XG16o9ukfev1pmFCOfv2s">开源力量培训课-Hadoop Development</a>网上视频在线教学课程。选择适合自己的就是对的。
 ，我毅然成为了其中的一员。
 目前我没有从事相关的工作，出于在工作之外寻找乐趣，就来了。</p>
 <p>学习之前还是多看些相关的资源比较容易找到赶脚。</p>

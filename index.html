@@ -12,7 +12,7 @@
   <meta name="OpooPressSiteRoot" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Generator" content="OpooPress-1.0.3"/>
-  <meta name="Generated" content="2014-03-05T01:02:11+08:00"/>
+  <meta name="Generated" content="2015-03-03T22:33:07+08:00"/>
   <link rel="canonical" href="/">
   <link href="/page/2/" rel="next" />
   
@@ -83,18 +83,64 @@
 <div class="blog-index">
     <article>
   <header>
-      <h1 class="entry-title"><a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a></h1>
+      <h1 class="entry-title"><a href="/article/2015/03/spring-batch--ru-men/">Springbatch入门</a></h1>
 
       <p class="meta">
 		
 
 
-<time datetime="2014-03-05T01:01:00+08:00" pubdate>2014年03月05日</time>
-         | <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/#disqus_thread">评论</a>
+<time datetime="2015-03-03T22:23:00+08:00" pubdate>2015年03月03日</time>
+         | <a href="/article/2015/03/spring-batch--ru-men/#disqus_thread">评论</a>
       </p>
   </header>
 
-  <div class="entry-content"><p>TODO.</p>
+  <div class="entry-content"><ol>
+<li><p>批处理
+在企业级应用系统当中，面对日益复杂的义务及一定规模的数据量，频繁的人机操作会引入一定的时间成本和管理风险。可以采取定时读取大批数据，在执行相应的工作流程，并归档。我首先想到的就是直接使用批处理进行解决。以解决我可能要面对的与特定时间周期相关、数据量大、尽量少人工干涉、自动完成、事后督察等工作。这些工作可以用 存储过程 + shell 等方式实现，但作为应用程序而言，我倾向于使用JAVA api. jdk 7 才有原生的API支持(这是 <a href="http://docs.oracle.com/javaee/7/tutorial/doc/batch-processing.htm">JAVA 7 Batch Processing Tutorial</a>)。貌似6要费费劲。我一直是spring 的粉丝。SpringBatch 自然会上场的。</p>
+</li>
+<li><p>spring batch
+一般的批处理都分有三个阶段
+读数据（我的数据目前大部分来自于文件）
+处理数据（业务逻辑）
+写数据（将业务结果写入数据库）
+这些过程又必选考虑效率、事物的粒度、监控、资源开销。读和写、业务处理一般都是独立的模块可直接解耦。谷歌了一番，看中了 spring batch。</p>
+</li>
+</ol>
+<p>那么 spring batch 可以给我们带来什么好处？
+Spring Batch作为Spring的一个顶级子项目，是一款优秀的大数据量并行处理框架。通过Spring Batch可以构建出轻量级的健壮的并行处理应用，支持事务、并发、监控，提供统一的接口管理和任务管理。</p>
+<p>谷歌文档一堆呀。先列举下我认为不错的。</p>
+<ul>
+<li><a href="http://projects.spring.io/spring-batch/#quick-start">spring-batch-quick-start</a></li>
+<li><a href="http://docs.spring.io/spring-batch/">spring-batch-docs</a></li>
+<li><a href="http://blog.csdn.net/shorn/article/details/7744579">2.1.8 中文版的翻译</a></li>
+<li><a href="http://wenku.baidu.com/view/9134505a0b1c59eef8c7b456">基​于​S​p​r​i​n​g​ ​B​a​t​c​h​的​大​数​据​量​并​行​处​理</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-springbatch1/">使用 Spring Batch 构建企业级批处理应用: 第 1 部分</a></li>
+<li><a href="http://spring.io/guides/gs/batch-processing/">spring 官方教程示例</a></li>
+<li><a href="https://github.com/chrisjs/maven-springbatch-archetype">maven-springbatch-archetype</a>  maven archetype 插件默认使用的是 springbatch 2.2.5 稳定版的。其默认生成的示例和<a href="http://spring.io/guides/gs/batch-processing/"> spring batch 官方文档</a>上提供的数据完全一致，官方介绍。</li>
+</ul>
+<p>好吧工具算是找的差不多了。
+也要开始我的第一个 demo 了。具体的概念先放放。东西弄出来了，在慢慢细嚼。</p>
+<ol>
+<li><p>首先 git clone <a href="https://github.com/chrisjs/maven-springbatch-archetype">maven-springbatch-archetype</a> maven 插件。同时请确保你自己的版本，我当前使用的 1.4-SNAPSHOT ，按照 readme 一步步执行吧。</p>
+</li>
+<li><p>生成我们自己的样板工程代码结构</p>
+<pre class='brush:shell'>mvn archetype:generate \
+-DarchetypeGroupId=com.dtzq \
+-DarchetypeArtifactId=maven-springbatch-archetype \
+-DarchetypeVersion=1.4-SNAPSHOT \
+-DgroupId=com.kangfoo.study.hygeia \
+-DartifactId=springbatch.test \
+-Dversion=1.0-SNAPSHOT \
+-Dpackage=com.kangfoo.study.hygeia.springbatch.test
+</pre></li>
+<li><p>题外话。第一次在 github 向他人维护的项目提交代码，弄了会儿，玩转了。
+主要借鉴<a href="http://site.douban.com/196781/widget/notes/12161495/note/269163206/">花20分钟写的-大白话讲解如何给github上项目贡献代码</a>
+先记录在案。</p>
+</li>
+<li><p>spring batch + quartz
+http://www.mkyong.com/spring-batch/spring-batch-and-quartz-scheduler-example/</p>
+</li>
+</ol>
 </div>
     </article>
     <article>
@@ -578,7 +624,7 @@ hello world 111 222
   
   
       <li class="post">
-        <a href="/article/2014/03/hadoop--xue-xi-can-kao-bo-ke-hui-zong/">Hadoop MapReduce 学习参考博客汇总</a>
+        <a href="/article/2015/03/spring-batch--ru-men/">Springbatch入门</a>
       </li>
       <li class="post">
         <a href="/article/2014/03/hadoop-pipes--streaming/">Hadoop Pipes & Streaming</a>
@@ -624,7 +670,7 @@ hello world 111 222
     </div>
   </div>
   <footer role="contentinfo"><p>
-  版权所有 &copy; 2014 - kangfoo -
+  版权所有 &copy; 2015 - kangfoo -
   <span class="credit">Powered by <a href="http://www.opoopress.com/">OpooPress</a></span>
  
   <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000232528'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000232528%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
