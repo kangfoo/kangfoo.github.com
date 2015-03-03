@@ -3,7 +3,7 @@
   <title><![CDATA[kangfoo's blog]]></title>
   <link href="http://kangfoo.u.qiniudn.com//atom.xml" rel="self"/>
   <link href="http://kangfoo.u.qiniudn.com//"/>
-  <updated>2015-03-03T22:36:33+08:00</updated>
+  <updated>2015-03-03T22:39:11+08:00</updated>
   <id>http://kangfoo.u.qiniudn.com//</id>
   <author>
     <name><![CDATA[kangfoo]]></name>
@@ -13,9 +13,9 @@
 
   <entry>
     <title type="html"><![CDATA[springbatch入门]]></title>
-    <link href="http://kangfoo.u.qiniudn.com//article/2015/03/spring-batch--ru-men/"/>
-    <updated>2015-03-03T22:23:00+08:00</updated>
-    <id>http://kangfoo.u.qiniudn.com//article/2015/03/spring-batch--ru-men/</id>
+    <link href="http://kangfoo.u.qiniudn.com//article/2014/04/spring-batch--ru-men/"/>
+    <updated>2014-04-08T22:23:00+08:00</updated>
+    <id>http://kangfoo.u.qiniudn.com//article/2014/04/spring-batch--ru-men/</id>
     <content type="html"><![CDATA[<ol>
 <li><p>批处理
 在企业级应用系统当中，面对日益复杂的义务及一定规模的数据量，频繁的人机操作会引入一定的时间成本和管理风险。可以采取定时读取大批数据，在执行相应的工作流程，并归档。我首先想到的就是直接使用批处理进行解决。以解决我可能要面对的与特定时间周期相关、数据量大、尽量少人工干涉、自动完成、事后督察等工作。这些工作可以用 存储过程 + shell 等方式实现，但作为应用程序而言，我倾向于使用JAVA api. jdk 7 才有原生的API支持(这是 <a href="http://docs.oracle.com/javaee/7/tutorial/doc/batch-processing.htm">JAVA 7 Batch Processing Tutorial</a>)。貌似6要费费劲。我一直是spring 的粉丝。SpringBatch 自然会上场的。</p>
